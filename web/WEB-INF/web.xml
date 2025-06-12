@@ -91,6 +91,27 @@
         <url-pattern>/admin/users</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>BookDetailServlet</servlet-name>
+        <servlet-class>com.swp391.servlet.BookDetailServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>BookDetailServlet</servlet-name>
+        <url-pattern>/book/detail</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>BookDetailServlet</servlet-name>
+        <url-pattern>/book/add</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>BookDetailServlet</servlet-name>
+        <url-pattern>/book/edit</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>BookDetailServlet</servlet-name>
+        <url-pattern>/book/delete</url-pattern>
+    </servlet-mapping>
+
     <session-config>
         <session-timeout>60</session-timeout>
     </session-config>
