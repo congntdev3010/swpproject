@@ -112,6 +112,15 @@
         <url-pattern>/book/delete</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>BookCopyListServlet</servlet-name>
+        <servlet-class>com.swp391.servlet.BookCopyListServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>BookCopyListServlet</servlet-name>
+        <url-pattern>/book/copies</url-pattern>
+    </servlet-mapping>
+
     <session-config>
         <session-timeout>60</session-timeout>
     </session-config>

@@ -173,8 +173,13 @@
 
             <!-- Inventory Card -->
             <div class="detail-card">
-                <div class="detail-card-header">
-                    <i class="fa-solid fa-boxes-stacked"></i> Thông tin tồn kho
+                <div class="detail-card-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                    <span><i class="fa-solid fa-boxes-stacked"></i> Thông tin tồn kho</span>
+                    <% if (loggedUser != null && loggedUser.isAdminOrLibrarian()) { %>
+                        <a href="<%= ctx %>/book/copies?bookId=<%= book.getId() %>" class="btn btn-outline btn-sm" style="font-size: 0.75rem; padding: 4px 10px; font-weight: 500;">
+                            <i class="fa-solid fa-list"></i> Quản lý bản sao
+                        </a>
+                    <% } %>
                 </div>
                 <div class="detail-card-body">
                     <div class="detail-grid">

@@ -222,6 +222,95 @@ public class BookCopyDAO {
         return list;
     }
 
+    /**
+     * Tìm kiếm & lọc bản sao thuộc một đầu sách có phân trang.
+     */
+    public List<BookCopy> searchCopies(int bookId, String barcode, String status, String area, int page, int pageSize) {
+        List<BookCopy> list = new ArrayList<>();
+        StringBuilder sql = new StringBuilder(
+                "SELECT bc.*, b.title, b.isbn FROM book_copies bc "
+                + "JOIN books b ON bc.book_id = b.id "
+                + "WHERE bc.book_id = ? "
+        );
+        List<Object> params = new ArrayList<>();
+        params.add(bookId);
+
+        if (barcode != null && !barcode.trim().isEmpty()) {
+            sql.append("AND bc.barcode LIKE ? ");
+            params.add("%" + barcode.trim() + "%");
+        }
+        if (status != null && !status.trim().isEmpty()) {
+            sql.append("AND bc.status = ? ");
+            params.add(status.trim());
+        }
+        if (area != null && !area.trim().isEmpty()) {
+            if ("Chưa xếp".equals(area)) {
+                sql.append("AND bc.area IS NULL ");
+            } else {
+                sql.append("AND bc.area = ? ");
+                params.add(area.trim());
+            }
+        }
+
+        sql.append("ORDER BY bc.barcode LIMIT ? OFFSET ?");
+        params.add(pageSize);
+        params.add((page - 1) * pageSize);
+
+        try (PreparedStatement ps = getConn().prepareStatement(sql.toString())) {
+            for (int i = 0; i < params.size(); i++) {
+                ps.setObject(i + 1, params.get(i));
+            }
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(mapRow(rs));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    /**
+     * Đếm tổng số bản sao thỏa mãn điều kiện lọc (dùng cho phân trang).
+     */
+    public int countCopies(int bookId, String barcode, String status, String area) {
+        StringBuilder sql = new StringBuilder(
+                "SELECT COUNT(*) FROM book_copies bc WHERE bc.book_id = ? "
+        );
+        List<Object> params = new ArrayList<>();
+        params.add(bookId);
+
+        if (barcode != null && !barcode.trim().isEmpty()) {
+            sql.append("AND bc.barcode LIKE ? ");
+            params.add("%" + barcode.trim() + "%");
+        }
+        if (status != null && !status.trim().isEmpty()) {
+            sql.append("AND bc.status = ? ");
+            params.add(status.trim());
+        }
+        if (area != null && !area.trim().isEmpty()) {
+            if ("Chưa xếp".equals(area)) {
+                sql.append("AND bc.area IS NULL ");
+            } else {
+                sql.append("AND bc.area = ? ");
+                params.add(area.trim());
+            }
+        }
+
+        try (PreparedStatement ps = getConn().prepareStatement(sql.toString())) {
+            for (int i = 0; i < params.size(); i++) {
+                ps.setObject(i + 1, params.get(i));
+            }
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
     // ================================================================
     //  Helpers
     // ================================================================
