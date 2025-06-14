@@ -510,7 +510,7 @@ img { max-width: 100%; display: block; }
   transition: all var(--transition-slow);
   display: flex;
   flex-direction: column;
-  /* Không dùng height:100% để tránh row stretching */
+  height: 100%; /* cho phép card kéo dãn bằng nhau */
 }
 .book-card:hover {
   border-color: rgba(244,121,32,0.4);
@@ -1093,7 +1093,7 @@ img { max-width: 100%; display: block; }
   /* 4 cột cố định → mọi hàng đều đồng đều */
   grid-template-columns: repeat(4, 1fr);
   gap: 20px;
-  align-items: start; /* card không bị kéo dài theo hàng */
+  align-items: stretch; /* các card trong hàng có chiều cao bằng nhau */
 }
 
 /* ===================== TOP BAR (Books Page) ===================== */

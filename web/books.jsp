@@ -252,9 +252,11 @@
                                 <span class="badge <%= b.getAvailable() > 0 ? "badge-success" : (b.getQuantity() > 0 ? "badge-warning" : "badge-danger") %>">
                                     <%= b.getStatusLabel() %>
                                 </span>
-                                <span style="font-size:0.75rem;color:var(--text-muted);display:block;margin-top:2px;">
-                                    <%= b.getAvailable() %>/<%= b.getQuantity() %> bản
-                                </span>
+                                <% if (loggedUser != null) { %>
+                                    <span style="font-size:0.75rem;color:var(--text-muted);display:block;margin-top:2px;">
+                                        <%= b.getAvailable() %>/<%= b.getQuantity() %> bản
+                                    </span>
+                                <% } %>
                             </td>
                             <td style="font-weight:600; color:var(--accent);"><%= b.getFormattedPrice() %></td>
                             <% if (isAdmin) { %>
@@ -325,10 +327,14 @@
                         <div class="book-price"><%= b.getFormattedPrice() %></div>
                     </div>
                     <div class="book-footer">
-                        <span style="font-size:0.78rem;color:var(--text-muted);">
-                            <i class="fa-solid fa-layer-group fa-xs"></i>
-                            <%= b.getAvailable() %>/<%= b.getQuantity() %> còn
-                        </span>
+                        <% if (loggedUser != null) { %>
+                            <span style="font-size:0.78rem;color:var(--text-muted);">
+                                <i class="fa-solid fa-layer-group fa-xs"></i>
+                                <%= b.getAvailable() %>/<%= b.getQuantity() %> còn
+                            </span>
+                        <% } else { %>
+                            <span></span>
+                        <% } %>
                         <div style="display:flex; gap:6px;">
                             <a href="<%= ctx %>/book/detail?id=<%= b.getId() %>" class="btn btn-outline btn-sm" title="Xem chi tiết">
                                 <i class="fa-solid fa-eye"></i>

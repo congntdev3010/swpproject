@@ -135,10 +135,14 @@
                                 <div class="book-price"><%= book.getFormattedPrice() %></div>
                             </div>
                             <div class="book-footer">
-                                <span style="font-size:0.78rem;color:var(--text-muted);">
-                                    <i class="fa-solid fa-layer-group fa-xs"></i>
-                                    <%= book.getAvailable() %>/<%= book.getQuantity() %> còn lại
-                                </span>
+                                <% if (loggedUser != null) { %>
+                                    <span style="font-size:0.78rem;color:var(--text-muted);">
+                                        <i class="fa-solid fa-layer-group fa-xs"></i>
+                                        <%= book.getAvailable() %>/<%= book.getQuantity() %> còn lại
+                                    </span>
+                                <% } else { %>
+                                    <span></span>
+                                <% } %>
                                 <a href="<%= request.getContextPath() %>/books?keyword=<%= java.net.URLEncoder.encode(book.getTitle(),"UTF-8") %>"
                                    class="btn btn-primary btn-sm">Chi tiết</a>
                             </div>
