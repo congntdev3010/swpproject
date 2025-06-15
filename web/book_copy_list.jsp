@@ -19,6 +19,10 @@
     if (keyword == null) keyword = "";
     if (selectedStatus == null) selectedStatus = "";
     if (selectedArea == null) selectedArea = "";
+
+    // Retrieve success and error alerts
+    String success = request.getParameter("success");
+    String error = request.getParameter("error");
 %>
 
 <main class="page-wrapper">
@@ -39,11 +43,14 @@
                 </p>
             </div>
             <% if (book != null) { %>
-            <div class="books-page-stats">
+            <div class="books-page-stats" style="display:flex; align-items:center; gap:16px;">
                 <div class="bps-item">
                     <span class="bps-num"><%= totalRecords %></span>
                     <span class="bps-lbl">Tổng bản sao</span>
                 </div>
+                <a href="<%= ctx %>/book/copy/add?bookId=<%= book.getId() %>" class="btn btn-primary">
+                    <i class="fa-solid fa-plus"></i> Thêm bản sao
+                </a>
             </div>
             <% } %>
         </div>
@@ -51,6 +58,23 @@
 </div>
 
 <div class="container" style="padding-top:28px;">
+
+    <!-- Alerts Notification -->
+    <% if ("added".equals(success)) { %>
+        <div class="alert alert-success"><i class="fa-solid fa-circle-check"></i> Thêm bản sao mới thành công!</div>
+    <% } else if ("updated".equals(success)) { %>
+        <div class="alert alert-success"><i class="fa-solid fa-circle-check"></i> Cập nhật bản sao thành công!</div>
+    <% } else if ("deleted".equals(success)) { %>
+        <div class="alert alert-success"><i class="fa-solid fa-circle-check"></i> Xóa bản sao thành công!</div>
+    <% } %>
+
+    <% if ("cannot_delete".equals(error)) { %>
+        <div class="alert alert-danger"><i class="fa-solid fa-circle-xmark"></i> Không thể xóa bản sao đang được mượn hoặc đặt trước.</div>
+    <% } else if ("delete_failed".equals(error)) { %>
+        <div class="alert alert-danger"><i class="fa-solid fa-circle-xmark"></i> Xóa bản sao thất bại do lỗi hệ thống.</div>
+    <% } else if ("barcode_exists".equals(error)) { %>
+        <div class="alert alert-danger"><i class="fa-solid fa-circle-xmark"></i> Mã barcode đã tồn tại trong hệ thống.</div>
+    <% } %>
 
     <!-- ==================== SEARCH & FILTER BAR ==================== -->
     <form id="searchForm" action="<%= ctx %>/book/copies" method="get">
@@ -138,6 +162,7 @@
                         <th>Khu vực / Tầng</th>
                         <th>Kệ / Ngăn</th>
                         <th>Ghi chú</th>
+                        <th style="width:130px; text-align:center;">Hành động</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -195,8 +220,27 @@
                                     —
                                 <% } %>
                             </td>
-                            <td style="font-size:0.85rem; color:var(--text-secondary); max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="<%= bc.getNote() != null ? bc.getNote() : "" %>">
+                            <td style="font-size:0.85rem; color:var(--text-secondary); max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="<%= bc.getNote() != null ? bc.getNote() : "" %>">
                                 <%= bc.getNote() != null ? bc.getNote() : "—" %>
+                            </td>
+                            <td style="text-align:center;">
+                                <div style="display:flex; gap:6px; justify-content:center;">
+                                    <a href="<%= ctx %>/book/copy/edit?id=<%= bc.getId() %>" class="btn btn-outline btn-sm" style="padding: 4px 8px;" title="Chỉnh sửa bản sao">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </a>
+                                    <% 
+                                        boolean isDeletable = !"BORROWED".equals(bc.getStatus()) && !"RESERVED".equals(bc.getStatus());
+                                        HttpSession s = request.getSession(false);
+                                        User u = (s != null) ? (User) s.getAttribute("loggedUser") : null;
+                                        if (u != null && u.isAdmin()) {
+                                    %>
+                                        <button type="button" class="btn btn-danger btn-sm" style="padding: 4px 8px;" 
+                                                onclick="confirmDeleteCopy('<%= bc.getId() %>', '<%= bc.getBarcode() %>')"
+                                                <%= isDeletable ? "" : "disabled title=\"Không thể xóa bản sao đang được mượn hoặc đặt trước\" style=\"opacity:0.5; cursor:not-allowed;\"" %>>
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    <% } %>
+                                </div>
                             </td>
                         </tr>
                     <% } %>
@@ -237,4 +281,34 @@
 </div>
 </main>
 
+<!-- ===== DELETE CONFIRMATION MODAL ===== -->
+<div id="deleteCopyModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:9999; align-items:center; justify-content:center; backdrop-filter:blur(4px);">
+    <div style="background:var(--bg-card); border:1px solid var(--border-light); border-radius:var(--radius-lg); padding:36px; max-width:440px; width:90%; box-shadow:var(--shadow-lg); position:relative;">
+        <div style="position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(to right,var(--danger),#ff6b6b); border-radius:var(--radius-lg) var(--radius-lg) 0 0;"></div>
+        <div style="font-size:2.5rem; margin-bottom:14px; text-align:center;">🗑️</div>
+        <h3 style="font-size:1.15rem; font-weight:700; color:var(--text-primary); margin-bottom:10px; text-align:center;">Xác nhận xóa bản sao</h3>
+        <p style="color:var(--text-secondary); font-size:0.9rem; margin-bottom:28px; text-align:center; line-height:1.6;">
+            Bạn có chắc muốn xóa bản sao: <strong id="deleteBarcodeLabel"></strong>?<br>
+            <span style="color:var(--danger); font-size:0.82rem;">Hành động này không thể hoàn tác.</span>
+        </p>
+        <div style="display:flex; gap:12px; justify-content:flex-end;">
+            <button onclick="document.getElementById('deleteCopyModal').style.display='none'" class="btn btn-outline">Hủy</button>
+            <a id="confirmDeleteLink" href="#" class="btn btn-danger">
+                <i class="fa-solid fa-trash"></i> Xóa
+            </a>
+        </div>
+    </div>
+</div>
+
 <%@ include file="/WEB-INF/jsp/footer.jsp" %>
+
+<script>
+function confirmDeleteCopy(id, barcode) {
+    document.getElementById('deleteBarcodeLabel').textContent = barcode;
+    document.getElementById('confirmDeleteLink').href = '<%= ctx %>/book/copy/delete?id=' + id;
+    document.getElementById('deleteCopyModal').style.display = 'flex';
+}
+document.getElementById('deleteCopyModal').addEventListener('click', function(e) {
+    if (e.target === this) this.style.display = 'none';
+});
+</script>
