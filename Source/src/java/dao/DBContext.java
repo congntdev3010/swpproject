@@ -7,7 +7,7 @@ import java.sql.SQLException;
 public class DBContext {
 
     private static final String DRIVER = "com.mysql.cj.jdbc.Driver";
-    private static final String URL = "jdbc:mysql://localhost:3307/pass_swp"
+    private static final String URL = "jdbc:mysql://localhost:3306/library_management_swp391"
             + "?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true";
     private static final String USER = "root";
     private static final String PASS = ""; // <-- điền password MySQL của bạn
