@@ -33,16 +33,30 @@
     // (dùng inline trong JSP)
 %>
 
-<main class="page-wrapper" style="padding-top:32px;">
-<div class="container">
+<main class="page-wrapper">
 
-    <!-- ==================== PAGE TITLE ==================== -->
-    <div style="margin-bottom:24px;">
-        <h1 style="font-family:'Playfair Display',serif; font-size:1.8rem; font-weight:700; color:var(--text-primary); margin-bottom:4px;">
-            <i class="fa-solid fa-book" style="color:var(--primary); margin-right:8px;"></i>Danh sách sách
-        </h1>
-        <p style="color:var(--text-muted); font-size:0.9rem;">Tra cứu, tìm kiếm và lọc đầu sách trong thư viện</p>
+<!-- ===== BOOKS PAGE HEADER ===== -->
+<div class="books-page-header">
+    <div class="container">
+        <div class="books-page-header-inner">
+            <div>
+                <div class="hero-eyebrow" style="margin-bottom:10px;">
+                    <i class="fa-solid fa-book"></i> Kho sách
+                </div>
+                <h1 class="books-page-title">Danh sách sách</h1>
+                <p class="books-page-subtitle">Tra cứu, tìm kiếm và lọc đầu sách trong thư viện FPT</p>
+            </div>
+            <div class="books-page-stats">
+                <div class="bps-item">
+                    <span class="bps-num"><%= totalRecords %></span>
+                    <span class="bps-lbl">Đầu sách</span>
+                </div>
+            </div>
+        </div>
     </div>
+</div>
+
+<div class="container" style="padding-top:28px;">
 
     <!-- ==================== SEARCH & FILTER BAR ==================== -->
     <form id="searchForm" action="<%= ctx %>/books" method="get" novalidate>
@@ -100,24 +114,24 @@
         </div>
     <% } %>
 
-    <!-- ==================== TOPBAR (Result info + View toggle + Sort) ==================== -->
+    <!-- ==================== TOPBAR ==================== -->
     <div class="books-topbar">
-        <div class="results-info">
+        <div class="results-info" style="margin-bottom:0;">
             <% if (!keyword.isEmpty() || !selectedCategory.isEmpty()) { %>
+                <i class="fa-solid fa-filter fa-xs" style="color:var(--primary);"></i>
                 Kết quả: <strong><%= totalRecords %></strong> sách
-                <% if (!keyword.isEmpty()) { %> cho "<strong><%= keyword %></strong>"<% } %>
-                <% if (!selectedCategory.isEmpty()) { %> trong "<strong><%= selectedCategory %></strong>"<% } %>
+                <% if (!keyword.isEmpty()) { %> cho “<strong><%= keyword %></strong>”<% } %>
+                <% if (!selectedCategory.isEmpty()) { %> trong “<strong><%= selectedCategory %></strong>”<% } %>
             <% } else { %>
+                <i class="fa-solid fa-books fa-xs" style="color:var(--primary); margin-right:4px;"></i>
                 Tổng cộng <strong><%= totalRecords %></strong> đầu sách
             <% } %>
-            &nbsp;·&nbsp; Trang <strong><%= currentPageNum %></strong>/<strong><%= totalPages %></strong>
         </div>
 
         <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
             <!-- Sort -->
-            <div style="display:flex; align-items:center; gap:6px; font-size:0.85rem; color:var(--text-muted);">
-                <i class="fa-solid fa-arrow-up-wide-short"></i>
-                <span>Sắp xếp:</span>
+            <div class="sort-group">
+                <span class="sort-label"><i class="fa-solid fa-arrow-up-wide-short"></i> Sắp xếp:</span>
                 <%
                     String[][] sortOptions = {
                         {"title",        "Tên sách"},
@@ -132,7 +146,7 @@
                         String icon = active ? ("ASC".equals(sortOrder) ? " ▲" : " ▼") : "";
                 %>
                     <a href="<%= ctx %>/books?keyword=<%= java.net.URLEncoder.encode(keyword,"UTF-8") %>&category=<%= java.net.URLEncoder.encode(selectedCategory,"UTF-8") %>&sort=<%= sf %>&order=<%= thisOrder %>&page=1&view=<%= viewMode %>"
-                       style="padding:4px 10px; border-radius:4px; font-size:0.82rem; font-weight:<%= active ? "700" : "500" %>; color:<%= active ? "var(--primary)" : "var(--text-muted)" %>; border:1px solid <%= active ? "var(--primary)" : "var(--border)" %>; background:<%= active ? "rgba(79,142,247,0.08)" : "transparent" %>; transition:all .15s;">
+                       class="sort-btn <%= active ? "sort-btn-active" : "" %>">
                         <%= sl %><%= icon %>
                     </a>
                 <% } %>
@@ -336,31 +350,56 @@
                     </a>
                 </li>
 
-                <% // Hiện tối đa 7 nút trang
-                   int startPage = Math.max(1, currentPageNum - 3);
-                   int endPage   = Math.min(totalPages, startPage + 6);
-                   startPage     = Math.max(1, endPage - 6);
+                <% 
+                   if (totalPages <= 7) {
+                       for (int pg = 1; pg <= totalPages; pg++) { %>
+                           <li class="page-item <%= pg == currentPageNum ? "active" : "" %>">
+                               <a class="page-link" href="<%= ctx %>/books?keyword=<%= java.net.URLEncoder.encode(keyword,"UTF-8") %>&category=<%= java.net.URLEncoder.encode(selectedCategory,"UTF-8") %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= pg %>&view=<%= viewMode %>"><%= pg %></a>
+                           </li>
+                       <% }
+                   } else {
+                       // Show first 2 pages
+                       for (int pg = 1; pg <= 2; pg++) { %>
+                           <li class="page-item <%= pg == currentPageNum ? "active" : "" %>">
+                               <a class="page-link" href="<%= ctx %>/books?keyword=<%= java.net.URLEncoder.encode(keyword,"UTF-8") %>&category=<%= java.net.URLEncoder.encode(selectedCategory,"UTF-8") %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= pg %>&view=<%= viewMode %>"><%= pg %></a>
+                           </li>
+                       <% }
 
-                   if (startPage > 1) { %>
-                    <li class="page-item">
-                        <a class="page-link" href="<%= ctx %>/books?keyword=<%= java.net.URLEncoder.encode(keyword,"UTF-8") %>&category=<%= java.net.URLEncoder.encode(selectedCategory,"UTF-8") %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=1&view=<%= viewMode %>">1</a>
-                    </li>
-                    <% if (startPage > 2) { %><li class="page-item disabled"><span class="page-link">…</span></li><% } %>
-                <% }
-                   for (int pg = startPage; pg <= endPage; pg++) { %>
-                    <li class="page-item <%= pg == currentPageNum ? "active" : "" %>">
-                        <a class="page-link"
-                           href="<%= ctx %>/books?keyword=<%= java.net.URLEncoder.encode(keyword,"UTF-8") %>&category=<%= java.net.URLEncoder.encode(selectedCategory,"UTF-8") %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= pg %>&view=<%= viewMode %>">
-                            <%= pg %>
-                        </a>
-                    </li>
-                <% }
-                   if (endPage < totalPages) {
-                       if (endPage < totalPages - 1) { %><li class="page-item disabled"><span class="page-link">…</span></li><% } %>
-                    <li class="page-item">
-                        <a class="page-link" href="<%= ctx %>/books?keyword=<%= java.net.URLEncoder.encode(keyword,"UTF-8") %>&category=<%= java.net.URLEncoder.encode(selectedCategory,"UTF-8") %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= totalPages %>&view=<%= viewMode %>"><%= totalPages %></a>
-                    </li>
-                <% } %>
+                       if (currentPageNum <= 4) {
+                           // Current page is near the start
+                           for (int pg = 3; pg <= 5; pg++) { %>
+                               <li class="page-item <%= pg == currentPageNum ? "active" : "" %>">
+                                   <a class="page-link" href="<%= ctx %>/books?keyword=<%= java.net.URLEncoder.encode(keyword,"UTF-8") %>&category=<%= java.net.URLEncoder.encode(selectedCategory,"UTF-8") %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= pg %>&view=<%= viewMode %>"><%= pg %></a>
+                               </li>
+                           <% } %>
+                           <li class="page-item disabled"><span class="page-link">…</span></li>
+                       <% } else if (currentPageNum >= totalPages - 3) {
+                           // Current page is near the end %>
+                           <li class="page-item disabled"><span class="page-link">…</span></li>
+                           <% for (int pg = totalPages - 4; pg <= totalPages - 2; pg++) { %>
+                               <li class="page-item <%= pg == currentPageNum ? "active" : "" %>">
+                                   <a class="page-link" href="<%= ctx %>/books?keyword=<%= java.net.URLEncoder.encode(keyword,"UTF-8") %>&category=<%= java.net.URLEncoder.encode(selectedCategory,"UTF-8") %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= pg %>&view=<%= viewMode %>"><%= pg %></a>
+                               </li>
+                           <% }
+                       } else {
+                           // Current page is in the middle %>
+                           <li class="page-item disabled"><span class="page-link">…</span></li>
+                           <% for (int pg = currentPageNum - 1; pg <= currentPageNum + 1; pg++) { %>
+                               <li class="page-item <%= pg == currentPageNum ? "active" : "" %>">
+                                   <a class="page-link" href="<%= ctx %>/books?keyword=<%= java.net.URLEncoder.encode(keyword,"UTF-8") %>&category=<%= java.net.URLEncoder.encode(selectedCategory,"UTF-8") %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= pg %>&view=<%= viewMode %>"><%= pg %></a>
+                               </li>
+                           <% } %>
+                           <li class="page-item disabled"><span class="page-link">…</span></li>
+                       <% }
+
+                       // Show last 2 pages
+                       for (int pg = totalPages - 1; pg <= totalPages; pg++) { %>
+                           <li class="page-item <%= pg == currentPageNum ? "active" : "" %>">
+                               <a class="page-link" href="<%= ctx %>/books?keyword=<%= java.net.URLEncoder.encode(keyword,"UTF-8") %>&category=<%= java.net.URLEncoder.encode(selectedCategory,"UTF-8") %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= pg %>&view=<%= viewMode %>"><%= pg %></a>
+                           </li>
+                       <% }
+                   }
+                %>
 
                 <!-- Next -->
                 <li class="page-item <%= currentPageNum >= totalPages ? "disabled" : "" %>">
@@ -379,11 +418,12 @@
 <%@ include file="/WEB-INF/jsp/footer.jsp" %>
 
 <!-- ==================== DELETE MODAL ==================== -->
-<div id="deleteModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:9999; align-items:center; justify-content:center;">
-    <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-lg); padding:32px; max-width:420px; width:90%; box-shadow:var(--shadow-lg);">
-        <div style="font-size:2rem; margin-bottom:12px;">🗑️</div>
-        <h3 style="font-size:1.1rem; font-weight:700; color:var(--text-primary); margin-bottom:8px;">Xác nhận xóa sách</h3>
-        <p style="color:var(--text-secondary); font-size:0.9rem; margin-bottom:24px;" id="deleteBookTitle"></p>
+<div id="deleteModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:9999; align-items:center; justify-content:center; backdrop-filter:blur(4px);">
+    <div style="background:var(--bg-card); border:1px solid var(--border-light); border-radius:var(--radius-lg); padding:36px; max-width:440px; width:90%; box-shadow:var(--shadow-lg); position:relative;">
+        <div style="position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(to right,var(--danger),#ff6b6b); border-radius:var(--radius-lg) var(--radius-lg) 0 0;"></div>
+        <div style="font-size:2.5rem; margin-bottom:14px; text-align:center;">🗑️</div>
+        <h3 style="font-size:1.15rem; font-weight:700; color:var(--text-primary); margin-bottom:10px; text-align:center;">Xác nhận xóa sách</h3>
+        <p style="color:var(--text-secondary); font-size:0.9rem; margin-bottom:28px; text-align:center; line-height:1.6;" id="deleteBookTitle"></p>
         <div style="display:flex; gap:12px; justify-content:flex-end;">
             <button onclick="closeDeleteModal()" class="btn btn-outline">Hủy</button>
             <a id="deleteConfirmBtn" href="#" class="btn btn-danger">
