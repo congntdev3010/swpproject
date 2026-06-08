@@ -4,9 +4,9 @@ import com.swp391.dao.BookDAO;
 import com.swp391.dao.BookDAOImpl;
 import com.swp391.model.Book;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
-import javax.servlet.annotation.WebServlet;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
+import jakarta.servlet.annotation.WebServlet;
 import java.io.IOException;
 import java.util.List;
 
