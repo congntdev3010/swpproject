@@ -15,7 +15,7 @@ public class DBContext {
     private static DBContext instance;
     protected Connection connection;
 
-    private DBContext() throws ClassNotFoundException, SQLException {
+    DBContext() throws ClassNotFoundException, SQLException {
         Class.forName(DRIVER);
         connection = DriverManager.getConnection(URL, USER, PASS);
     }
