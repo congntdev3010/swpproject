@@ -1,4 +1,0 @@
-ALTER TABLE book_copies 
-ADD COLUMN area VARCHAR(50) NULL COMMENT 'Khu vực (Tầng 1, Tầng 2...)',
-ADD COLUMN shelf VARCHAR(20) NULL COMMENT 'Kệ (K01, K02...)',
-ADD COLUMN slot VARCHAR(20) NULL COMMENT 'Ngăn (N01, N02...)';
