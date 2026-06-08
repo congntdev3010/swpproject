@@ -1,4 +1,10 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%
+    if (request.getAttribute("featuredBooks") == null) {
+        response.sendRedirect(request.getContextPath() + "/home");
+        return;
+    }
+%>
 <%@ page import="com.swp391.model.Book, java.util.List" %>
 <%@ include file="/WEB-INF/jsp/header.jsp" %>
 <%
@@ -12,11 +18,12 @@
 
     <!-- ==================== HERO BANNER ==================== -->
     <section class="hero">
-        <div class="container">
+        <div class="hero-grid-bg"></div>
+        <div class="container" style="position:relative;z-index:1;">
             <div class="hero-content">
                 <div class="hero-eyebrow">
-                    <i class="fa-solid fa-star"></i>
-                    Thư viện FPT University
+                    <i class="fa-solid fa-graduation-cap"></i>
+                    FPT University Library System
                 </div>
                 <h1 class="hero-title">
                     Kho tri thức<br>
@@ -28,7 +35,8 @@
                 </p>
 
                 <!-- Quick Search -->
-                <form class="hero-search" action="<%= contextPath %>/books" method="get" role="search">
+                <form class="hero-search" action="<%= contextPath %>/books" method="get" role="search"
+                      onsubmit="return validateHeroSearch(this)">
                     <input type="text" name="keyword" id="heroSearchInput"
                            placeholder="Tìm tên sách, tác giả, chủ đề..."
                            maxlength="200"
@@ -38,15 +46,16 @@
                         Tìm kiếm
                     </button>
                 </form>
+                <div id="heroSearchError" style="color:var(--danger);font-size:0.82rem;margin-top:6px;display:none;"></div>
 
                 <!-- Stats -->
                 <div class="hero-stats">
                     <div class="hero-stat">
-                        <span class="number"><%= totalBooks != null ? totalBooks : "—" %>+</span>
+                        <span class="number"><span><%= totalBooks != null ? totalBooks : "—" %></span>+</span>
                         <span class="label">Đầu sách</span>
                     </div>
                     <div class="hero-stat">
-                        <span class="number"><%= totalCategories != null ? totalCategories : "—" %></span>
+                        <span class="number"><span><%= totalCategories != null ? totalCategories : "—" %></span></span>
                         <span class="label">Danh mục</span>
                     </div>
                     <div class="hero-stat">
@@ -55,11 +64,22 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Decorative book stack -->
+            <div class="hero-visual">
+                <div class="hero-visual-inner">
+                    <div class="hero-book-stack">📗</div>
+                    <div class="hero-book-stack">📘</div>
+                    <div class="hero-book-stack">📙</div>
+                    <div class="hero-book-stack">📕</div>
+                    <div class="hero-book-stack">📓</div>
+                </div>
+            </div>
         </div>
     </section>
 
     <!-- ==================== FEATURED BOOKS ==================== -->
-    <section style="padding: 64px 0;">
+    <section style="padding: 72px 0;">
         <div class="container">
 
             <% if (dbError != null) { %>
@@ -136,10 +156,11 @@
     </section>
 
     <!-- ==================== WHY SECTION ==================== -->
-    <section style="padding: 60px 0; background: var(--bg-card); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+    <section class="why-section">
         <div class="container">
-            <div style="text-align:center; margin-bottom:40px;">
+            <div style="text-align:center; margin-bottom:48px;">
                 <h2 class="section-title" style="display:inline-block;">Tại sao chọn FPT Library?</h2>
+                <p class="section-subtitle" style="margin-top:16px;">Trải nghiệm thư viện hiện đại – thông minh – tiện lợi</p>
             </div>
             <div class="info-grid">
                 <div class="info-card">
@@ -163,9 +184,43 @@
                     <p>Hệ thống tự động gửi thông báo nhắc trả sách, hạn mượn và phí phạt (nếu có).</p>
                 </div>
             </div>
+
+            <!-- Stat strip -->
+            <div class="stat-strip">
+                <div class="stat-item">
+                    <div class="stat-number"><%= totalBooks != null ? totalBooks : "300" %>+</div>
+                    <div class="stat-label">Đầu sách</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number"><%= totalCategories != null ? totalCategories : "10" %></div>
+                    <div class="stat-label">Danh mục</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">50+</div>
+                    <div class="stat-label">Tác giả</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">Tra cứu online</div>
+                </div>
+            </div>
         </div>
     </section>
 
 </main>
 
 <%@ include file="/WEB-INF/jsp/footer.jsp" %>
+
+<script>
+function validateHeroSearch(form) {
+    var kw = document.getElementById('heroSearchInput').value;
+    var errEl = document.getElementById('heroSearchError');
+    if (kw.length > 200) {
+        errEl.textContent = 'Từ khóa không được vượt quá 200 ký tự.';
+        errEl.style.display = 'block';
+        return false;
+    }
+    errEl.style.display = 'none';
+    return true;
+}
+</script>
