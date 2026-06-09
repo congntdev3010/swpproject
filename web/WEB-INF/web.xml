@@ -5,7 +5,7 @@
          WELCOME FILES – redirect / vào HomeServlet
          ==================================================== -->
     <welcome-file-list>
-        <welcome-file>/admin/users</welcome-file>
+        <welcome-file>/home</welcome-file>
     </welcome-file-list>
     <!-- ====================================================
          SERVLETS (annotation-based, khai báo thêm ở đây nếu cần)
