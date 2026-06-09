@@ -1,5 +1,6 @@
 package com.swp391.servlet;
 
+import com.swp391.dao.DBContext;
 import com.swp391.dao.UserDAO;
 import com.swp391.dao.UserDAOImpl;
 import com.swp391.model.User;
@@ -10,6 +11,9 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.nio.charset.StandardCharsets;
 import com.swp391.util.BCrypt;
+import java.io.Console;
+import java.sql.Connection;
+import java.sql.SQLException;
 
     @WebServlet(name = "LoginServlet", urlPatterns = {"/login"})
 public class LoginServlet extends HttpServlet {
@@ -25,7 +29,8 @@ public class LoginServlet extends HttpServlet {
             throws ServletException, IOException {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
-
+        
+        
         try {
             UserDAO dao = new UserDAOImpl();
             User user = dao.getUserByUsername(username);
@@ -67,5 +72,6 @@ public class LoginServlet extends HttpServlet {
         // Fallback: legacy MD5 comparison
         return hashPassword(raw).equals(hashed);
     }
+    
 }
 
