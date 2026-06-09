@@ -4,7 +4,6 @@
     User loggedUser = (User) session.getAttribute("loggedUser");
     String currentPage = request.getAttribute("currentPage") != null
         ? (String) request.getAttribute("currentPage") : "";
-    String contextPath = request.getContextPath();
 %>
 <!DOCTYPE html>
 <html lang="vi">
@@ -20,7 +19,7 @@
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <!-- Main CSS -->
-    <link rel="stylesheet" href="<%= contextPath %>/css/style.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css">
 </head>
 <body>
 
@@ -29,7 +28,7 @@
     <div class="container">
         <div class="navbar-inner">
             <!-- Brand -->
-            <a href="<%= contextPath %>/home" class="navbar-brand">
+            <a href="<%= request.getContextPath() %>/home" class="navbar-brand">
                 <div class="brand-icon">📚</div>
                 <span>FPT <span class="brand-accent">Library</span></span>
             </a>
@@ -37,19 +36,19 @@
             <!-- Nav Links -->
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a href="<%= contextPath %>/home"
+                          <a href="<%= request.getContextPath() %>/home"
                        class="nav-link <%= "home".equals(currentPage) ? "active" : "" %>">
                         <i class="fa-solid fa-house"></i> Trang chủ
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="<%= contextPath %>/books"
+                          <a href="<%= request.getContextPath() %>/books"
                        class="nav-link <%= "books".equals(currentPage) ? "active" : "" %>">
                         <i class="fa-solid fa-book"></i> Danh sách sách
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="<%= contextPath %>/about"
+                          <a href="<%= request.getContextPath() %>/about"
                        class="nav-link <%= "about".equals(currentPage) ? "active" : "" %>">
                         <i class="fa-solid fa-circle-info"></i> Giới thiệu
                     </a>
@@ -66,11 +65,11 @@
                             <%= loggedUser.getRole() %>
                         </span>
                     </div>
-                    <a href="<%= contextPath %>/logout" class="btn btn-outline btn-sm">
+                    <a href="<%= request.getContextPath() %>/logout" class="btn btn-outline btn-sm">
                         <i class="fa-solid fa-right-from-bracket"></i>
                     </a>
                 <% } else { %>
-                    <a href="<%= contextPath %>/login" class="btn-login">
+                    <a href="<%= request.getContextPath() %>/login" class="btn-login">
                         <i class="fa-solid fa-right-to-bracket"></i> Đăng nhập
                     </a>
                 <% } %>
@@ -88,3 +87,4 @@
         });
     })();
 </script>
+

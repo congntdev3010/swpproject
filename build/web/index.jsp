@@ -35,7 +35,7 @@
                 </p>
 
                 <!-- Quick Search -->
-                <form class="hero-search" action="<%= contextPath %>/books" method="get" role="search"
+                <form class="hero-search" action="<%= request.getContextPath() %>/books" method="get" role="search"
                       onsubmit="return validateHeroSearch(this)">
                     <input type="text" name="keyword" id="heroSearchInput"
                            placeholder="Tìm tên sách, tác giả, chủ đề..."
@@ -94,7 +94,7 @@
                     <h2 class="section-title">Sách mới nhất</h2>
                     <p class="section-subtitle">Những đầu sách vừa được bổ sung vào thư viện</p>
                 </div>
-                <a href="<%= contextPath %>/books" class="btn btn-outline">
+                <a href="<%= request.getContextPath() %>/books" class="btn btn-outline">
                     Xem tất cả <i class="fa-solid fa-arrow-right"></i>
                 </a>
             </div>
@@ -139,7 +139,7 @@
                                     <i class="fa-solid fa-layer-group fa-xs"></i>
                                     <%= book.getAvailable() %>/<%= book.getQuantity() %> còn lại
                                 </span>
-                                <a href="<%= contextPath %>/books?keyword=<%= java.net.URLEncoder.encode(book.getTitle(),"UTF-8") %>"
+                                <a href="<%= request.getContextPath() %>/books?keyword=<%= java.net.URLEncoder.encode(book.getTitle(),"UTF-8") %>"
                                    class="btn btn-primary btn-sm">Chi tiết</a>
                             </div>
                         </div>
