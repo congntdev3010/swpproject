@@ -10,7 +10,7 @@ public class DBContext {
     private static final String URL = "jdbc:mysql://localhost:3306/library_management_swp391"
             + "?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true";
     private static final String USER = "root";
-    private static final String PASS = "123456"; // <-- điền password MySQL của bạn
+    private static final String PASS = ""; // <-- điền password MySQL của bạn
 
     private static DBContext instance;
     protected Connection connection;
