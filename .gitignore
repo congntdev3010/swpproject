@@ -1,1 +1,16 @@
 /dist/
+
+# Build output
+/build/
+/Source/build/
+
+# NetBeans private settings (local paths, credentials)
+nbproject/private/
+
+# WAR/EAR artifacts
+*.war
+*.ear
+
+# Database credentials (never commit these)
+db.properties
+

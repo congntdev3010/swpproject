@@ -28,10 +28,6 @@
         <servlet-class>com.swp391.servlet.UserProfileServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>LoginServlet</servlet-name>
-        <servlet-class>LoginServlet</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>LogoutServlet</servlet-name>
         <servlet-class>com.swp391.servlet.LogoutServlet</servlet-class>
     </servlet>
