@@ -6,7 +6,6 @@
 
 # NetBeans private settings (local paths, credentials)
 nbproject/private/
-nbproject/project.properties
 
 # DB connection (hardcoded credentials)
 src/java/com/swp391/dao/DBContext.java
