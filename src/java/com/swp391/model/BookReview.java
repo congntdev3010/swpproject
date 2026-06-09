@@ -38,10 +38,23 @@ public class BookReview {
     public void setUserId(int userId) { this.userId = userId; }
 
     public int getRating() { return rating; }
-    public void setRating(int rating) { this.rating = rating; }
+    public void setRating(int rating) { 
+        // Validation: rating phải trong khoảng 1-5
+        if (rating >= 1 && rating <= 5) {
+            this.rating = rating;
+        } else {
+            throw new IllegalArgumentException("Rating phải nằm trong khoảng 1-5");
+        }
+    }
 
     public String getComment() { return comment; }
-    public void setComment(String comment) { this.comment = comment; }
+    public void setComment(String comment) { 
+        // Validation: comment không được quá 1000 ký tự
+        if (comment != null && comment.length() > 1000) {
+            throw new IllegalArgumentException("Comment không được vượt quá 1000 ký tự");
+        }
+        this.comment = comment;
+    }
 
     public Date getCreatedAt() { return createdAt; }
     public void setCreatedAt(Date createdAt) { this.createdAt = createdAt; }
