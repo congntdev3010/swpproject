@@ -215,6 +215,12 @@ img { max-width: 100%; display: block; }
   border: 1px solid var(--border);
   font-size: 0.88rem;
   color: var(--text-secondary);
+  transition: all var(--transition);
+}
+.user-info:hover {
+  background: rgba(244, 121, 32, 0.08);
+  border-color: rgba(244, 121, 32, 0.3);
+  color: var(--text-primary);
 }
 .user-info .user-role-badge {
   font-size: 0.72rem;
