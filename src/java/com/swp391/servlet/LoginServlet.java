@@ -10,8 +10,12 @@ import jakarta.servlet.annotation.WebServlet;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.nio.charset.StandardCharsets;
+import com.swp391.util.BCrypt;
+import java.io.Console;
+import java.sql.Connection;
+import java.sql.SQLException;
 
-@WebServlet(name = "LoginServlet", urlPatterns = {"/login"})
+    @WebServlet(name = "LoginServlet", urlPatterns = {"/login"})
 public class LoginServlet extends HttpServlet {
 
     @Override
@@ -61,8 +65,13 @@ public class LoginServlet extends HttpServlet {
 
     private boolean checkPassword(String raw, String hashed) {
         if (raw == null || hashed == null) return false;
+        // If the stored hash is a bcrypt hash ($2a/$2b/$2y), verify with BCrypt
+        if (hashed.startsWith("$2")) {
+            return BCrypt.checkpw(raw, hashed);
+        }
         // Fallback: legacy MD5 comparison
         return hashPassword(raw).equals(hashed);
     }
     
 }
+

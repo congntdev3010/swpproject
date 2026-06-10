@@ -1,1 +1,22 @@
 /dist/
+
+# Build output
+/build/
+/Source/build/
+
+# NetBeans private settings (local paths, credentials)
+nbproject/private/
+
+# Tomcat context file (chứa đường dẫn local riêng từng máy)
+conf/Catalina/localhost/swpproject.xml
+
+# DB connection (hardcoded credentials)
+src/java/com/swp391/dao/DBContext.java
+
+# WAR/EAR artifacts
+*.war
+*.ear
+
+# Database credentials (never commit these)
+db.properties
+

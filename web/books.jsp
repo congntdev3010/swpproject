@@ -17,7 +17,7 @@
     boolean isAdmin    = (loggedUser != null && loggedUser.isAdmin());
     boolean isAdminLib = (loggedUser != null && loggedUser.isAdminOrLibrarian());
 
-    String ctx         = contextPath;
+    String ctx         = request.getContextPath();
     if (totalRecords     == null) totalRecords     = 0;
     if (totalPages       == null) totalPages       = 1;
     if (currentPageNum   == null) currentPageNum   = 1;

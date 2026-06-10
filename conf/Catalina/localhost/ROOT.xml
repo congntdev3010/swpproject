@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Context docBase="C:\Users\Admin\Desktop\SWP\swpproject">
+  <Resources cacheMaxSize="10240">
+    <PreResources base="C:/Users/Admin/Desktop/SWP/out/production/SWP" className="org.apache.catalina.webresources.DirResourceSet" webAppMount="/WEB-INF/classes"/>
+    <PostResources base="C:/Users/Admin/Desktop/SWP/swpproject/build/web/WEB-INF/lib/javaee-api-7.0.jar" className="org.apache.catalina.webresources.FileResourceSet" webAppMount="/WEB-INF/lib/javaee-api-7.0.jar"/>
+    <PostResources base="C:/Users/Admin/Desktop/SWP/swpproject/build/web/WEB-INF/lib/mysql-connector-j-9.7.0.jar" className="org.apache.catalina.webresources.FileResourceSet" webAppMount="/WEB-INF/lib/mysql-connector-j-9.7.0.jar"/>
+    <PostResources base="C:/Users/Admin/Desktop/SWP/swpproject/build/web/WEB-INF/lib/mysql-connector-j-8.3.0.jar" className="org.apache.catalina.webresources.FileResourceSet" webAppMount="/WEB-INF/lib/mysql-connector-j-8.3.0.jar"/>
+    <PostResources base="C:/Users/Admin/Desktop/SWP/swpproject/build/web/WEB-INF/lib/jakarta.jakartaee-api-10.0.0.jar" className="org.apache.catalina.webresources.FileResourceSet" webAppMount="/WEB-INF/lib/jakarta.jakartaee-api-10.0.0.jar"/>
+  </Resources>
+</Context>
