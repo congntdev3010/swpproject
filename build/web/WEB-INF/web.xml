@@ -53,6 +53,15 @@
         <servlet-name>BookListServlet</servlet-name>
         <url-pattern>/books</url-pattern>
     </servlet-mapping>
+    <servlet>
+    <servlet-name>BookReviewServlet</servlet-name>
+    <servlet-class>com.swp391.servlet.BookReviewServlet</servlet-class>
+</servlet>
+
+<servlet-mapping>
+    <servlet-name>BookReviewServlet</servlet-name>
+    <url-pattern>/book-review</url-pattern>
+</servlet-mapping>
     <!-- ====================================================
          SESSION CONFIG
          ==================================================== -->

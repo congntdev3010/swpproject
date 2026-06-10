@@ -14,7 +14,6 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.List;
 
-
 public class BookReviewServlet extends HttpServlet {
 
     private final BookReviewDAO reviewDAO = new BookReviewDAO();
@@ -54,7 +53,7 @@ public class BookReviewServlet extends HttpServlet {
             request.setAttribute("canReview", canReview);
             request.setAttribute("loggedInUser", loggedInUser);
 
-            request.getRequestDispatcher("/view/book-review.jsp").forward(request, response);
+            request.getRequestDispatcher("/book-review.jsp").forward(request, response);
         } catch (NumberFormatException e) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ID sách không hợp lệ");
         }
