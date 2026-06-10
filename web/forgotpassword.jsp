@@ -180,7 +180,7 @@
 .form-actions-sub {
     text-align: center;
     margin-top: 20px;
-    margin-bottom: -10px;
+    margin-bottom: 10px;
 }
 
 .btn-back-login {
@@ -188,15 +188,16 @@
     color: var(--text-secondary, #4b5563);
     text-decoration: none;
     transition: all 0.2s;
-    font-weight: 500;
+    font-weight: 600;
     display: inline-flex;
     align-items: center;
     gap: 6px;
 }
 
 .btn-back-login:hover {
-    color: var(--primary, #3b82f6);
-    transform: translateX(-2px);
+    color: var(--primary, #f47920);
+    transform: translateX(-3px);
+    text-decoration: underline;
 }
 
 .forgot-info {
