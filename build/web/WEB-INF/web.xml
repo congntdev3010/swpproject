@@ -7,63 +7,10 @@
 
     <display-name>FPT Library Management System</display-name>
 
-<<<<<<< Updated upstream
-=======
-    <!-- ====================================================
-         WELCOME FILES – redirect / vào HomeServlet
-         ==================================================== -->
->>>>>>> Stashed changes
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
 
-<<<<<<< Updated upstream
-=======
-    <!-- ====================================================
-         SERVLETS (annotation-based, khai báo thêm ở đây nếu cần)
-         ==================================================== -->
-
-    <!-- HomeServlet -->
-    <servlet>
-        <servlet-name>HomeServlet</servlet-name>
-        <servlet-class>com.swp391.servlet.HomeServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>HomeServlet</servlet-name>
-        <url-pattern>/home</url-pattern>
-    </servlet-mapping>
-
-    <!-- AboutServlet -->
-    <servlet>
-        <servlet-name>AboutServlet</servlet-name>
-        <servlet-class>com.swp391.servlet.AboutServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>AboutServlet</servlet-name>
-        <url-pattern>/about</url-pattern>
-    </servlet-mapping>
-
-    <!-- BookListServlet -->
-    <servlet>
-        <servlet-name>BookListServlet</servlet-name>
-        <servlet-class>com.swp391.servlet.BookListServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>BookListServlet</servlet-name>
-        <url-pattern>/books</url-pattern>
-    </servlet-mapping>
-
-    <!-- ====================================================
-         SESSION CONFIG
-         ==================================================== -->
-    <session-config>
-        <session-timeout>60</session-timeout>
-    </session-config>
-
-    <!-- ====================================================
-         CHARACTER ENCODING FILTER
-         ==================================================== -->
->>>>>>> Stashed changes
     <filter>
         <filter-name>EncodingFilter</filter-name>
         <filter-class>org.apache.catalina.filters.SetCharacterEncodingFilter</filter-class>
@@ -81,7 +28,6 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
-<<<<<<< Updated upstream
     <servlet>
         <servlet-name>HomeServlet</servlet-name>
         <servlet-class>com.swp391.servlet.HomeServlet</servlet-class>
@@ -122,11 +68,6 @@
         <session-timeout>60</session-timeout>
     </session-config>
 
-=======
-    <!-- ====================================================
-         ERROR PAGES
-         ==================================================== -->
->>>>>>> Stashed changes
     <error-page>
         <error-code>404</error-code>
         <location>/index.jsp</location>
@@ -135,9 +76,4 @@
         <error-code>500</error-code>
         <location>/index.jsp</location>
     </error-page>
-<<<<<<< Updated upstream
 </web-app>
-=======
-
-</web-app>
->>>>>>> Stashed changes
