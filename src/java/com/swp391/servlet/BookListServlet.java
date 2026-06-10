@@ -10,7 +10,18 @@ import jakarta.servlet.annotation.WebServlet;
 import java.io.IOException;
 import java.util.List;
 
-
+/**
+ * BookListServlet – xử lý danh sách sách với search, filter, sort, phân trang.
+ * URL: /books
+ *
+ * Query params:
+ *   keyword  – từ khóa tìm kiếm
+ *   category – lọc danh mục
+ *   sort     – cột sắp xếp (title | publish_year | available | price)
+ *   order    – ASC | DESC
+ *   page     – trang hiện tại (mặc định 1)
+ *   view     – "grid" | "table" (mặc định "grid")
+ */
 @WebServlet(name = "BookListServlet", urlPatterns = {"/books", "/Books"})
 public class BookListServlet extends HttpServlet {
 
