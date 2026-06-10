@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class BookCopy {
+
     private int id;
     private int bookId;
     private String barcode;
@@ -13,11 +14,14 @@ public class BookCopy {
     private String note;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    
+    private String area;
+    private String shelf;
+    private String slot;
     private Book book;
     private Set<BorrowRecord> borrowRecords = new HashSet<>();
 
-    public BookCopy() {}
+    public BookCopy() {
+    }
 
     public BookCopy(int bookId, String barcode, String bookCondition, String status) {
         this.bookId = bookId;
@@ -29,6 +33,30 @@ public class BookCopy {
     }
 
     // Getters and Setters
+    public String getArea() {
+        return area;
+    }
+
+    public void setArea(String area) {
+        this.area = area;
+    }
+
+    public String getShelf() {
+        return shelf;
+    }
+
+    public void setShelf(String shelf) {
+        this.shelf = shelf;
+    }
+
+    public String getSlot() {
+        return slot;
+    }
+
+    public void setSlot(String slot) {
+        this.slot = slot;
+    }
+
     public int getId() {
         return id;
     }
@@ -111,15 +139,15 @@ public class BookCopy {
 
     @Override
     public String toString() {
-        return "BookCopy{" +
-                "id=" + id +
-                ", bookId=" + bookId +
-                ", barcode='" + barcode + '\'' +
-                ", bookCondition='" + bookCondition + '\'' +
-                ", status='" + status + '\'' +
-                ", note='" + note + '\'' +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                '}';
+        return "BookCopy{"
+                + "id=" + id
+                + ", bookId=" + bookId
+                + ", barcode='" + barcode + '\''
+                + ", bookCondition='" + bookCondition + '\''
+                + ", status='" + status + '\''
+                + ", note='" + note + '\''
+                + ", createdAt=" + createdAt
+                + ", updatedAt=" + updatedAt
+                + '}';
     }
 }
