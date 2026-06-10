@@ -65,6 +65,11 @@
                             <%= loggedUser.getRole() %>
                         </span>
                     </div>
+                    <% if (loggedUser.isAdminOrLibrarian()) { %>
+                        <a href="<%= request.getContextPath() %>/admin/users" class="btn btn-outline btn-sm navbar-admin-link" title="Quản lý hệ thống">
+                            <i class="fa-solid fa-user-gear"></i>
+                        </a>
+                    <% } %>
                     <a href="<%= request.getContextPath() %>/logout" class="btn btn-outline btn-sm">
                         <i class="fa-solid fa-right-from-bracket"></i>
                     </a>

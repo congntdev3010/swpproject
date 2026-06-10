@@ -14,6 +14,41 @@ import java.nio.charset.StandardCharsets;
 public class AdminUserServlet extends HttpServlet {
 
     @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("loggedUser") == null) {
+            response.sendRedirect(request.getContextPath() + "/login");
+            return;
+        }
+        User logged = (User) session.getAttribute("loggedUser");
+        if (!logged.isAdminOrLibrarian()) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+
+        String q = request.getParameter("q");
+        String role = request.getParameter("role");
+        String activeParam = request.getParameter("active");
+        Integer active = null;
+        if (activeParam != null && !activeParam.isEmpty()) {
+            try { active = Integer.parseInt(activeParam); } catch (NumberFormatException e) { active = null; }
+        }
+
+        try {
+            UserDAO dao = new UserDAOImpl();
+            request.setAttribute("users", dao.searchUsers(q, role, active));
+            request.setAttribute("q", q);
+            request.setAttribute("roleFilter", role);
+            request.setAttribute("activeFilter", active);
+        } catch (Exception e) {
+            request.setAttribute("error", "Không thể tải danh sách người dùng: " + e.getMessage());
+        }
+
+        request.getRequestDispatcher("/admin.jsp").forward(request, response);
+    }
+
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession(false);
@@ -22,7 +57,7 @@ public class AdminUserServlet extends HttpServlet {
             return;
         }
         User logged = (User) session.getAttribute("loggedUser");
-        if (!logged.isAdmin()) {
+        if (!logged.isAdminOrLibrarian()) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
@@ -79,8 +114,8 @@ public class AdminUserServlet extends HttpServlet {
             request.setAttribute("error", "Lỗi: " + e.getMessage());
         }
 
-        // After action redirect back to users list
-        response.sendRedirect(request.getContextPath() + "/users");
+        // After action redirect back to admin page
+        response.sendRedirect(request.getContextPath() + "/admin/users");
     }
 
     private String hashPassword(String raw) {

@@ -30,7 +30,6 @@ public class LoginServlet extends HttpServlet {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         
-        
         try {
             UserDAO dao = new UserDAOImpl();
             User user = dao.getUserByUsername(username);
@@ -38,7 +37,11 @@ public class LoginServlet extends HttpServlet {
                 // login success
                 HttpSession session = request.getSession();
                 session.setAttribute("loggedUser", user);
-                response.sendRedirect(request.getContextPath() + "/home");
+                if (user.isAdminOrLibrarian()) {
+                    response.sendRedirect(request.getContextPath() + "/admin/users");
+                } else {
+                    response.sendRedirect(request.getContextPath() + "/home");
+                }
                 return;
             } else {
                 request.setAttribute("error", "Tên đăng nhập hoặc mật khẩu không đúng.");
