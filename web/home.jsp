@@ -106,24 +106,23 @@
 .form-actions-sub {
     text-align: center;
     margin-top: 20px;
-    margin-bottom: 24px;
+    margin-bottom: -10px;
 }
 
 .btn-forgot-password {
     font-size: 14px;
-    color: var(--primary, #f47920);
+    color: var(--primary, #3b82f6);
     text-decoration: none;
     transition: all 0.2s;
-    font-weight: 600;
+    font-weight: 500;
     display: inline-flex;
     align-items: center;
     gap: 6px;
 }
 
 .btn-forgot-password:hover {
-    color: var(--primary-dark, #d4600a);
-    transform: translateY(-2px);
-    text-decoration: underline;
+    color: var(--primary-dark, #2563eb);
+    transform: translateY(-1px);
 }
 
 .login-header {

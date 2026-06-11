@@ -5,14 +5,14 @@
 <%@ include file="/WEB-INF/jsp/header.jsp" %>
 
 <main class="page-wrapper">
-    <section class="login-section">
+    <section class="forgot-section">
         <div class="container">
-            <div class="login-container">
-                <!-- Login Form -->
-                <div class="login-card">
-                    <div class="login-header">
-                        <h1>Đăng nhập</h1>
-                        <p>Vào tài khoản của bạn để truy cập thư viện</p>
+            <div class="forgot-container">
+                <!-- Forgot Password Card -->
+                <div class="forgot-card">
+                    <div class="forgot-header">
+                        <h1>Quên mật khẩu?</h1>
+                        <p>Nhập thông tin tài khoản của bạn để đặt lại mật khẩu</p>
                     </div>
 
                     <% if (request.getAttribute("error") != null) { %>
@@ -21,56 +21,61 @@
                             <%= request.getAttribute("error") %>
                         </div>
                     <% } %>
-                    <% if (request.getAttribute("success") != null) { %>
-                        <div class="alert alert-success">
-                            <i class="fa-solid fa-circle-check"></i>
-                            <%= request.getAttribute("success") %>
-                        </div>
-                    <% } %>
 
-                    <form method="POST" action="<%= contextPath %>/login" class="login-form">
+                    <form method="POST" action="<%= contextPath %>/forgot-password" class="forgot-form" onsubmit="return validateForm()">
                         <div class="form-group">
                             <label for="username">Tên đăng nhập</label>
                             <input type="text" id="username" name="username"
-                                   required placeholder="Nhập tên đăng nhập"
+                                   required placeholder="Nhập tên đăng nhập của bạn"
+                                   value="<%= request.getParameter("username") != null ? request.getParameter("username") : "" %>"
                                    class="form-control">
                         </div>
 
                         <div class="form-group">
-                            <label for="password">Mật khẩu</label>
-                            <input type="password" id="password" name="password"
-                                   required placeholder="Nhập mật khẩu"
+                            <label for="email">Email đã đăng ký</label>
+                            <input type="email" id="email" name="email"
+                                   required placeholder="Nhập email của bạn"
+                                   value="<%= request.getParameter("email") != null ? request.getParameter("email") : "" %>"
                                    class="form-control">
                         </div>
 
+                        <div class="form-group">
+                            <label for="newPassword">Mật khẩu mới</label>
+                            <input type="password" id="newPassword" name="newPassword"
+                                   required placeholder="Nhập mật khẩu mới"
+                                   class="form-control">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="confirmPassword">Xác nhận mật khẩu mới</label>
+                            <input type="password" id="confirmPassword" name="confirmPassword"
+                                   required placeholder="Nhập lại mật khẩu mới"
+                                   class="form-control">
+                            <div id="passwordError" class="validation-error" style="display:none; color:var(--danger, #ef4444); font-size:13px; margin-top:6px;"></div>
+                        </div>
+
                         <button type="submit" class="btn btn-primary btn-block">
-                            <i class="fa-solid fa-right-to-bracket"></i> Đăng nhập
+                            <i class="fa-solid fa-rotate"></i> Đặt lại mật khẩu
                         </button>
                     </form>
-                    
-                    <div class="form-actions-sub">
-                        <a href="<%= contextPath %>/forgot-password" class="btn-forgot-password">
-                            <i class="fa-solid fa-key"></i> Quên mật khẩu?
-                        </a>
-                    </div>
 
-                    <!-- Demo hint -->
-                    <div class="login-hint">
-                        <p><strong>Demo:</strong> admin / 12345 hoặc librarian / 12345</p>
+                    <div class="form-actions-sub">
+                        <a href="<%= contextPath %>/login" class="btn-back-login">
+                            <i class="fa-solid fa-arrow-left"></i> Quay lại Đăng nhập
+                        </a>
                     </div>
                 </div>
 
-                <!-- Info Section -->
-                <div class="login-info">
+                <!-- Info Section (Identical to login for brand consistency) -->
+                <div class="forgot-info">
                     <div class="info-box">
-                        <div class="info-icon">📚</div>
-                        <h3>Thư viện FPT University</h3>
-                        <p>Đăng nhập để:</p>
+                        <div class="info-icon">🔐</div>
+                        <h3>Bảo mật tài khoản</h3>
+                        <p>Để bảo vệ tài khoản của bạn, hệ thống yêu cầu:</p>
                         <ul>
-                            <li><i class="fa-solid fa-check"></i> Tìm kiếm sách và tài liệu</li>
-                            <li><i class="fa-solid fa-check"></i> Xem và quản lý hồ sơ cá nhân</li>
-                            <li><i class="fa-solid fa-check"></i> Đặt mượn sách trực tuyến</li>
-                            <li><i class="fa-solid fa-check"></i> Theo dõi quá trình mượn trả</li>
+                            <li><i class="fa-solid fa-check"></i> Xác minh đúng tên đăng nhập</li>
+                            <li><i class="fa-solid fa-check"></i> Khớp chính xác email đã đăng ký</li>
+                            <li><i class="fa-solid fa-check"></i> Mật khẩu mới an toàn và dễ nhớ</li>
                         </ul>
                     </div>
                 </div>
@@ -82,20 +87,20 @@
 <%@ include file="/WEB-INF/jsp/footer.jsp" %>
 
 <style>
-.login-section {
+.forgot-section {
     padding: 60px 0;
     background: linear-gradient(135deg, #f5f7fa 0%, #f0f4f8 100%);
     min-height: calc(100vh - 200px);
 }
 
-.login-container {
+.forgot-container {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 48px;
     align-items: center;
 }
 
-.login-card {
+.forgot-card {
     background: white;
     border-radius: 12px;
     padding: 48px;
@@ -103,47 +108,24 @@
     border: 1px solid #e5e7eb;
 }
 
-.form-actions-sub {
-    text-align: center;
-    margin-top: 20px;
-    margin-bottom: 24px;
-}
-
-.btn-forgot-password {
-    font-size: 14px;
-    color: var(--primary, #f47920);
-    text-decoration: none;
-    transition: all 0.2s;
-    font-weight: 600;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.btn-forgot-password:hover {
-    color: var(--primary-dark, #d4600a);
-    transform: translateY(-2px);
-    text-decoration: underline;
-}
-
-.login-header {
+.forgot-header {
     margin-bottom: 32px;
     text-align: center;
 }
 
-.login-header h1 {
+.forgot-header h1 {
     font-size: 28px;
     font-weight: 700;
     color: var(--text-primary, #1f2937);
     margin-bottom: 8px;
 }
 
-.login-header p {
+.forgot-header p {
     font-size: 14px;
     color: var(--text-muted, #6b7280);
 }
 
-.login-form {
+.forgot-form {
     margin-bottom: 24px;
 }
 
@@ -195,27 +177,37 @@
     box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
 }
 
-.login-hint {
-    padding: 16px;
-    background: #fef3c7;
-    border: 1px solid #fcd34d;
-    border-radius: 8px;
-    font-size: 13px;
-    color: #92400e;
+.form-actions-sub {
     text-align: center;
+    margin-top: 20px;
+    margin-bottom: 10px;
 }
 
-.login-hint p {
-    margin: 0;
+.btn-back-login {
+    font-size: 14px;
+    color: var(--text-secondary, #4b5563);
+    text-decoration: none;
+    transition: all 0.2s;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
 }
 
-.login-info {
+.btn-back-login:hover {
+    color: var(--primary, #f47920);
+    transform: translateX(-3px);
+    text-decoration: underline;
+}
+
+.forgot-info {
     display: flex;
     align-items: center;
 }
 
 .info-box {
     text-align: center;
+    width: 100%;
 }
 
 .info-icon {
@@ -253,7 +245,7 @@
 }
 
 .info-box i {
-    color: var(--success, #10b981);
+    color: var(--primary, #3b82f6);
     font-weight: bold;
 }
 
@@ -278,23 +270,38 @@
 }
 
 @media (max-width: 768px) {
-    .login-container {
+    .forgot-container {
         grid-template-columns: 1fr;
         gap: 32px;
     }
 
-    .login-card {
+    .forgot-card {
         padding: 32px;
     }
 
-    .login-header h1 {
+    .forgot-header h1 {
         font-size: 24px;
     }
 
-    .info-box {
+    .forgot-info {
         display: none;
     }
 }
 </style>
 
-
+<script>
+function validateForm() {
+    var password = document.getElementById("newPassword").value;
+    var confirmPassword = document.getElementById("confirmPassword").value;
+    var errorDiv = document.getElementById("passwordError");
+    
+    if (password !== confirmPassword) {
+        errorDiv.textContent = "Mật khẩu xác nhận không khớp.";
+        errorDiv.style.display = "block";
+        return false;
+    }
+    
+    errorDiv.style.display = "none";
+    return true;
+}
+</script>

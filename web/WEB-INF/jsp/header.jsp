@@ -58,13 +58,18 @@
             <!-- Actions -->
             <div class="navbar-actions">
                 <% if (loggedUser != null) { %>
-                    <div class="user-info">
+                    <a href="<%= request.getContextPath() %>/user/profile" class="user-info" title="Hồ sơ cá nhân">
                         <i class="fa-solid fa-circle-user"></i>
                         <span><%= loggedUser.getFullName() != null ? loggedUser.getFullName() : loggedUser.getUsername() %></span>
                         <span class="user-role-badge <%= loggedUser.getRole().toLowerCase() %>">
                             <%= loggedUser.getRole() %>
                         </span>
-                    </div>
+                    </a>
+                    <% if (loggedUser.isAdminOrLibrarian()) { %>
+                        <a href="<%= request.getContextPath() %>/admin/users" class="btn btn-outline btn-sm navbar-admin-link" title="Quản lý hệ thống">
+                            <i class="fa-solid fa-user-gear"></i>
+                        </a>
+                    <% } %>
                     <a href="<%= request.getContextPath() %>/logout" class="btn btn-outline btn-sm">
                         <i class="fa-solid fa-right-from-bracket"></i>
                     </a>
