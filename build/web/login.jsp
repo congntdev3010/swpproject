@@ -21,6 +21,12 @@
                             <%= request.getAttribute("error") %>
                         </div>
                     <% } %>
+                    <% if (request.getAttribute("success") != null) { %>
+                        <div class="alert alert-success">
+                            <i class="fa-solid fa-circle-check"></i>
+                            <%= request.getAttribute("success") %>
+                        </div>
+                    <% } %>
 
                     <form method="POST" action="<%= contextPath %>/login" class="login-form">
                         <div class="form-group">
@@ -41,6 +47,12 @@
                             <i class="fa-solid fa-right-to-bracket"></i> Đăng nhập
                         </button>
                     </form>
+                    
+                    <div class="form-actions-sub">
+                        <a href="<%= contextPath %>/forgot-password" class="btn-forgot-password">
+                            <i class="fa-solid fa-key"></i> Quên mật khẩu?
+                        </a>
+                    </div>
 
                     <!-- Demo hint -->
                     <div class="login-hint">
@@ -89,6 +101,29 @@
     padding: 48px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
     border: 1px solid #e5e7eb;
+}
+
+.form-actions-sub {
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 24px;
+}
+
+.btn-forgot-password {
+    font-size: 14px;
+    color: var(--primary, #f47920);
+    text-decoration: none;
+    transition: all 0.2s;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-forgot-password:hover {
+    color: var(--primary-dark, #d4600a);
+    transform: translateY(-2px);
+    text-decoration: underline;
 }
 
 .login-header {

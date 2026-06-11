@@ -12,50 +12,52 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= request.getAttribute("pageTitle") != null ? request.getAttribute("pageTitle") : "Thư Viện FPT University" %></title>
     <meta name="description" content="<%= request.getAttribute("pageDesc") != null ? request.getAttribute("pageDesc") : "Hệ thống thư viện điện tử FPT University – Khám phá kho tàng tri thức" %>">
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Be+Vietnam+Pro:wght@600;700;800&display=swap" rel="stylesheet">
-    <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <!-- Main CSS -->
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css">
 </head>
 <body>
 
-<!-- ===== NAVBAR ===== -->
 <nav class="navbar" id="mainNavbar">
     <div class="container">
         <div class="navbar-inner">
-            <!-- Brand -->
             <a href="<%= request.getContextPath() %>/home" class="navbar-brand">
                 <div class="brand-icon">📚</div>
                 <span>FPT <span class="brand-accent">Library</span></span>
             </a>
 
-            <!-- Nav Links -->
             <ul class="navbar-nav">
                 <li class="nav-item">
-                          <a href="<%= request.getContextPath() %>/home"
+                    <a href="<%= request.getContextPath() %>/home"
                        class="nav-link <%= "home".equals(currentPage) ? "active" : "" %>">
                         <i class="fa-solid fa-house"></i> Trang chủ
                     </a>
                 </li>
                 <li class="nav-item">
-                          <a href="<%= request.getContextPath() %>/books"
+                    <a href="<%= request.getContextPath() %>/books"
                        class="nav-link <%= "books".equals(currentPage) ? "active" : "" %>">
                         <i class="fa-solid fa-book"></i> Danh sách sách
                     </a>
                 </li>
                 <li class="nav-item">
-                          <a href="<%= request.getContextPath() %>/about"
+                    <a href="<%= request.getContextPath() %>/about"
                        class="nav-link <%= "about".equals(currentPage) ? "active" : "" %>">
                         <i class="fa-solid fa-circle-info"></i> Giới thiệu
                     </a>
                 </li>
+                
+                <% if (loggedUser != null && loggedUser.isAdminOrLibrarian()) { %>
+                <li class="nav-item">
+                    <a href="<%= request.getContextPath() %>/shelf"
+                       class="nav-link <%= "shelf".equals(currentPage) ? "active" : "" %>">
+                        <i class="fa-solid fa-layer-group"></i> Vị trí kệ
+                    </a>
+                </li>
+                <% } %>
             </ul>
 
-            <!-- Actions -->
             <div class="navbar-actions">
                 <% if (loggedUser != null) { %>
                     <a href="<%= request.getContextPath() %>/user/profile" class="user-info" title="Hồ sơ cá nhân">
@@ -70,6 +72,7 @@
                             <i class="fa-solid fa-user-gear"></i>
                         </a>
                     <% } %>
+                    
                     <a href="<%= request.getContextPath() %>/logout" class="btn btn-outline btn-sm">
                         <i class="fa-solid fa-right-from-bracket"></i>
                     </a>
@@ -83,7 +86,6 @@
     </div>
 </nav>
 
-<!-- Sticky navbar scroll effect -->
 <script>
     (function(){
         var nav = document.getElementById('mainNavbar');
@@ -92,4 +94,5 @@
         });
     })();
 </script>
-
+</body>
+</html>

@@ -25,7 +25,7 @@ public class BookReviewServlet extends HttpServlet {
 
         String bookIdParam = request.getParameter("bookId");
         if (bookIdParam == null || bookIdParam.isEmpty()) {
-            response.sendRedirect("book-list");
+            response.sendRedirect("books");
             return;
         }
 
