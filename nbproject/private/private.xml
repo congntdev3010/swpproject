@@ -3,9 +3,25 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/congb/Documents/GitHub/swpproject/web/shelf-layout.jsp</file>
-            <file>file:/C:/Users/congb/Documents/GitHub/swpproject/src/java/com/swp391/dao/BookCopyDAO.java</file>
-            <file>file:/C:/Users/congb/Documents/GitHub/swpproject/src/java/com/swp391/servlet/ShelfServlet.java</file>
+            <file>file:/C:/Users/Admin/Desktop/New%20folder/swpproject/src/java/com/swp391/dao/CategoryDAO.java</file>
+            <file>file:/C:/Users/Admin/Desktop/New%20folder/swpproject/build/web/user_profile.jsp</file>
+            <file>file:/C:/Users/Admin/Desktop/New%20folder/swpproject/web/css/style.css</file>
+            <file>file:/C:/Users/Admin/Desktop/New%20folder/swpproject/src/java/com/swp391/servlet/HomeServlet.java</file>
+            <file>file:/C:/Users/Admin/Desktop/New%20folder/swpproject/src/java/com/swp391/servlet/LoginServlet.java</file>
+            <file>file:/C:/Users/Admin/Desktop/New%20folder/swpproject/web/user_profile.jsp</file>
+            <file>file:/C:/Users/Admin/Desktop/New%20folder/swpproject/src/java/com/swp391/servlet/UserProfileServlet.java</file>
+            <file>file:/C:/Users/Admin/Desktop/New%20folder/swpproject/src/main/java/model/BorrowRecord.java</file>
+            <file>file:/C:/Users/Admin/Desktop/New%20folder/swpproject/src/java/com/swp391/servlet/AboutServlet.java</file>
+            <file>file:/C:/Users/Admin/Desktop/New%20folder/swpproject/src/java/com/swp391/servlet/AdminUserServlet.java</file>
+            <file>file:/C:/Users/Admin/Desktop/New%20folder/swpproject/src/java/com/swp391/dao/UserDAOImpl.java</file>
+            <file>file:/C:/Users/Admin/Desktop/New%20folder/swpproject/src/java/com/swp391/servlet/LogoutServlet.java</file>
+            <file>file:/C:/Users/Admin/Desktop/New%20folder/swpproject/src/java/com/swp391/dao/UserDAO.java</file>
+            <file>file:/C:/Users/Admin/Desktop/New%20folder/swpproject/web/WEB-INF/web.xml</file>
+            <file>file:/C:/Users/Admin/Desktop/New%20folder/swpproject/src/java/com/swp391/dao/DBContext.java</file>
+            <file>file:/C:/Users/Admin/Desktop/New%20folder/swpproject/src/java/com/swp391/servlet/UserListServlet.java</file>
+            <file>file:/C:/Users/Admin/Desktop/New%20folder/swpproject/src/java/com/swp391/dao/AuthorDAOImpl.java</file>
+            <file>file:/C:/Users/Admin/Desktop/New%20folder/swpproject/src/java/com/swp391/model/User.java</file>
+            <file>file:/C:/Users/Admin/Desktop/New%20folder/swpproject/build/web/users.jsp</file>
         </group>
     </open-files>
 </project-private>
