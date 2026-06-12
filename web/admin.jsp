@@ -29,13 +29,15 @@
             </div>
         </div>
 
-        <nav class="admin-nav" aria-label="Admin management menu">
-            <a class="admin-nav-item active" href="#user-management"><i class="fa-solid fa-users"></i> Quản lý người dùng</a>
-            <a class="admin-nav-item" href="#book-management"><i class="fa-solid fa-book"></i> Quản lý sách</a>
-            <a class="admin-nav-item" href="#category-management"><i class="fa-solid fa-tags"></i> Quản lý danh mục</a>
-            <a class="admin-nav-item" href="#borrow-management"><i class="fa-solid fa-bookmark"></i> Mượn / trả sách</a>
-            <a class="admin-nav-item" href="#fine-management"><i class="fa-solid fa-bell"></i> Phạt / thông báo</a>
-        </nav>
+       <nav class="admin-nav" aria-label="Admin management menu">
+    <a class="admin-nav-item admin-nav-user
+        <%= request.getAttribute("activeTab") != null ? "active" : "" %>"
+       href="<%= request.getContextPath() %>/admin/users">
+
+        <i class="fa-solid fa-list"></i>
+        <span>Quản lý người dùng</span>
+    </a>
+</nav>
 
         <div class="admin-sidebar-footer">
             <div class="admin-sidebar-card admin-sidebar-usercard">
@@ -232,50 +234,7 @@
             </form>
         </section>
 
-        <section id="book-management" class="admin-card">
-            <div class="admin-section-head">
-                <h2>Quản lý sách</h2>
-                <span>Books</span>
-            </div>
-            <div class="empty-state">
-                <h3>Khu vực quản lý sách</h3>
-                <p>Hiện tại bạn có thể dùng trang danh sách sách ở `<%= request.getContextPath() %>/books` để xem dữ liệu. Phần CRUD sách sẽ được gắn vào đây sau.</p>
-                <a class="btn btn-outline btn-sm" href="<%= request.getContextPath() %>/books">Đi tới trang sách</a>
-            </div>
-        </section>
 
-        <section id="category-management" class="admin-card">
-            <div class="admin-section-head">
-                <h2>Quản lý danh mục</h2>
-                <span>Categories</span>
-            </div>
-            <div class="empty-state">
-                <h3>Khu vực quản lý danh mục</h3>
-                <p>Phần này dành cho tạo, sửa, xoá danh mục sách và mapping với các đầu sách.</p>
-            </div>
-        </section>
-
-        <section id="borrow-management" class="admin-card">
-            <div class="admin-section-head">
-                <h2>Mượn / trả sách</h2>
-                <span>Borrow & Return</span>
-            </div>
-            <div class="empty-state">
-                <h3>Khu vực theo dõi mượn trả</h3>
-                <p>Chức năng quản lý phiếu mượn, gia hạn, trạng thái trả sách sẽ hiển thị tại đây.</p>
-            </div>
-        </section>
-
-        <section id="fine-management" class="admin-card">
-            <div class="admin-section-head">
-                <h2>Phạt / thông báo</h2>
-                <span>Fine & Notification</span>
-            </div>
-            <div class="empty-state">
-                <h3>Khu vực phạt và thông báo</h3>
-                <p>Dùng để quản lý tiền phạt, cảnh báo quá hạn và các thông báo hệ thống.</p>
-            </div>
-        </section>
     </main>
 </div>
 </body>
