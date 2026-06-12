@@ -306,7 +306,6 @@ img { max-width: 100%; display: block; }
   font-weight: 600;
 }
 
-
 /* ===================== BUTTONS ===================== */
 .btn {
   display: inline-flex;
@@ -1555,28 +1554,10 @@ img { max-width: 100%; display: block; }
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  align-items: center;
 }
 
 .admin-row-actions form {
-  display: flex;
-  margin: 0;
-}
-
-.user-action-btn {
-  width: 85px;      /* tất cả nút cùng chiều rộng */
-  height: 34px;     /* tất cả nút cùng chiều cao */
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-  font-size: 0.8rem;
-}
-
-.user-action-btn.btn-danger,
-.user-action-btn.btn-outline {
-  width: 85px;
+  display: inline;
 }
 
 @media (max-width: 1024px) {
