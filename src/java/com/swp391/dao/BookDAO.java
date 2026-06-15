@@ -1,5 +1,6 @@
 package com.swp391.dao;
 
+import com.swp391.model.Author;
 import com.swp391.model.Book;
 import java.util.List;
 
@@ -41,4 +42,55 @@ public interface BookDAO {
      * Tìm sách theo id.
      */
     Book findById(int id) throws Exception;
+
+    /**
+     * Thêm sách mới.
+     * @return id sách mới sinh, hoặc -1 nếu thất bại
+     */
+    int createBook(Book book) throws Exception;
+
+    /**
+     * Cập nhật thông tin sách.
+     */
+    boolean updateBook(Book book) throws Exception;
+
+    /**
+     * Xóa sách theo id.
+     */
+    boolean deleteBook(int id) throws Exception;
+
+    /**
+     * Kiểm tra ISBN có trùng lặp không.
+     */
+    boolean isIsbnExists(String isbn) throws Exception;
+
+    /**
+     * Kiểm tra ISBN có trùng với sách khác không (dùng khi sửa sách).
+     */
+    boolean isIsbnExistsExcluding(String isbn, int excludeId) throws Exception;
+
+    /**
+     * Kiểm tra sách có chứa bản sao vật lý không.
+     */
+    boolean hasPhysicalCopies(int bookId) throws Exception;
+
+    /**
+     * Kiểm tra sách có lượt mượn/đặt chỗ nào đang hoạt động không.
+     */
+    boolean hasActiveBorrowsOrReservations(int bookId) throws Exception;
+
+    /**
+     * Lấy danh sách tác giả của sách theo ID.
+     */
+    List<Author> getAuthorsByBookId(int bookId) throws Exception;
+
+    /**
+     * Lấy danh sách ID tác giả của sách theo ID.
+     */
+    List<Integer> getAuthorIdsByBookId(int bookId) throws Exception;
+
+    /**
+     * Thiết lập danh sách tác giả cho sách.
+     */
+    void setBookAuthors(int bookId, List<Integer> authorIds) throws Exception;
 }
