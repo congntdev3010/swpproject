@@ -9,7 +9,7 @@ import java.sql.Timestamp;
  *   id, isbn, title, category (VARCHAR), category_id (FK),
  *   publisher (VARCHAR), publish_year, price, quantity, available,
  *   description, cover_image, subject, area, shelf, slot,
- *   created_at, updated_at
+ *   created_at, updated_at, is_deleted, created_by, updated_by
  *
  * Trạng thái sách:
  *   - available > 0  → "Còn sách"
@@ -36,6 +36,9 @@ public class Book {
     private String  slot;           // ngăn (N01...)
     private Timestamp createdAt;
     private Timestamp updatedAt;
+    private boolean   isDeleted;   // soft delete flag
+    private String    createdBy;   // tài khoản tạo
+    private String    updatedBy;   // tài khoản cập nhật gần nhất
 
     public Book() {}
 
@@ -93,6 +96,15 @@ public class Book {
 
     public Timestamp getUpdatedAt()         { return updatedAt; }
     public void setUpdatedAt(Timestamp v)   { this.updatedAt = v; }
+
+    public boolean isDeleted()               { return isDeleted; }
+    public void setDeleted(boolean v)        { this.isDeleted = v; }
+
+    public String getCreatedBy()             { return createdBy; }
+    public void setCreatedBy(String v)       { this.createdBy = v; }
+
+    public String getUpdatedBy()             { return updatedBy; }
+    public void setUpdatedBy(String v)       { this.updatedBy = v; }
 
     /**
      * Trả về nhãn trạng thái sách.
