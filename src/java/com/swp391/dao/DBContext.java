@@ -1,7 +1,7 @@
 package com.swp391.dao;
 
 import java.sql.PreparedStatement;
-import jakarta.resource.cci.ResultSet;
+import java.sql.ResultSet;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -14,7 +14,7 @@ public class DBContext {
     private static final String URL = "jdbc:mysql://localhost:3306/library_management_swp391"
             + "?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true";
     private static final String USER = "root";
-    private static final String PASS = "1234"; // <-- điền password MySQL của bạn
+    private static final String PASS = "123456"; // <-- điền password MySQL của bạn
 
     private static DBContext instance;
     protected Connection connection;

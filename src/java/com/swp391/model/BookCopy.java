@@ -14,6 +14,9 @@ public class BookCopy {
     private String note;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private boolean isDeleted;   // soft delete flag
+    private String  createdBy;   // tài khoản tạo
+    private String  updatedBy;   // tài khoản cập nhật gần nhất
     private String area;
     private String shelf;
     private String slot;
@@ -120,6 +123,20 @@ public class BookCopy {
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
+
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.isDeleted = deleted;
+    }
+
+    public String getCreatedBy()             { return createdBy; }
+    public void setCreatedBy(String v)       { this.createdBy = v; }
+
+    public String getUpdatedBy()             { return updatedBy; }
+    public void setUpdatedBy(String v)       { this.updatedBy = v; }
 
     public Book getBook() {
         return book;

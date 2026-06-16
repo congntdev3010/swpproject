@@ -20,7 +20,7 @@ public class BookCopyDAO {
         List<BookCopy> list = new ArrayList<>();
         String sql = "SELECT bc.*, b.title, b.isbn FROM book_copies bc "
                 + "JOIN books b ON bc.book_id = b.id "
-                + "WHERE bc.book_id = ? ORDER BY bc.barcode";
+                + "WHERE bc.book_id = ? AND bc.is_deleted = 0 ORDER BY bc.barcode";
         try (PreparedStatement ps = getConn().prepareStatement(sql)) {
             ps.setInt(1, bookId);
             ResultSet rs = ps.executeQuery();
@@ -36,6 +36,7 @@ public class BookCopyDAO {
         List<BookCopy> list = new ArrayList<>();
         String sql = "SELECT bc.*, b.title, b.isbn FROM book_copies bc "
                 + "JOIN books b ON bc.book_id = b.id "
+                + "WHERE bc.is_deleted = 0 "
                 + "ORDER BY bc.area, bc.shelf, bc.slot, bc.barcode";
         try (PreparedStatement ps = getConn().prepareStatement(sql)) {
             ResultSet rs = ps.executeQuery();
@@ -50,7 +51,7 @@ public class BookCopyDAO {
     public BookCopy findByBarcode(String barcode) {
         String sql = "SELECT bc.*, b.title, b.isbn FROM book_copies bc "
                 + "JOIN books b ON bc.book_id = b.id "
-                + "WHERE bc.barcode = ?";
+                + "WHERE bc.barcode = ? AND bc.is_deleted = 0";
         try (PreparedStatement ps = getConn().prepareStatement(sql)) {
             ps.setString(1, barcode);
             ResultSet rs = ps.executeQuery();
@@ -65,7 +66,7 @@ public class BookCopyDAO {
     public List<String> getDistinctAreas() {
         List<String> list = new ArrayList<>();
         String sql = "SELECT DISTINCT area FROM book_copies "
-                + "WHERE area IS NOT NULL ORDER BY area";
+                + "WHERE area IS NOT NULL AND is_deleted = 0 ORDER BY area";
         try (PreparedStatement ps = getConn().prepareStatement(sql)) {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) list.add(rs.getString("area"));
@@ -112,10 +113,10 @@ public class BookCopyDAO {
         return false;
     }
 
-    /** Xóa bản sao (chỉ khi status khác BORROWED và RESERVED) */
+    /** Xóa mềm bản sao (soft delete, chỉ khi status khác BORROWED và RESERVED) */
     public boolean deleteCopy(int copyId) {
         int bookId = -1;
-        String sqlGetBook = "SELECT book_id FROM book_copies WHERE id = ?";
+        String sqlGetBook = "SELECT book_id FROM book_copies WHERE id = ? AND is_deleted = 0";
         try (PreparedStatement ps = getConn().prepareStatement(sqlGetBook)) {
             ps.setInt(1, copyId);
             try (ResultSet rs = ps.executeQuery()) {
@@ -127,7 +128,9 @@ public class BookCopyDAO {
             e.printStackTrace();
         }
 
-        String sql = "DELETE FROM book_copies WHERE id=? AND status NOT IN ('BORROWED', 'RESERVED')";
+        // Soft delete: đánh dấu is_deleted=1 thay vì xóa vật lý
+        String sql = "UPDATE book_copies SET is_deleted = 1 "
+                   + "WHERE id = ? AND is_deleted = 0 AND status NOT IN ('BORROWED', 'RESERVED')";
         try (PreparedStatement ps = getConn().prepareStatement(sql)) {
             ps.setInt(1, copyId);
             boolean ok = ps.executeUpdate() > 0;
@@ -155,7 +158,8 @@ public class BookCopyDAO {
 
         StringBuilder sql = new StringBuilder(
                 "SELECT bc.*, b.title, b.isbn FROM book_copies bc "
-                + "JOIN books b ON bc.book_id = b.id WHERE 1=1");
+                + "JOIN books b ON bc.book_id = b.id "
+                + "WHERE bc.is_deleted = 0 AND 1=1");
 
         List<Object> params = new ArrayList<>();
 
@@ -202,8 +206,8 @@ public class BookCopyDAO {
     public List<String> getDistinctShelvesByArea(String area) {
         List<String> list = new ArrayList<>();
         String sql = "Chưa xếp".equals(area)
-                ? "SELECT DISTINCT shelf FROM book_copies WHERE area IS NULL AND shelf IS NOT NULL ORDER BY shelf"
-                : "SELECT DISTINCT shelf FROM book_copies WHERE area = ? AND shelf IS NOT NULL ORDER BY shelf";
+                ? "SELECT DISTINCT shelf FROM book_copies WHERE area IS NULL AND shelf IS NOT NULL AND is_deleted = 0 ORDER BY shelf"
+                : "SELECT DISTINCT shelf FROM book_copies WHERE area = ? AND shelf IS NOT NULL AND is_deleted = 0 ORDER BY shelf";
         try (PreparedStatement ps = getConn().prepareStatement(sql)) {
             if (!"Chưa xếp".equals(area)) ps.setString(1, area);
             ResultSet rs = ps.executeQuery();
@@ -220,7 +224,7 @@ public class BookCopyDAO {
     public List<String> getDistinctSlotsByAreaAndShelf(String area, String shelf) {
         List<String> list = new ArrayList<>();
         StringBuilder sql = new StringBuilder(
-                "SELECT DISTINCT slot FROM book_copies WHERE slot IS NOT NULL");
+                "SELECT DISTINCT slot FROM book_copies WHERE slot IS NOT NULL AND is_deleted = 0");
 
         List<String> params = new ArrayList<>();
         if (area != null && !area.isEmpty()) {
@@ -251,7 +255,7 @@ public class BookCopyDAO {
         StringBuilder sql = new StringBuilder(
                 "SELECT bc.*, b.title, b.isbn FROM book_copies bc "
                 + "JOIN books b ON bc.book_id = b.id "
-                + "WHERE bc.book_id = ? "
+                + "WHERE bc.book_id = ? AND bc.is_deleted = 0 "
         );
         List<Object> params = new ArrayList<>();
         params.add(bookId);
@@ -296,7 +300,7 @@ public class BookCopyDAO {
      */
     public int countCopies(int bookId, String barcode, String status, String area) {
         StringBuilder sql = new StringBuilder(
-                "SELECT COUNT(*) FROM book_copies bc WHERE bc.book_id = ? "
+                "SELECT COUNT(*) FROM book_copies bc WHERE bc.book_id = ? AND bc.is_deleted = 0 "
         );
         List<Object> params = new ArrayList<>();
         params.add(bookId);
@@ -337,7 +341,7 @@ public class BookCopyDAO {
     // ================================================================
 
     private int countUnplaced() {
-        String sql = "SELECT COUNT(*) FROM book_copies WHERE area IS NULL";
+        String sql = "SELECT COUNT(*) FROM book_copies WHERE area IS NULL AND is_deleted = 0";
         try (PreparedStatement ps = getConn().prepareStatement(sql)) {
             ResultSet rs = ps.executeQuery();
             if (rs.next()) return rs.getInt(1);
@@ -422,11 +426,11 @@ public class BookCopyDAO {
         }
     }
 
-    /** Tìm kiếm bản sao theo ID */
+    /** Tìm kiếm bản sao theo ID (chỉ lấy bản chưa xóa) */
     public BookCopy findById(int id) {
         String sql = "SELECT bc.*, b.title, b.isbn FROM book_copies bc "
                    + "JOIN books b ON bc.book_id = b.id "
-                   + "WHERE bc.id = ?";
+                   + "WHERE bc.id = ? AND bc.is_deleted = 0";
         try (PreparedStatement ps = getConn().prepareStatement(sql)) {
             ps.setInt(1, id);
             try (ResultSet rs = ps.executeQuery()) {
@@ -457,10 +461,10 @@ public class BookCopyDAO {
         return false;
     }
 
-    /** Thêm bản sao mới đầy đủ thông tin */
+    /** Thêm bản sao mới đầy đủ thông tin (ghi nhận created_by) */
     public boolean addCopy(BookCopy copy) {
-        String sql = "INSERT INTO book_copies (book_id, barcode, book_condition, status, area, shelf, slot, note, created_at, updated_at) "
-                   + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
+        String sql = "INSERT INTO book_copies (book_id, barcode, book_condition, status, area, shelf, slot, note, created_by, created_at, updated_at) "
+                   + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
         try (PreparedStatement ps = getConn().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setInt(1, copy.getBookId());
             ps.setString(2, copy.getBarcode());
@@ -470,6 +474,7 @@ public class BookCopyDAO {
             ps.setString(6, copy.getShelf());
             ps.setString(7, copy.getSlot());
             ps.setString(8, copy.getNote());
+            ps.setString(9, copy.getCreatedBy());
             boolean ok = ps.executeUpdate() > 0;
             if (ok) {
                 try (ResultSet keys = ps.getGeneratedKeys()) {
@@ -486,9 +491,9 @@ public class BookCopyDAO {
         return false;
     }
 
-    /** Cập nhật thông tin bản sao */
+    /** Cập nhật thông tin bản sao (ghi nhận updated_by) */
     public boolean updateCopy(BookCopy copy) {
-        String sql = "UPDATE book_copies SET barcode = ?, book_condition = ?, status = ?, area = ?, shelf = ?, slot = ?, note = ?, updated_at = NOW() WHERE id = ?";
+        String sql = "UPDATE book_copies SET barcode = ?, book_condition = ?, status = ?, area = ?, shelf = ?, slot = ?, note = ?, updated_by = ?, updated_at = NOW() WHERE id = ? AND is_deleted = 0";
         try (PreparedStatement ps = getConn().prepareStatement(sql)) {
             ps.setString(1, copy.getBarcode());
             ps.setString(2, copy.getBookCondition());
@@ -497,7 +502,8 @@ public class BookCopyDAO {
             ps.setString(5, copy.getShelf());
             ps.setString(6, copy.getSlot());
             ps.setString(7, copy.getNote());
-            ps.setInt(8, copy.getId());
+            ps.setString(8, copy.getUpdatedBy());
+            ps.setInt(9, copy.getId());
             boolean ok = ps.executeUpdate() > 0;
             if (ok) {
                 updateBookStock(copy.getBookId());
@@ -521,6 +527,9 @@ public class BookCopyDAO {
         bc.setArea(rs.getString("area"));
         bc.setShelf(rs.getString("shelf"));
         bc.setSlot(rs.getString("slot"));
+        bc.setDeleted(rs.getInt("is_deleted") == 1);
+        bc.setCreatedBy(rs.getString("created_by"));
+        bc.setUpdatedBy(rs.getString("updated_by"));
 
         Book book = new Book();
         book.setId(rs.getInt("book_id"));
