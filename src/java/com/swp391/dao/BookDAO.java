@@ -55,9 +55,13 @@ public interface BookDAO {
     boolean updateBook(Book book) throws Exception;
 
     /**
-     * Xóa sách theo id.
+     * Xóa mềm sách theo id.
+     * Ném {@link IllegalStateException} nếu còn bản sao vật lý active.
+     *
+     * @param id        id sách cần xóa
+     * @param deletedBy username của người thực hiện xóa
      */
-    boolean deleteBook(int id) throws Exception;
+    boolean deleteBook(int id, String deletedBy) throws Exception;
 
     /**
      * Kiểm tra ISBN có trùng lặp không.

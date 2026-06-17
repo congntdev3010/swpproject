@@ -305,22 +305,24 @@ public class BookDetailServlet extends HttpServlet {
             return;
         }
 
+        // Lấy username từ session để ghi vào updated_by
+        com.swp391.model.User currentUser = (com.swp391.model.User) request.getSession().getAttribute("user");
+        String operator = (currentUser != null) ? currentUser.getUsername() : "system";
+
         try {
             BookDAO dao = new BookDAOImpl();
 
-            // Check constraints
-            if (dao.hasPhysicalCopies(id)) {
-                response.sendRedirect(ctx + "/book/detail?id=" + id + "&error=has_copies");
-                return;
-            }
+            // Kiểm tra có lượt mượn/đặt chỗ đang hoạt động không
             if (dao.hasActiveBorrowsOrReservations(id)) {
                 response.sendRedirect(ctx + "/book/detail?id=" + id + "&error=has_active");
                 return;
             }
 
-            // Delete book_authors first, then book
+            // Xóa liên kết tác giả trước
             dao.setBookAuthors(id, new ArrayList<>());
-            boolean deleted = dao.deleteBook(id);
+
+            // deleteBook đã tích hợp guard: nếu còn active copies sẽ throw IllegalStateException
+            boolean deleted = dao.deleteBook(id, operator);
 
             if (deleted) {
                 response.sendRedirect(ctx + "/books?success=deleted");
@@ -328,6 +330,9 @@ public class BookDetailServlet extends HttpServlet {
                 response.sendRedirect(ctx + "/book/detail?id=" + id + "&error=delete_failed");
             }
 
+        } catch (IllegalStateException e) {
+            // Còn bản sao vật lý active
+            response.sendRedirect(ctx + "/book/detail?id=" + id + "&error=has_copies");
         } catch (Exception e) {
             response.sendRedirect(ctx + "/book/detail?id=" + id + "&error=exception");
         }

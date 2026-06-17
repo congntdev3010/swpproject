@@ -261,7 +261,7 @@ public class BookDAOImpl implements BookDAO {
     //  deleteBook — SOFT DELETE (blocked if active copies exist)
     // ============================================================
     @Override
-    public boolean deleteBook(int id) throws Exception {
+    public boolean deleteBook(int id, String deletedBy) throws Exception {
         // Kiểm tra còn bản sao vật lý chưa bị xóa không
         String checkSql = "SELECT COUNT(*) FROM book_copies WHERE book_id = ? AND is_deleted = 0";
         try (Connection con = DBContext.getInstance().getConnection();
@@ -276,11 +276,12 @@ public class BookDAOImpl implements BookDAO {
             }
         }
 
-        // Soft delete: đánh dấu is_deleted=1 thay vì xóa vật lý
-        String sql = "UPDATE books SET is_deleted = 1 WHERE id = ? AND is_deleted = 0";
+        // Soft delete: đánh dấu is_deleted=1, ghi lại người xóa vào updated_by
+        String sql = "UPDATE books SET is_deleted = 1, updated_by = ? WHERE id = ? AND is_deleted = 0";
         try (Connection con = DBContext.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setInt(1, id);
+            ps.setString(1, deletedBy);
+            ps.setInt(2, id);
             return ps.executeUpdate() > 0;
         }
     }
