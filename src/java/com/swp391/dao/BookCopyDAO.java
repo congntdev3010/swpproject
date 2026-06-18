@@ -108,6 +108,22 @@ public class BookCopyDAO {
         return false;
     }
 
+    /** Lấy danh sách bản sao AVAILABLE của một cuốn sách (Librarian chọn khi xác nhận phiếu) */
+    public List<BookCopy> getAvailableCopiesByBookId(int bookId) {
+        List<BookCopy> list = new ArrayList<>();
+        String sql = "SELECT bc.*, b.title, b.isbn FROM book_copies bc "
+                + "JOIN books b ON bc.book_id = b.id "
+                + "WHERE bc.book_id = ? AND bc.status = 'AVAILABLE' ORDER BY bc.barcode";
+        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
+            ps.setInt(1, bookId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) list.add(mapRow(rs));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
     /** Xóa bản sao (chỉ khi status = AVAILABLE) */
     public boolean deleteCopy(int copyId) {
         String sql = "DELETE FROM book_copies WHERE id=? AND status='AVAILABLE'";
