@@ -340,7 +340,7 @@ public class BookCopyServlet extends HttpServlet {
             return;
         }
 
-        boolean success = copyDao.deleteCopy(id);
+        boolean success = copyDao.deleteCopy(id, operator);
         if (success) {
             copyDao.addAuditLog(id, "DELETE", operator, copy.getStatus(), null, copy.getBookCondition(), null, "Xóa bản sao");
             response.sendRedirect(ctx + "/book/copies?bookId=" + bookId + "&success=deleted");

@@ -114,7 +114,7 @@ public class BookCopyDAO {
     }
 
     /** Xóa mềm bản sao (soft delete, chỉ khi status khác BORROWED và RESERVED) */
-    public boolean deleteCopy(int copyId) {
+    public boolean deleteCopy(int copyId, String deletedBy) {
         int bookId = -1;
         String sqlGetBook = "SELECT book_id FROM book_copies WHERE id = ? AND is_deleted = 0";
         try (PreparedStatement ps = getConn().prepareStatement(sqlGetBook)) {
@@ -128,11 +128,12 @@ public class BookCopyDAO {
             e.printStackTrace();
         }
 
-        // Soft delete: đánh dấu is_deleted=1 thay vì xóa vật lý
-        String sql = "UPDATE book_copies SET is_deleted = 1 "
+        // Soft delete: đánh dấu is_deleted=1, ghi lại người xóa vào updated_by
+        String sql = "UPDATE book_copies SET is_deleted = 1, updated_by = ? "
                    + "WHERE id = ? AND is_deleted = 0 AND status NOT IN ('BORROWED', 'RESERVED')";
         try (PreparedStatement ps = getConn().prepareStatement(sql)) {
-            ps.setInt(1, copyId);
+            ps.setString(1, deletedBy);
+            ps.setInt(2, copyId);
             boolean ok = ps.executeUpdate() > 0;
             if (ok && bookId > 0) {
                 updateBookStock(bookId);
