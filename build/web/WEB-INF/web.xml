@@ -91,6 +91,71 @@
         <url-pattern>/admin/users</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>BookDetailServlet</servlet-name>
+        <servlet-class>com.swp391.servlet.BookDetailServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>BookDetailServlet</servlet-name>
+        <url-pattern>/book/detail</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>BookDetailServlet</servlet-name>
+        <url-pattern>/book/add</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>BookDetailServlet</servlet-name>
+        <url-pattern>/book/edit</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>BookDetailServlet</servlet-name>
+        <url-pattern>/book/delete</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>BookCopyListServlet</servlet-name>
+        <servlet-class>com.swp391.servlet.BookCopyListServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>BookCopyListServlet</servlet-name>
+        <url-pattern>/book/copies</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>BookCopyServlet</servlet-name>
+        <servlet-class>com.swp391.servlet.BookCopyServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>BookCopyServlet</servlet-name>
+        <url-pattern>/book/copy/add</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>BookCopyServlet</servlet-name>
+        <url-pattern>/book/copy/edit</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>BookCopyServlet</servlet-name>
+        <url-pattern>/book/copy/delete</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>BorrowServlet</servlet-name>
+        <servlet-class>com.swp391.servlet.BorrowServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>BorrowServlet</servlet-name>
+        <url-pattern>/borrow</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>ReturnBookServlet</servlet-name>
+        <servlet-class>com.swp391.servlet.ReturnBookServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ReturnBookServlet</servlet-name>
+        <url-pattern>/return-book</url-pattern>
+    </servlet-mapping>
+
     <session-config>
         <session-timeout>60</session-timeout>
     </session-config>

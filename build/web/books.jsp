@@ -113,6 +113,11 @@
             <i class="fa-solid fa-circle-xmark"></i> <%= dbError %>
         </div>
     <% } %>
+    <% if ("deleted".equals(request.getParameter("success"))) { %>
+        <div class="alert alert-success">
+            <i class="fa-solid fa-circle-check"></i> Xóa sách thành công!
+        </div>
+    <% } %>
 
     <!-- ==================== TOPBAR ==================== -->
     <div class="books-topbar">
@@ -165,8 +170,8 @@
             </div>
 
             <!-- Admin add button -->
-            <% if (isAdminLib) { %>
-                <a href="<%= ctx %>/admin/books/add" class="btn btn-primary btn-sm">
+            <% if (isAdmin) { %>
+                <a href="<%= ctx %>/book/add" class="btn btn-primary btn-sm">
                     <i class="fa-solid fa-plus"></i> Thêm sách
                 </a>
             <% } %>
@@ -213,7 +218,7 @@
                                 Giá <i class="fa-solid <%= "price".equals(sortField) ? ("ASC".equals(sortOrder)?"fa-sort-up":"fa-sort-down") : "fa-sort" %> sort-icon fa-xs"></i>
                             </a>
                         </th>
-                        <% if (isAdminLib) { %><th style="width:100px; text-align:center;">Thao tác</th><% } %>
+                        <% if (isAdmin) { %><th style="width:140px; text-align:center;">Thao tác</th><% } %>
                     </tr>
                 </thead>
                 <tbody>
@@ -233,7 +238,7 @@
                                 <% } %>
                             </td>
                             <td class="book-info-cell">
-                                <span class="book-title-link" title="<%= b.getTitle() %>"><%= b.getTitle() %></span>
+                                <a href="<%= ctx %>/book/detail?id=<%= b.getId() %>" class="book-title-link" title="<%= b.getTitle() %>"><%= b.getTitle() %></a>
                                 <span class="book-isbn"><%= b.getIsbn() %></span>
                             </td>
                             <td>
@@ -247,26 +252,30 @@
                                 <span class="badge <%= b.getAvailable() > 0 ? "badge-success" : (b.getQuantity() > 0 ? "badge-warning" : "badge-danger") %>">
                                     <%= b.getStatusLabel() %>
                                 </span>
-                                <span style="font-size:0.75rem;color:var(--text-muted);display:block;margin-top:2px;">
-                                    <%= b.getAvailable() %>/<%= b.getQuantity() %> bản
-                                </span>
+                                <% if (loggedUser != null) { %>
+                                    <span style="font-size:0.75rem;color:var(--text-muted);display:block;margin-top:2px;">
+                                        <%= b.getAvailable() %>/<%= b.getQuantity() %> bản
+                                    </span>
+                                <% } %>
                             </td>
                             <td style="font-weight:600; color:var(--accent);"><%= b.getFormattedPrice() %></td>
-                            <% if (isAdminLib) { %>
+                            <% if (isAdmin) { %>
                             <td style="text-align:center;">
                                 <div style="display:flex; gap:6px; justify-content:center;">
-                                    <a href="<%= ctx %>/admin/books/edit?id=<%= b.getId() %>"
+                                    <a href="<%= ctx %>/book/detail?id=<%= b.getId() %>"
+                                       class="btn btn-outline btn-sm" title="Xem chi tiết">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </a>
+                                    <a href="<%= ctx %>/book/edit?id=<%= b.getId() %>"
                                        class="btn btn-outline btn-sm" title="Chỉnh sửa">
                                         <i class="fa-solid fa-pen"></i>
                                     </a>
-                                    <% if (isAdmin) { %>
                                     <button type="button"
                                             class="btn btn-danger btn-sm"
-                                            title="Ẩn / Xóa sách"
+                                            title="Xóa sách"
                                             onclick="confirmDelete(<%= b.getId() %>, '<%= b.getTitle().replace("'", "\\'") %>')">
                                         <i class="fa-solid fa-trash"></i>
                                     </button>
-                                    <% } %>
                                 </div>
                             </td>
                             <% } %>
@@ -281,7 +290,7 @@
         <div class="books-grid">
             <% for (Book b : books) { %>
                 <div class="book-card">
-                    <div class="book-cover">
+                    <a href="<%= ctx %>/book/detail?id=<%= b.getId() %>" class="book-cover">
                         <% if (b.getCoverImage() != null && !b.getCoverImage().trim().isEmpty()) { %>
                             <img src="<%= b.getCoverImage() %>"
                                  alt="<%= b.getTitle() %>"
@@ -299,7 +308,7 @@
                         <span class="book-status-tag <%= b.getStatusClass() %>">
                             <%= b.getStatusLabel() %>
                         </span>
-                    </div>
+                    </a>
                     <div class="book-body">
                         <div class="book-category">
                             <a href="<%= ctx %>/books?category=<%= java.net.URLEncoder.encode(b.getCategory() != null ? b.getCategory() : "","UTF-8") %>&view=grid"
@@ -307,7 +316,7 @@
                                 <%= b.getCategory() != null ? b.getCategory() : "—" %>
                             </a>
                         </div>
-                        <div class="book-title" title="<%= b.getTitle() %>"><%= b.getTitle() %></div>
+                        <a href="<%= ctx %>/book/detail?id=<%= b.getId() %>" class="book-title" title="<%= b.getTitle() %>"><%= b.getTitle() %></a>
                         <% if (b.getPublisher() != null) { %>
                             <div class="book-publisher">
                                 <i class="fa-solid fa-building fa-xs"></i>
@@ -318,15 +327,25 @@
                         <div class="book-price"><%= b.getFormattedPrice() %></div>
                     </div>
                     <div class="book-footer">
-                        <span style="font-size:0.78rem;color:var(--text-muted);">
-                            <i class="fa-solid fa-layer-group fa-xs"></i>
-                            <%= b.getAvailable() %>/<%= b.getQuantity() %> còn
-                        </span>
+                        <% if (loggedUser != null) { %>
+                            <span style="font-size:0.78rem;color:var(--text-muted);">
+                                <i class="fa-solid fa-layer-group fa-xs"></i>
+                                <%= b.getAvailable() %>/<%= b.getQuantity() %> còn
+                            </span>
+                        <% } else { %>
+                            <span></span>
+                        <% } %>
                         <div style="display:flex; gap:6px;">
+                            <a href="<%= ctx %>/book/detail?id=<%= b.getId() %>" class="btn btn-outline btn-sm" title="Xem chi tiết">
+                                <i class="fa-solid fa-eye"></i>
+                            </a>
                             <% if (isAdmin) { %>
+                            <a href="<%= ctx %>/book/edit?id=<%= b.getId() %>" class="btn btn-outline btn-sm" title="Chỉnh sửa">
+                                <i class="fa-solid fa-pen"></i>
+                            </a>
                             <button type="button"
                                     class="btn btn-danger btn-sm"
-                                    title="Ẩn / Xóa sách"
+                                    title="Xóa sách"
                                     onclick="confirmDelete(<%= b.getId() %>, '<%= b.getTitle().replace("'", "\\'") %>')">
                                 <i class="fa-solid fa-trash"></i>
                             </button>
@@ -447,7 +466,7 @@ function confirmDelete(bookId, bookTitle) {
     document.getElementById('deleteBookTitle').textContent =
         'Bạn có chắc muốn xóa/ẩn sách: "' + bookTitle + '"?';
     document.getElementById('deleteConfirmBtn').href =
-        '<%= ctx %>/admin/books/delete?id=' + bookId;
+        '<%= ctx %>/book/delete?id=' + bookId;
     document.getElementById('deleteModal').style.display = 'flex';
 }
 function closeDeleteModal() {

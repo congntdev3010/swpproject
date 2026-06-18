@@ -48,7 +48,22 @@
                     </a>
                 </li>
                 
+                <% if (loggedUser != null) { %>
+                <li class="nav-item">
+                    <a href="<%= request.getContextPath() %>/borrow?action=list"
+                       class="nav-link <%= "borrow".equals(currentPage) ? "active" : "" %>">
+                        <i class="fa-solid fa-book-bookmark"></i> Phiếu Mượn
+                    </a>
+                </li>
+                <% } %>
+
                 <% if (loggedUser != null && loggedUser.isAdminOrLibrarian()) { %>
+                <li class="nav-item">
+                    <a href="<%= request.getContextPath() %>/return-book"
+                       class="nav-link <%= "return-book".equals(currentPage) ? "active" : "" %>">
+                        <i class="fa-solid fa-rotate-left"></i> Trả Sách
+                    </a>
+                </li>
                 <li class="nav-item">
                     <a href="<%= request.getContextPath() %>/shelf"
                        class="nav-link <%= "shelf".equals(currentPage) ? "active" : "" %>">

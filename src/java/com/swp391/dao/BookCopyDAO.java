@@ -131,6 +131,25 @@ public class BookCopyDAO {
         // Soft delete: đánh dấu is_deleted=1, ghi lại người xóa vào updated_by
         String sql = "UPDATE book_copies SET is_deleted = 1, updated_by = ? "
                    + "WHERE id = ? AND is_deleted = 0 AND status NOT IN ('BORROWED', 'RESERVED')";
+    /** Lấy danh sách bản sao AVAILABLE của một cuốn sách (Librarian chọn khi xác nhận phiếu) */
+    public List<BookCopy> getAvailableCopiesByBookId(int bookId) {
+        List<BookCopy> list = new ArrayList<>();
+        String sql = "SELECT bc.*, b.title, b.isbn FROM book_copies bc "
+                + "JOIN books b ON bc.book_id = b.id "
+                + "WHERE bc.book_id = ? AND bc.status = 'AVAILABLE' ORDER BY bc.barcode";
+        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
+            ps.setInt(1, bookId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) list.add(mapRow(rs));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    /** Xóa bản sao (chỉ khi status = AVAILABLE) */
+    public boolean deleteCopy(int copyId) {
+        String sql = "DELETE FROM book_copies WHERE id=? AND status='AVAILABLE'";
         try (PreparedStatement ps = getConn().prepareStatement(sql)) {
             ps.setString(1, deletedBy);
             ps.setInt(2, copyId);
@@ -378,8 +397,8 @@ public class BookCopyDAO {
     }
 
     /** Ghi log lịch sử thay đổi */
-    public boolean addAuditLog(int copyId, String action, String changedBy, 
-                               String oldStatus, String newStatus, 
+    public boolean addAuditLog(int copyId, String action, String changedBy,
+                               String oldStatus, String newStatus,
                                String oldCondition, String newCondition, String note) {
         ensureAuditLogTableExists();
         String sql = "INSERT INTO book_copy_logs (copy_id, action, changed_by, old_status, new_status, old_condition, new_condition, note) "
