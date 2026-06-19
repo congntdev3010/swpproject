@@ -306,7 +306,7 @@ public class BookDetailServlet extends HttpServlet {
         }
 
         // Lấy username từ session để ghi vào updated_by
-        com.swp391.model.User currentUser = (com.swp391.model.User) request.getSession().getAttribute("user");
+        com.swp391.model.User currentUser = (com.swp391.model.User) request.getSession().getAttribute("loggedUser");
         String operator = (currentUser != null) ? currentUser.getUsername() : "system";
 
         try {

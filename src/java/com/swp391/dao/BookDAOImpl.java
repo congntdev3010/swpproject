@@ -130,7 +130,7 @@ public class BookDAOImpl implements BookDAO {
     // ============================================================
     @Override
     public List<String> getAllCategories() throws Exception {
-        String sql = "SELECT DISTINCT category FROM books WHERE category IS NOT NULL ORDER BY category";
+        String sql = "SELECT DISTINCT category FROM books WHERE category IS NOT NULL AND is_deleted = 0 ORDER BY category";
         List<String> cats = new ArrayList<>();
         try (Connection con = DBContext.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql);
@@ -291,7 +291,7 @@ public class BookDAOImpl implements BookDAO {
     // ============================================================
     @Override
     public boolean isIsbnExists(String isbn) throws Exception {
-        String sql = "SELECT COUNT(*) FROM books WHERE isbn = ?";
+        String sql = "SELECT COUNT(*) FROM books WHERE isbn = ? AND is_deleted = 0";
         try (Connection con = DBContext.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, isbn);
@@ -307,7 +307,7 @@ public class BookDAOImpl implements BookDAO {
     // ============================================================
     @Override
     public boolean isIsbnExistsExcluding(String isbn, int excludeId) throws Exception {
-        String sql = "SELECT COUNT(*) FROM books WHERE isbn = ? AND id != ?";
+        String sql = "SELECT COUNT(*) FROM books WHERE isbn = ? AND id != ? AND is_deleted = 0";
         try (Connection con = DBContext.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, isbn);

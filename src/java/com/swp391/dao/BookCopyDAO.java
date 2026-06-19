@@ -402,7 +402,7 @@ public class BookCopyDAO {
 
     /** Đồng bộ lại số lượng quantity và available của sách */
     public void updateBookStock(int bookId) {
-        String sqlCount = "SELECT COUNT(*) AS total, SUM(CASE WHEN status='AVAILABLE' THEN 1 ELSE 0 END) AS avail FROM book_copies WHERE book_id=?";
+        String sqlCount = "SELECT COUNT(*) AS total, SUM(CASE WHEN status='AVAILABLE' THEN 1 ELSE 0 END) AS avail FROM book_copies WHERE book_id=? AND is_deleted = 0";
         String sqlUpdate = "UPDATE books SET quantity=?, available=? WHERE id=?";
         try {
             int total = 0;
@@ -446,8 +446,8 @@ public class BookCopyDAO {
     /** Kiểm tra xem barcode có bị trùng lặp không (loại trừ ID hiện tại) */
     public boolean isBarcodeExists(String barcode, int excludeId) {
         String sql = excludeId > 0
-                ? "SELECT COUNT(*) FROM book_copies WHERE barcode = ? AND id != ?"
-                : "SELECT COUNT(*) FROM book_copies WHERE barcode = ?";
+                ? "SELECT COUNT(*) FROM book_copies WHERE barcode = ? AND id != ? AND is_deleted = 0"
+                : "SELECT COUNT(*) FROM book_copies WHERE barcode = ? AND is_deleted = 0";
         try (PreparedStatement ps = getConn().prepareStatement(sql)) {
             ps.setString(1, barcode);
             if (excludeId > 0) {
