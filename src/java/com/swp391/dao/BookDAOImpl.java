@@ -72,8 +72,15 @@ public class BookDAOImpl implements BookDAO {
         List<Object> params = new ArrayList<>();
 
         if (keyword != null && !keyword.trim().isEmpty()) {
-            sql.append("AND LOWER(title) LIKE LOWER(?) ");
-            params.add("%" + keyword.trim() + "%");
+            sql.append("AND (LOWER(title) LIKE LOWER(?) ")
+               .append("OR LOWER(isbn) LIKE LOWER(?) ")
+               .append("OR LOWER(publisher) LIKE LOWER(?) ")
+               .append("OR EXISTS (SELECT 1 FROM book_authors ba JOIN authors a ON ba.author_id = a.id WHERE ba.book_id = books.id AND LOWER(a.name) LIKE LOWER(?))) ");
+            String matchStr = "%" + keyword.trim() + "%";
+            params.add(matchStr);
+            params.add(matchStr);
+            params.add(matchStr);
+            params.add(matchStr);
         }
         if (categoryFilter != null && !categoryFilter.trim().isEmpty()) {
             sql.append("AND category = ? ");
@@ -107,8 +114,15 @@ public class BookDAOImpl implements BookDAO {
         List<Object> params = new ArrayList<>();
 
         if (keyword != null && !keyword.trim().isEmpty()) {
-            sql.append("AND LOWER(title) LIKE LOWER(?) ");
-            params.add("%" + keyword.trim() + "%");
+            sql.append("AND (LOWER(title) LIKE LOWER(?) ")
+               .append("OR LOWER(isbn) LIKE LOWER(?) ")
+               .append("OR LOWER(publisher) LIKE LOWER(?) ")
+               .append("OR EXISTS (SELECT 1 FROM book_authors ba JOIN authors a ON ba.author_id = a.id WHERE ba.book_id = books.id AND LOWER(a.name) LIKE LOWER(?))) ");
+            String matchStr = "%" + keyword.trim() + "%";
+            params.add(matchStr);
+            params.add(matchStr);
+            params.add(matchStr);
+            params.add(matchStr);
         }
         if (categoryFilter != null && !categoryFilter.trim().isEmpty()) {
             sql.append("AND category = ? ");
