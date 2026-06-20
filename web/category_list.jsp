@@ -26,6 +26,7 @@
     String successMsg = (String) request.getAttribute("successMsg");
     String errorMsg = (String) request.getAttribute("errorMsg");
 
+    User loggedUser = (User) session.getAttribute("loggedUser");
     boolean isAdmin = (loggedUser != null && loggedUser.isAdmin());
     String ctx = request.getContextPath();
 

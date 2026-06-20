@@ -2,6 +2,7 @@
 <%@ page import="com.swp391.model.Book, com.swp391.model.Author, com.swp391.model.User, java.util.List" %>
 <%@ include file="/WEB-INF/jsp/header.jsp" %>
 <%
+    User loggedUser = (User) session.getAttribute("loggedUser");
     Book book       = (Book) request.getAttribute("book");
     List<Author> authors = (List<Author>) request.getAttribute("authors");
     String errorMsg  = (String) request.getAttribute("errorMsg");

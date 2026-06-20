@@ -14,6 +14,7 @@
     String       viewMode         = (String)        request.getAttribute("viewMode");
     String       dbError          = (String)        request.getAttribute("dbError");
 
+    User loggedUser = (User) session.getAttribute("loggedUser");
     boolean isAdmin    = (loggedUser != null && loggedUser.isAdmin());
     boolean isAdminLib = (loggedUser != null && loggedUser.isAdminOrLibrarian());
 

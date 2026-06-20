@@ -16,7 +16,7 @@ public class ReservationDAOImpl implements ReservationDAO {
 
     @Override
     public ReservationRecord create(int userId, int bookId) throws Exception {
-        String sql = "INSERT INTO reservation_records (user_id, book_id, status, reserve_date, created_at, updated_at) "
+        String sql = "INSERT INTO book_reservations (user_id, book_id, status, reserve_date, created_at, updated_at) "
                 + "VALUES (?, ?, 'PENDING', NOW(), NOW(), NOW())";
         try (Connection con = DBContext.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -36,7 +36,7 @@ public class ReservationDAOImpl implements ReservationDAO {
 
     @Override
     public boolean confirm(int reservationId, String performedBy) throws Exception {
-        String sql = "UPDATE reservation_records SET status = 'READY', notified_at = NOW(), updated_at = NOW() "
+        String sql = "UPDATE book_reservations SET status = 'READY', notified_at = NOW(), updated_at = NOW() "
                 + "WHERE id = ? AND status = 'PENDING'";
         try (Connection con = DBContext.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -47,7 +47,7 @@ public class ReservationDAOImpl implements ReservationDAO {
 
     @Override
     public boolean cancel(int reservationId, String performedBy) throws Exception {
-        String sql = "UPDATE reservation_records SET status = 'CANCELLED', updated_at = NOW() "
+        String sql = "UPDATE book_reservations SET status = 'CANCELLED', updated_at = NOW() "
                 + "WHERE id = ? AND status IN ('PENDING','READY')";
         try (Connection con = DBContext.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -58,7 +58,7 @@ public class ReservationDAOImpl implements ReservationDAO {
 
     @Override
     public int countPendingReservations(int bookId) throws Exception {
-        String sql = "SELECT COUNT(*) FROM reservation_records WHERE book_id = ? AND status IN ('PENDING','READY')";
+        String sql = "SELECT COUNT(*) FROM book_reservations WHERE book_id = ? AND status IN ('PENDING','READY')";
         try (Connection con = DBContext.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, bookId);
@@ -72,7 +72,7 @@ public class ReservationDAOImpl implements ReservationDAO {
     @Override
     public ReservationRecord findById(int id) throws Exception {
         String sql = "SELECT rr.*, u.full_name, u.username, b.title AS book_title "
-                + "FROM reservation_records rr "
+                + "FROM book_reservations rr "
                 + "LEFT JOIN users u ON u.id = rr.user_id "
                 + "LEFT JOIN books b ON b.id = rr.book_id "
                 + "WHERE rr.id = ?";
@@ -89,7 +89,7 @@ public class ReservationDAOImpl implements ReservationDAO {
     @Override
     public List<ReservationRecord> getByUser(int userId) throws Exception {
         String sql = "SELECT rr.*, u.full_name, u.username, b.title AS book_title "
-                + "FROM reservation_records rr "
+                + "FROM book_reservations rr "
                 + "LEFT JOIN users u ON u.id = rr.user_id "
                 + "LEFT JOIN books b ON b.id = rr.book_id "
                 + "WHERE rr.user_id = ? ORDER BY rr.created_at DESC";
@@ -108,7 +108,7 @@ public class ReservationDAOImpl implements ReservationDAO {
     public List<ReservationRecord> getAll(String status, String keyword, int page, int pageSize) throws Exception {
         StringBuilder sql = new StringBuilder(
                 "SELECT rr.*, u.full_name, u.username, b.title AS book_title "
-                + "FROM reservation_records rr "
+                + "FROM book_reservations rr "
                 + "LEFT JOIN users u ON u.id = rr.user_id "
                 + "LEFT JOIN books b ON b.id = rr.book_id WHERE 1=1");
         List<Object> params = new ArrayList<>();
@@ -135,7 +135,7 @@ public class ReservationDAOImpl implements ReservationDAO {
     @Override
     public int countAll(String status, String keyword) throws Exception {
         StringBuilder sql = new StringBuilder(
-                "SELECT COUNT(*) FROM reservation_records rr "
+                "SELECT COUNT(*) FROM book_reservations rr "
                 + "LEFT JOIN users u ON u.id = rr.user_id "
                 + "LEFT JOIN books b ON b.id = rr.book_id WHERE 1=1");
         List<Object> params = new ArrayList<>();

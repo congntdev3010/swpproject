@@ -28,7 +28,7 @@ public class BorrowDAOImpl implements BorrowDAO {
         String sql = "SELECT "
                 + "(SELECT COUNT(*) FROM borrow_records WHERE user_id = ? AND status IN ('BORROWING','OVERDUE')) "
                 + "+ "
-                + "(SELECT COUNT(*) FROM reservation_records WHERE user_id = ? AND status IN ('PENDING','READY')) "
+                + "(SELECT COUNT(*) FROM book_reservations WHERE user_id = ? AND status IN ('PENDING','READY')) "
                 + "AS total";
         try (Connection con = DBContext.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -46,7 +46,8 @@ public class BorrowDAOImpl implements BorrowDAO {
         // Lấy giới hạn mượn theo hạng membership của user
         String sql = "SELECT COALESCE(mt.max_simultaneous_borrows, 5) AS max_limit "
                 + "FROM users u "
-                + "LEFT JOIN membership_tiers mt ON mt.id = u.tier_id "
+                + "LEFT JOIN user_memberships um ON um.user_id = u.id "
+                + "LEFT JOIN membership_tiers mt ON mt.id = um.tier_id "
                 + "WHERE u.id = ?";
         try (Connection con = DBContext.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -65,8 +66,8 @@ public class BorrowDAOImpl implements BorrowDAO {
     @Override
     public boolean canRenew(int borrowRecordId) throws Exception {
         String sql = "SELECT br.book_id, "
-                + "(SELECT COUNT(*) FROM book_copy bc WHERE bc.book_id = br.book_id AND bc.status = 'AVAILABLE') AS available_copies, "
-                + "(SELECT COUNT(*) FROM reservation_records rr WHERE rr.book_id = br.book_id AND rr.status IN ('PENDING','READY')) AS pending_reservations "
+                + "(SELECT COUNT(*) FROM book_copies bc WHERE bc.book_id = br.book_id AND bc.status = 'AVAILABLE') AS available_copies, "
+                + "(SELECT COUNT(*) FROM book_reservations rr WHERE rr.book_id = br.book_id AND rr.status IN ('PENDING','READY')) AS pending_reservations "
                 + "FROM borrow_records br WHERE br.id = ?";
         try (Connection con = DBContext.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -144,7 +145,7 @@ public class BorrowDAOImpl implements BorrowDAO {
 
             // 3. Cập nhật trạng thái bản sao sách (nếu có copy_id)
             if (record.getCopyId() != null) {
-                String updateCopy = "UPDATE book_copy SET status = 'AVAILABLE', updated_at = NOW() WHERE id = ?";
+                String updateCopy = "UPDATE book_copies SET status = 'AVAILABLE', updated_at = NOW() WHERE id = ?";
                 try (PreparedStatement ps = con.prepareStatement(updateCopy)) {
                     ps.setInt(1, record.getCopyId());
                     ps.executeUpdate();
@@ -172,7 +173,7 @@ public class BorrowDAOImpl implements BorrowDAO {
                 + "FROM borrow_records br "
                 + "LEFT JOIN users u ON u.id = br.user_id "
                 + "LEFT JOIN books b ON b.id = br.book_id "
-                + "LEFT JOIN book_copy bc ON bc.id = br.copy_id "
+                + "LEFT JOIN book_copies bc ON bc.id = br.copy_id "
                 + "WHERE br.id = ?";
         try (PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, id);
@@ -190,7 +191,7 @@ public class BorrowDAOImpl implements BorrowDAO {
                 + "FROM borrow_records br "
                 + "LEFT JOIN users u ON u.id = br.user_id "
                 + "LEFT JOIN books b ON b.id = br.book_id "
-                + "LEFT JOIN book_copy bc ON bc.id = br.copy_id "
+                + "LEFT JOIN book_copies bc ON bc.id = br.copy_id "
                 + "WHERE br.user_id = ? AND br.status IN ('BORROWING','OVERDUE') "
                 + "ORDER BY br.due_date ASC";
         return queryList(sql, userId);
@@ -203,7 +204,7 @@ public class BorrowDAOImpl implements BorrowDAO {
                 + "FROM borrow_records br "
                 + "LEFT JOIN users u ON u.id = br.user_id "
                 + "LEFT JOIN books b ON b.id = br.book_id "
-                + "LEFT JOIN book_copy bc ON bc.id = br.copy_id "
+                + "LEFT JOIN book_copies bc ON bc.id = br.copy_id "
                 + "WHERE br.user_id = ? ORDER BY br.created_at DESC";
         return queryList(sql, userId);
     }
@@ -216,7 +217,7 @@ public class BorrowDAOImpl implements BorrowDAO {
                 + "FROM borrow_records br "
                 + "LEFT JOIN users u ON u.id = br.user_id "
                 + "LEFT JOIN books b ON b.id = br.book_id "
-                + "LEFT JOIN book_copy bc ON bc.id = br.copy_id WHERE 1=1");
+                + "LEFT JOIN book_copies bc ON bc.id = br.copy_id WHERE 1=1");
         List<Object> params = new ArrayList<>();
         if (status != null && !status.isEmpty()) { sql.append(" AND br.status = ?"); params.add(status); }
         if (keyword != null && !keyword.trim().isEmpty()) {

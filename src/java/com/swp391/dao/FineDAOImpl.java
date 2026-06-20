@@ -35,7 +35,7 @@ public class FineDAOImpl implements FineDAO {
         String sql = "SELECT br.due_date, br.return_date, br.status, br.copy_id, "
                 + "bc.original_price, bc.id AS copy_id_val, br.book_id "
                 + "FROM borrow_records br "
-                + "LEFT JOIN book_copy bc ON bc.id = br.copy_id "
+                + "LEFT JOIN book_copies bc ON bc.id = br.copy_id "
                 + "WHERE br.id = ?";
         try (Connection con = DBContext.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -61,7 +61,7 @@ public class FineDAOImpl implements FineDAO {
                     int copyId = rs.getInt("copy_id_val");
                     if (!rs.wasNull() && copyId > 0) {
                         // Đánh dấu bản sao DAMAGED
-                        String updateCopy = "UPDATE book_copy SET status = 'DAMAGED', updated_at = NOW() WHERE id = ?";
+                        String updateCopy = "UPDATE book_copies SET status = 'DAMAGED', updated_at = NOW() WHERE id = ?";
                         try (PreparedStatement ps2 = con.prepareStatement(updateCopy)) {
                             ps2.setInt(1, copyId);
                             ps2.executeUpdate();
@@ -232,7 +232,7 @@ public class FineDAOImpl implements FineDAO {
 
     private BigDecimal getOriginalPrice(int borrowRecordId) throws Exception {
         String sql = "SELECT bc.original_price FROM borrow_records br "
-                + "LEFT JOIN book_copy bc ON bc.id = br.copy_id WHERE br.id = ?";
+                + "LEFT JOIN book_copies bc ON bc.id = br.copy_id WHERE br.id = ?";
         try (Connection con = DBContext.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, borrowRecordId);

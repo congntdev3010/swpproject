@@ -8,6 +8,7 @@
 <%@ page import="com.swp391.model.Book, java.util.List" %>
 <%@ include file="/WEB-INF/jsp/header.jsp" %>
 <%
+    User loggedUser = (User) session.getAttribute("loggedUser");
     List<Book> featuredBooks = (List<Book>) request.getAttribute("featuredBooks");
     Integer totalBooks       = (Integer) request.getAttribute("totalBooks");
     Integer totalCategories  = (Integer) request.getAttribute("totalCategories");

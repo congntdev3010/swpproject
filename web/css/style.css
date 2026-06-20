@@ -178,6 +178,52 @@ img { max-width: 100%; display: block; }
   border: 1px solid rgba(244,121,32,0.18);
 }
 
+/* Dropdown Menu */
+.nav-item.dropdown {
+  position: relative;
+}
+.nav-item.dropdown > .dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  min-width: 200px;
+  padding: 8px 0;
+  list-style: none;
+  z-index: 1050;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all var(--transition);
+}
+.nav-item.dropdown:hover > .dropdown-menu {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  transition: all var(--transition);
+  text-decoration: none;
+}
+.dropdown-item:hover, .dropdown-item.active {
+  background: var(--bg-surface);
+  color: var(--primary);
+}
+.dropdown-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 8px 0;
+}
+
 .navbar-actions {
   display: flex;
   align-items: center;
@@ -209,28 +255,42 @@ img { max-width: 100%; display: block; }
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 6px 12px;
+  padding: 6px 14px 6px 10px;
   background: var(--bg-surface);
-  border-radius: var(--radius-sm);
+  border-radius: 99px; /* Pill shape */
   border: 1px solid var(--border);
-  font-size: 0.88rem;
-  color: var(--text-secondary);
   transition: all var(--transition);
+  text-decoration: none;
 }
 .user-info:hover {
   background: rgba(244, 121, 32, 0.08);
   border-color: rgba(244, 121, 32, 0.3);
+}
+.user-info-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+.user-info-name {
+  font-weight: 600;
+  font-size: 0.85rem;
   color: var(--text-primary);
+  max-width: 140px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .user-info .user-role-badge {
-  font-size: 0.72rem;
+  font-size: 0.65rem;
   font-weight: 700;
-  padding: 2px 8px;
+  padding: 1px 6px;
   border-radius: 99px;
   background: var(--primary);
   color: #fff;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  align-self: flex-start;
+  margin-top: 2px;
 }
 .user-role-badge.admin     { background: var(--danger); }
 .user-role-badge.librarian { background: var(--primary); }
@@ -1931,3 +1991,5 @@ a.book-title-link:hover {
     grid-template-columns: 1fr;
   }
 }
+. d r o p d o w n - d i v i d e r   {   h e i g h t :   1 p x ;   b a c k g r o u n d - c o l o r :   v a r ( - - b o r d e r ) ;   m a r g i n :   8 p x   0 ;   }  
+ 
