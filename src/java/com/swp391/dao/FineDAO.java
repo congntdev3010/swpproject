@@ -143,7 +143,7 @@ public class FineDAO {
             ps.setString(1, status);
             ps.setString(2, paymentMethod);
             ps.setString(3, paymentNote);
-            ps.setDate(4, "PAID".equals(status) ? Date.valueOf(LocalDate.now()) : null);
+            ps.setDate(4, "PAID".equals(status) ? java.sql.Date.valueOf(LocalDate.now()) : null);
             ps.setInt(5, fineId);
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
@@ -198,7 +198,7 @@ public class FineDAO {
         f.setPaymentMethod(rs.getString("payment_method"));
         f.setPaymentNote(rs.getString("payment_note"));
 
-        Date paidDate = rs.getDate("paid_date");
+        java.sql.Date paidDate = rs.getDate("paid_date");
         if (paidDate != null) f.setPaidDate(paidDate.toLocalDate());
 
         Timestamp createdAt = rs.getTimestamp("created_at");
@@ -221,11 +221,11 @@ public class FineDAO {
         BorrowRecord br = new BorrowRecord();
         br.setId(rs.getInt("borrow_record_id"));
         try {
-            Date bDate = rs.getDate("borrow_date");
+            java.sql.Date bDate = rs.getDate("borrow_date");
             if (bDate != null) br.setBorrowDate(bDate.toLocalDate());
-            Date dDate = rs.getDate("due_date");
+            java.sql.Date dDate = rs.getDate("due_date");
             if (dDate != null) br.setDueDate(dDate.toLocalDate());
-            Date rDate = rs.getDate("return_date");
+            java.sql.Date rDate = rs.getDate("return_date");
             if (rDate != null) br.setReturnDate(rDate.toLocalDate());
             br.setStatus(rs.getString("record_status"));
             // Book title

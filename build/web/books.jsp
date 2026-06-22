@@ -213,7 +213,7 @@
                                 Giá <i class="fa-solid <%= "price".equals(sortField) ? ("ASC".equals(sortOrder)?"fa-sort-up":"fa-sort-down") : "fa-sort" %> sort-icon fa-xs"></i>
                             </a>
                         </th>
-                        <% if (isAdminLib) { %><th style="width:100px; text-align:center;">Thao tác</th><% } %>
+                        <% if (loggedUser != null || isAdminLib) { %><th style="width:100px; text-align:center;">Thao tác</th><% } %>
                     </tr>
                 </thead>
                 <tbody>
@@ -252,9 +252,15 @@
                                 </span>
                             </td>
                             <td style="font-weight:600; color:var(--accent);"><%= b.getFormattedPrice() %></td>
-                            <% if (isAdminLib) { %>
+                            <% if (loggedUser != null || isAdminLib) { %>
                             <td style="text-align:center;">
                                 <div style="display:flex; gap:6px; justify-content:center;">
+                                    <% if (loggedUser != null) { %>
+                                        <button type="button" class="btn btn-outline btn-sm" onclick="addToBorrowCart(<%= b.getId() %>)" title="Mượn sách">
+                                            <i class="fa-solid fa-cart-plus"></i>
+                                        </button>
+                                    <% } %>
+                                    <% if (isAdminLib) { %>
                                     <a href="<%= ctx %>/admin/books/edit?id=<%= b.getId() %>"
                                        class="btn btn-outline btn-sm" title="Chỉnh sửa">
                                         <i class="fa-solid fa-pen"></i>
@@ -323,6 +329,11 @@
                             <%= b.getAvailable() %>/<%= b.getQuantity() %> còn
                         </span>
                         <div style="display:flex; gap:6px;">
+                            <% if (loggedUser != null) { %>
+                                <button type="button" class="btn btn-primary btn-sm" onclick="addToBorrowCart(<%= b.getId() %>)" title="Mượn sách">
+                                    <i class="fa-solid fa-cart-plus"></i> Mượn
+                                </button>
+                            <% } %>
                             <% if (isAdmin) { %>
                             <button type="button"
                                     class="btn btn-danger btn-sm"

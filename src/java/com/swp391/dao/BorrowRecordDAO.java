@@ -242,8 +242,8 @@ public class BorrowRecordDAO {
                    + "WHERE id = ? AND status = 'PENDING'";
         try (PreparedStatement ps = getConn().prepareStatement(sql)) {
             ps.setInt(1, copyId);
-            ps.setDate(2, Date.valueOf(borrowDate));
-            ps.setDate(3, Date.valueOf(dueDate));
+            ps.setDate(2, java.sql.Date.valueOf(borrowDate));
+            ps.setDate(3, java.sql.Date.valueOf(dueDate));
             ps.setString(4, librarianNote);
             ps.setInt(5, confirmedBy);
             ps.setInt(6, recordId);
@@ -282,7 +282,7 @@ public class BorrowRecordDAO {
                    + "    updated_at = NOW() "
                    + "WHERE id = ? AND status IN ('BORROWING', 'OVERDUE')";
         try (PreparedStatement ps = getConn().prepareStatement(sql)) {
-            ps.setDate(1, Date.valueOf(returnDate));
+            ps.setDate(1, java.sql.Date.valueOf(returnDate));
             ps.setString(2, (note != null && !note.isEmpty()) ? "\n[Librarian]: " + note : "");
             ps.setInt(3, recordId);
             return ps.executeUpdate() > 0;
@@ -374,13 +374,13 @@ public class BorrowRecordDAO {
         int copyId = rs.getInt("copy_id");
         br.setCopyId(rs.wasNull() ? null : copyId);
 
-        Date borrowDate = rs.getDate("borrow_date");
+        java.sql.Date borrowDate = rs.getDate("borrow_date");
         if (borrowDate != null) br.setBorrowDate(borrowDate.toLocalDate());
 
-        Date dueDate = rs.getDate("due_date");
+        java.sql.Date dueDate = rs.getDate("due_date");
         if (dueDate != null) br.setDueDate(dueDate.toLocalDate());
 
-        Date returnDate = rs.getDate("return_date");
+        java.sql.Date returnDate = rs.getDate("return_date");
         if (returnDate != null) br.setReturnDate(returnDate.toLocalDate());
 
         br.setRenewalCount(rs.getInt("renewal_count"));

@@ -139,8 +139,15 @@
                                     <i class="fa-solid fa-layer-group fa-xs"></i>
                                     <%= book.getAvailable() %>/<%= book.getQuantity() %> còn lại
                                 </span>
-                                <a href="<%= request.getContextPath() %>/books?keyword=<%= java.net.URLEncoder.encode(book.getTitle(),"UTF-8") %>"
-                                   class="btn btn-primary btn-sm">Chi tiết</a>
+                                <div style="display:flex; gap:6px;">
+                                    <% if (loggedUser != null) { %>
+                                        <button type="button" class="btn btn-outline btn-sm" onclick="addToBorrowCart(<%= book.getId() %>)" title="Mượn sách">
+                                            <i class="fa-solid fa-cart-plus"></i>
+                                        </button>
+                                    <% } %>
+                                    <a href="<%= request.getContextPath() %>/books?keyword=<%= java.net.URLEncoder.encode(book.getTitle(),"UTF-8") %>"
+                                       class="btn btn-primary btn-sm">Chi tiết</a>
+                                </div>
                             </div>
                         </div>
                     <% } %>

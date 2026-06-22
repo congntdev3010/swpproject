@@ -171,7 +171,7 @@ public class BorrowServlet extends HttpServlet {
         Book preselectedBook = null;
         if (bookIdParam != null) {
             try {
-                preselectedBook = bookDAO.getBookById(Integer.parseInt(bookIdParam));
+                preselectedBook = bookDAO.findById(Integer.parseInt(bookIdParam));
             } catch (Exception e) {
                 e.printStackTrace();
             }
