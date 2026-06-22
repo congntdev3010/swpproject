@@ -18,9 +18,7 @@ public class FineDAO {
     /** Mức phạt trễ hạn: 5.000 VND / ngày */
     public static final BigDecimal FINE_RATE_PER_DAY = new BigDecimal("5000");
 
-    private Connection getConn() throws ClassNotFoundException, SQLException {
-        return DBContext.getInstance().getConnection();
-    }
+    
 
     // ================================================================
     // CREATE
@@ -35,7 +33,7 @@ public class FineDAO {
         String sql = "INSERT INTO fines (borrow_record_id, user_id, amount, overdue_days, "
                    + "reason, status, created_at, updated_at) "
                    + "VALUES (?, ?, ?, ?, ?, 'UNPAID', NOW(), NOW())";
-        try (PreparedStatement ps = getConn().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection conn = DBContext.getInstance().getConnection(); PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setInt(1, borrowRecordId);
             ps.setInt(2, userId);
             ps.setBigDecimal(3, amount);
@@ -58,7 +56,7 @@ public class FineDAO {
     /** Lấy fine theo id. */
     public Fine getById(int id) {
         String sql = buildBaseSelect() + " WHERE f.id = ?";
-        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
+        try (Connection conn = DBContext.getInstance().getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) return mapRow(rs);
@@ -72,7 +70,7 @@ public class FineDAO {
     public List<Fine> getByBorrowRecordId(int borrowRecordId) {
         List<Fine> list = new ArrayList<>();
         String sql = buildBaseSelect() + " WHERE f.borrow_record_id = ?";
-        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
+        try (Connection conn = DBContext.getInstance().getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, borrowRecordId);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) list.add(mapRow(rs));
@@ -86,7 +84,7 @@ public class FineDAO {
     public List<Fine> getByUserId(int userId) {
         List<Fine> list = new ArrayList<>();
         String sql = buildBaseSelect() + " WHERE f.user_id = ? ORDER BY f.created_at DESC";
-        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
+        try (Connection conn = DBContext.getInstance().getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, userId);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) list.add(mapRow(rs));
@@ -118,7 +116,7 @@ public class FineDAO {
             params.add((page - 1) * pageSize);
         }
 
-        try (PreparedStatement ps = getConn().prepareStatement(sql.toString())) {
+        try (Connection conn = DBContext.getInstance().getConnection(); PreparedStatement ps = conn.prepareStatement(sql.toString())) {
             for (int i = 0; i < params.size(); i++) ps.setObject(i + 1, params.get(i));
             ResultSet rs = ps.executeQuery();
             while (rs.next()) list.add(mapRow(rs));
@@ -139,7 +137,7 @@ public class FineDAO {
                                     String paymentMethod, String paymentNote) {
         String sql = "UPDATE fines SET status = ?, payment_method = ?, payment_note = ?, "
                    + "paid_date = ?, updated_at = NOW() WHERE id = ?";
-        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
+        try (Connection conn = DBContext.getInstance().getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, status);
             ps.setString(2, paymentMethod);
             ps.setString(3, paymentNote);

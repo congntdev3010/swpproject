@@ -41,6 +41,14 @@
                 <i class="fa-solid fa-list-check"></i>
                 <span>Duyệt đơn mượn</span>
             </a>
+            <a class="admin-nav-item admin-nav-user" href="<%= request.getContextPath() %>/admin/borrow">
+                <i class="fa-solid fa-book-bookmark"></i>
+                <span>Phiếu mượn</span>
+            </a>
+            <a class="admin-nav-item admin-nav-user" href="<%= request.getContextPath() %>/admin/return">
+                <i class="fa-solid fa-rotate-left"></i>
+                <span>Trả sách</span>
+            </a>
         </nav>
 
         <div class="admin-sidebar-footer">

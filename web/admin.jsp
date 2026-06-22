@@ -31,11 +31,23 @@
 
        <nav class="admin-nav" aria-label="Admin management menu">
     <a class="admin-nav-item admin-nav-user
-        <%= request.getAttribute("activeTab") != null ? "active" : "" %>"
+        <%= request.getAttribute("activeTab") != null && "users".equals(request.getAttribute("activeTab")) ? "active" : "" %>"
        href="<%= request.getContextPath() %>/admin/users">
 
-        <i class="fa-solid fa-list"></i>
+        <i class="fa-solid fa-users"></i>
         <span>Quản lý người dùng</span>
+    </a>
+    <a class="admin-nav-item admin-nav-user
+        <%= request.getAttribute("activeTab") != null && "borrow".equals(request.getAttribute("activeTab")) ? "active" : "" %>"
+       href="<%= request.getContextPath() %>/admin/borrow">
+        <i class="fa-solid fa-book-bookmark"></i>
+        <span>Phiếu mượn</span>
+    </a>
+    <a class="admin-nav-item admin-nav-user
+        <%= request.getAttribute("activeTab") != null && "return".equals(request.getAttribute("activeTab")) ? "active" : "" %>"
+       href="<%= request.getContextPath() %>/admin/return">
+        <i class="fa-solid fa-rotate-left"></i>
+        <span>Trả sách</span>
     </a>
 </nav>
 

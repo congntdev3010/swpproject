@@ -1,7 +1,7 @@
 package com.swp391.dao;
 
 import java.sql.PreparedStatement;
-import jakarta.resource.cci.ResultSet;
+import java.sql.ResultSet;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -17,32 +17,20 @@ public class DBContext {
     private static final String PASS = "1234"; // <-- điền password MySQL của bạn
 
     private static DBContext instance;
-    protected Connection connection;
 
-    private DBContext() throws ClassNotFoundException, SQLException {
-        Class.forName(DRIVER);
-        connection = DriverManager.getConnection(URL, USER, PASS);
+    private DBContext() {
     }
 
-    public static DBContext getInstance() throws ClassNotFoundException, SQLException {
-        if (instance == null || instance.connection.isClosed()) {
+    public static DBContext getInstance() {
+        if (instance == null) {
             instance = new DBContext();
         }
         return instance;
     }
 
-    public Connection getConnection() {
-        return connection;
-    }
-
-    public void closeConnection() {
-        try {
-            if (connection != null && !connection.isClosed()) {
-                connection.close();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+    public Connection getConnection() throws ClassNotFoundException, SQLException {
+        Class.forName(DRIVER);
+        return DriverManager.getConnection(URL, USER, PASS);
     }
 
     public static void main(String[] args) {

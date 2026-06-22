@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+﻿<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
     if (request.getAttribute("featuredBooks") == null) {
         response.sendRedirect(request.getContextPath() + "/home");
@@ -140,12 +140,12 @@
                                     <%= book.getAvailable() %>/<%= book.getQuantity() %> còn lại
                                 </span>
                                 <div style="display:flex; gap:6px;">
-                                    <% if (loggedUser != null) { %>
+                                    <% if (loggedUser != null && !loggedUser.isAdminOrLibrarian()) { %>
                                         <button type="button" class="btn btn-outline btn-sm" onclick="addToBorrowCart(<%= book.getId() %>)" title="Mượn sách">
                                             <i class="fa-solid fa-cart-plus"></i>
                                         </button>
                                     <% } %>
-                                    <a href="<%= request.getContextPath() %>/books?keyword=<%= java.net.URLEncoder.encode(book.getTitle(),"UTF-8") %>"
+                                    <a href="<%= request.getContextPath() %>/book-review?bookId=<%= book.getId() %>"
                                        class="btn btn-primary btn-sm">Chi tiết</a>
                                 </div>
                             </div>
@@ -231,3 +231,4 @@ function validateHeroSearch(form) {
     return true;
 }
 </script>
+

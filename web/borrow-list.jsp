@@ -1,25 +1,30 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="com.swp391.model.*,com.swp391.model.BorrowRecord,java.util.*" %>
 <%
-    User loggedUser = (User) session.getAttribute("loggedUser");
-    if (loggedUser == null) {
+    // loggedUser được khai báo trong header.jsp - KHÔNG khai báo lại ở đây
+    if (session.getAttribute("loggedUser") == null) {
         response.sendRedirect(request.getContextPath() + "/login");
         return;
     }
+    // Đặt currentPage nav TRƯỚC khi include header
     request.setAttribute("currentPage", "borrow");
     List<BorrowRecord> records = (List<BorrowRecord>) request.getAttribute("records");
-    int total = records != null ? (Integer) request.getAttribute("total") : 0;
+    int total = records != null && request.getAttribute("total") != null ? (Integer) request.getAttribute("total") : 0;
     int totalPages = request.getAttribute("totalPages") != null ? (Integer) request.getAttribute("totalPages") : 1;
-    int currentPage = request.getAttribute("currentPage") != null ? (Integer) request.getAttribute("currentPage") : 1;
+    int pageNum = request.getAttribute("currentPage") != null ? (Integer) request.getAttribute("currentPage") : 1;
     String statusFilter = (String) request.getAttribute("statusFilter");
     String search = (String) request.getAttribute("search");
-    boolean isLibrarian = loggedUser.isAdminOrLibrarian();
 
     // Success/error message
     String successParam = request.getParameter("success");
     String errorParam   = request.getParameter("error");
 %>
 <%@ include file="/WEB-INF/jsp/header.jsp" %>
+<%
+    // Lấy lại loggedUser sau khi header.jsp đã khai báo
+    User loggedUser = (User) session.getAttribute("loggedUser");
+    boolean isLibrarian = loggedUser.isAdminOrLibrarian();
+%>
 
 <div class="borrow-page">
     <div class="container">
@@ -211,7 +216,7 @@
                             + (statusFilter != null && !statusFilter.isEmpty() ? "&status=" + statusFilter : "")
                             + (search != null && !search.isEmpty() ? "&search=" + search : "");
                     %>
-                    <% if (p == currentPage) { %>
+                    <% if (p == pageNum) { %>
                     <span class="active"><%= p %></span>
                     <% } else { %>
                     <a href="<%= request.getContextPath() %>/borrow?<%= qStr %>"><%= p %></a>

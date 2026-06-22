@@ -7,9 +7,7 @@ import java.util.List;
 
 public class BookReviewDAO {
 
-    private Connection getConn() throws ClassNotFoundException, SQLException {
-        return DBContext.getInstance().getConnection();
-    }
+    
 
     // Lấy tất cả review của 1 đầu sách (kèm tên user)
     public List<BookReview> getReviewsByBookId(int bookId) {
@@ -21,7 +19,7 @@ public class BookReviewDAO {
                 + "JOIN users u ON br.user_id = u.id "
                 + "WHERE br.book_id = ? "
                 + "ORDER BY br.created_at DESC";
-        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
+        try (Connection conn = DBContext.getInstance().getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, bookId);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -46,7 +44,7 @@ public class BookReviewDAO {
     // Tính rating trung bình của 1 đầu sách
     public double getAverageRating(int bookId) {
         String sql = "SELECT AVG(rating) FROM book_reviews WHERE book_id = ?";
-        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
+        try (Connection conn = DBContext.getInstance().getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, bookId);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
@@ -66,7 +64,7 @@ public class BookReviewDAO {
                 + "FROM book_reviews br "
                 + "JOIN users u ON br.user_id = u.id "
                 + "WHERE br.book_id = ? AND br.user_id = ?";
-        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
+        try (Connection conn = DBContext.getInstance().getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, bookId);
             ps.setInt(2, userId);
             ResultSet rs = ps.executeQuery();
@@ -94,7 +92,7 @@ public class BookReviewDAO {
     public boolean hasReturnedBook(int bookId, int userId) {
     String sql = "SELECT COUNT(*) FROM borrow_records "
             + "WHERE book_id = ? AND user_id = ? AND status = 'RETURNED'";
-    try (PreparedStatement ps = getConn().prepareStatement(sql)) {
+    try (Connection conn = DBContext.getInstance().getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
         ps.setInt(1, bookId);
         ps.setInt(2, userId);
         ResultSet rs = ps.executeQuery();
@@ -110,7 +108,7 @@ public class BookReviewDAO {
     // Thêm review mới
     public boolean addReview(int bookId, int userId, int rating, String comment) {
         String sql = "INSERT INTO book_reviews (book_id, user_id, rating, comment) VALUES (?, ?, ?, ?)";
-        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
+        try (Connection conn = DBContext.getInstance().getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, bookId);
             ps.setInt(2, userId);
             ps.setInt(3, rating);
@@ -125,7 +123,7 @@ public class BookReviewDAO {
     // Cập nhật review
     public boolean updateReview(int reviewId, int userId, int rating, String comment) {
         String sql = "UPDATE book_reviews SET rating = ?, comment = ? WHERE id = ? AND user_id = ?";
-        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
+        try (Connection conn = DBContext.getInstance().getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, rating);
             ps.setString(2, comment);
             ps.setInt(3, reviewId);
@@ -140,7 +138,7 @@ public class BookReviewDAO {
     // Xóa review
     public boolean deleteReview(int reviewId, int userId) {
         String sql = "DELETE FROM book_reviews WHERE id = ? AND user_id = ?";
-        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
+        try (Connection conn = DBContext.getInstance().getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, reviewId);
             ps.setInt(2, userId);
             return ps.executeUpdate() > 0;

@@ -7,9 +7,7 @@ import java.util.*;
 
 public class BookCopyDAO {
 
-    private Connection getConn() throws ClassNotFoundException, SQLException {
-        return DBContext.getInstance().getConnection();
-    }
+    
 
     // ================================================================
     //  Các method CŨ — giữ nguyên hoàn toàn
@@ -21,7 +19,7 @@ public class BookCopyDAO {
         String sql = "SELECT bc.*, b.title, b.isbn FROM book_copies bc "
                 + "JOIN books b ON bc.book_id = b.id "
                 + "WHERE bc.book_id = ? ORDER BY bc.barcode";
-        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
+        try (Connection conn = DBContext.getInstance().getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, bookId);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) list.add(mapRow(rs));
@@ -37,7 +35,7 @@ public class BookCopyDAO {
         String sql = "SELECT bc.*, b.title, b.isbn FROM book_copies bc "
                 + "JOIN books b ON bc.book_id = b.id "
                 + "ORDER BY bc.area, bc.shelf, bc.slot, bc.barcode";
-        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
+        try (Connection conn = DBContext.getInstance().getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) list.add(mapRow(rs));
         } catch (Exception e) {
@@ -51,7 +49,7 @@ public class BookCopyDAO {
         String sql = "SELECT bc.*, b.title, b.isbn FROM book_copies bc "
                 + "JOIN books b ON bc.book_id = b.id "
                 + "WHERE bc.barcode = ?";
-        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
+        try (Connection conn = DBContext.getInstance().getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, barcode);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) return mapRow(rs);
@@ -66,7 +64,7 @@ public class BookCopyDAO {
         List<String> list = new ArrayList<>();
         String sql = "SELECT DISTINCT area FROM book_copies "
                 + "WHERE area IS NOT NULL ORDER BY area";
-        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
+        try (Connection conn = DBContext.getInstance().getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) list.add(rs.getString("area"));
         } catch (Exception e) {
@@ -79,7 +77,7 @@ public class BookCopyDAO {
     /** Cập nhật vị trí bản sao */
     public boolean updateLocation(int copyId, String area, String shelf, String slot) {
         String sql = "UPDATE book_copies SET area=?, shelf=?, slot=? WHERE id=?";
-        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
+        try (Connection conn = DBContext.getInstance().getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, area);
             ps.setString(2, shelf);
             ps.setString(3, slot);
@@ -95,7 +93,7 @@ public class BookCopyDAO {
     public boolean addCopy(int bookId, String barcode, String area, String shelf, String slot) {
         String sql = "INSERT INTO book_copies (book_id, barcode, book_condition, status, area, shelf, slot) "
                 + "VALUES (?, ?, 'GOOD', 'AVAILABLE', ?, ?, ?)";
-        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
+        try (Connection conn = DBContext.getInstance().getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, bookId);
             ps.setString(2, barcode);
             ps.setString(3, area);
@@ -114,7 +112,7 @@ public class BookCopyDAO {
         String sql = "SELECT bc.*, b.title, b.isbn FROM book_copies bc "
                 + "JOIN books b ON bc.book_id = b.id "
                 + "WHERE bc.book_id = ? AND bc.status = 'AVAILABLE' ORDER BY bc.barcode";
-        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
+        try (Connection conn = DBContext.getInstance().getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, bookId);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) list.add(mapRow(rs));
@@ -127,7 +125,7 @@ public class BookCopyDAO {
     /** Xóa bản sao (chỉ khi status = AVAILABLE) */
     public boolean deleteCopy(int copyId) {
         String sql = "DELETE FROM book_copies WHERE id=? AND status='AVAILABLE'";
-        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
+        try (Connection conn = DBContext.getInstance().getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, copyId);
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
@@ -181,7 +179,7 @@ public class BookCopyDAO {
 
         sql.append(" ORDER BY bc.area, bc.shelf, bc.slot, bc.barcode");
 
-        try (PreparedStatement ps = getConn().prepareStatement(sql.toString())) {
+        try (Connection conn = DBContext.getInstance().getConnection(); PreparedStatement ps = conn.prepareStatement(sql.toString())) {
             for (int i = 0; i < params.size(); i++) ps.setObject(i + 1, params.get(i));
             ResultSet rs = ps.executeQuery();
             while (rs.next()) list.add(mapRow(rs));
@@ -199,7 +197,7 @@ public class BookCopyDAO {
         String sql = "Chưa xếp".equals(area)
                 ? "SELECT DISTINCT shelf FROM book_copies WHERE area IS NULL AND shelf IS NOT NULL ORDER BY shelf"
                 : "SELECT DISTINCT shelf FROM book_copies WHERE area = ? AND shelf IS NOT NULL ORDER BY shelf";
-        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
+        try (Connection conn = DBContext.getInstance().getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             if (!"Chưa xếp".equals(area)) ps.setString(1, area);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) list.add(rs.getString("shelf"));
@@ -228,7 +226,7 @@ public class BookCopyDAO {
         }
         sql.append(" ORDER BY slot");
 
-        try (PreparedStatement ps = getConn().prepareStatement(sql.toString())) {
+        try (Connection conn = DBContext.getInstance().getConnection(); PreparedStatement ps = conn.prepareStatement(sql.toString())) {
             for (int i = 0; i < params.size(); i++) ps.setString(i + 1, params.get(i));
             ResultSet rs = ps.executeQuery();
             while (rs.next()) list.add(rs.getString("slot"));
@@ -244,7 +242,7 @@ public class BookCopyDAO {
 
     private int countUnplaced() {
         String sql = "SELECT COUNT(*) FROM book_copies WHERE area IS NULL";
-        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
+        try (Connection conn = DBContext.getInstance().getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ResultSet rs = ps.executeQuery();
             if (rs.next()) return rs.getInt(1);
         } catch (Exception e) {

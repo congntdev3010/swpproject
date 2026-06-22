@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+﻿<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="com.swp391.model.Book, com.swp391.model.User, java.util.List" %>
 <%@ include file="/WEB-INF/jsp/header.jsp" %>
 <%
@@ -255,7 +255,7 @@
                             <% if (loggedUser != null || isAdminLib) { %>
                             <td style="text-align:center;">
                                 <div style="display:flex; gap:6px; justify-content:center;">
-                                    <% if (loggedUser != null) { %>
+                                    <% if (loggedUser != null && !loggedUser.isAdminOrLibrarian()) { %>
                                         <button type="button" class="btn btn-outline btn-sm" onclick="addToBorrowCart(<%= b.getId() %>)" title="Mượn sách">
                                             <i class="fa-solid fa-cart-plus"></i>
                                         </button>
@@ -265,6 +265,7 @@
                                        class="btn btn-outline btn-sm" title="Chỉnh sửa">
                                         <i class="fa-solid fa-pen"></i>
                                     </a>
+                                    <% } %>
                                     <% if (isAdmin) { %>
                                     <button type="button"
                                             class="btn btn-danger btn-sm"
@@ -329,7 +330,7 @@
                             <%= b.getAvailable() %>/<%= b.getQuantity() %> còn
                         </span>
                         <div style="display:flex; gap:6px;">
-                            <% if (loggedUser != null) { %>
+                            <% if (loggedUser != null && !loggedUser.isAdminOrLibrarian()) { %>
                                 <button type="button" class="btn btn-primary btn-sm" onclick="addToBorrowCart(<%= b.getId() %>)" title="Mượn sách">
                                     <i class="fa-solid fa-cart-plus"></i> Mượn
                                 </button>
@@ -477,3 +478,4 @@ document.getElementById('searchForm').addEventListener('submit', function(e) {
     }
 });
 </script>
+

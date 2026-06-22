@@ -48,7 +48,7 @@ public class BookReviewServlet extends HttpServlet {
 
             request.setAttribute("bookId", bookId);
             request.setAttribute("reviews", reviews);
-            request.setAttribute("avgRating", String.format("%.1f", avgRating));
+            request.setAttribute("avgRating", avgRating);
             request.setAttribute("myReview", myReview);
             request.setAttribute("canReview", canReview);
             request.setAttribute("loggedInUser", loggedInUser);

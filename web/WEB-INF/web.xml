@@ -91,22 +91,32 @@
         <url-pattern>/admin/users</url-pattern>
     </servlet-mapping>
 
+
     <servlet>
-        <servlet-name>BorrowServlet</servlet-name>
-        <servlet-class>com.swp391.servlet.BorrowServlet</servlet-class>
+        <servlet-name>AdminServlet</servlet-name>
+        <servlet-class>com.swp391.servlet.AdminServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>BorrowServlet</servlet-name>
-        <url-pattern>/borrow</url-pattern>
+        <servlet-name>AdminServlet</servlet-name>
+        <url-pattern>/admin</url-pattern>
     </servlet-mapping>
 
     <servlet>
-        <servlet-name>ReturnBookServlet</servlet-name>
-        <servlet-class>com.swp391.servlet.ReturnBookServlet</servlet-class>
+        <servlet-name>AdminBorrowServlet</servlet-name>
+        <servlet-class>com.swp391.servlet.AdminBorrowServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>ReturnBookServlet</servlet-name>
-        <url-pattern>/return-book</url-pattern>
+        <servlet-name>AdminBorrowServlet</servlet-name>
+        <url-pattern>/admin/borrow</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>AdminReturnServlet</servlet-name>
+        <servlet-class>com.swp391.servlet.AdminReturnServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AdminReturnServlet</servlet-name>
+        <url-pattern>/admin/return</url-pattern>
     </servlet-mapping>
 
     <session-config>

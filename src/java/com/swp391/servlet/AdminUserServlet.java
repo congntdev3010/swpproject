@@ -45,6 +45,7 @@ public class AdminUserServlet extends HttpServlet {
             request.setAttribute("error", "Không thể tải danh sách người dùng: " + e.getMessage());
         }
 
+        request.setAttribute("activeTab", "users");
         request.getRequestDispatcher("/admin.jsp").forward(request, response);
     }
 

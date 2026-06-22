@@ -12,9 +12,7 @@ import java.util.*;
  */
 public class BorrowRecordDAO {
 
-    private Connection getConn() throws ClassNotFoundException, SQLException {
-        return DBContext.getInstance().getConnection();
-    }
+    
 
     // ================================================================
     // CREATE
@@ -27,7 +25,7 @@ public class BorrowRecordDAO {
     public int createBorrowRecord(int userId, int bookId, String note) {
         String sql = "INSERT INTO borrow_records (user_id, book_id, note, status, created_at, updated_at) "
                    + "VALUES (?, ?, ?, 'PENDING', NOW(), NOW())";
-        try (PreparedStatement ps = getConn().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection conn = DBContext.getInstance().getConnection(); PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setInt(1, userId);
             ps.setInt(2, bookId);
             ps.setString(3, note);
@@ -51,7 +49,7 @@ public class BorrowRecordDAO {
     public BorrowRecord getById(int id) {
         String sql = buildBaseSelect()
                    + " WHERE br.id = ?";
-        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
+        try (Connection conn = DBContext.getInstance().getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) return mapRow(rs);
@@ -70,7 +68,7 @@ public class BorrowRecordDAO {
                    + " JOIN book_copies bc2 ON br.copy_id = bc2.id"
                    + " WHERE bc2.barcode = ? AND br.status IN ('BORROWING', 'OVERDUE')"
                    + " ORDER BY br.created_at DESC LIMIT 1";
-        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
+        try (Connection conn = DBContext.getInstance().getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, barcode);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) return mapRow(rs);
@@ -87,7 +85,7 @@ public class BorrowRecordDAO {
         String sql = buildBaseSelect()
                    + " WHERE br.copy_id = ? AND br.status IN ('BORROWING', 'OVERDUE')"
                    + " ORDER BY br.created_at DESC LIMIT 1";
-        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
+        try (Connection conn = DBContext.getInstance().getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, copyId);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) return mapRow(rs);
@@ -114,7 +112,7 @@ public class BorrowRecordDAO {
         sql.append(" ORDER BY br.created_at DESC");
         appendPaging(sql, params, page, pageSize);
 
-        try (PreparedStatement ps = getConn().prepareStatement(sql.toString())) {
+        try (Connection conn = DBContext.getInstance().getConnection(); PreparedStatement ps = conn.prepareStatement(sql.toString())) {
             bindParams(ps, params);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) list.add(mapRow(rs));
@@ -134,7 +132,7 @@ public class BorrowRecordDAO {
         params.add(userId);
         appendFilters(sql, params, statusFilter, search);
 
-        try (PreparedStatement ps = getConn().prepareStatement(sql.toString())) {
+        try (Connection conn = DBContext.getInstance().getConnection(); PreparedStatement ps = conn.prepareStatement(sql.toString())) {
             bindParams(ps, params);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) return rs.getInt(1);
@@ -158,7 +156,7 @@ public class BorrowRecordDAO {
         sql.append(" ORDER BY br.created_at DESC");
         appendPaging(sql, params, page, pageSize);
 
-        try (PreparedStatement ps = getConn().prepareStatement(sql.toString())) {
+        try (Connection conn = DBContext.getInstance().getConnection(); PreparedStatement ps = conn.prepareStatement(sql.toString())) {
             bindParams(ps, params);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) list.add(mapRow(rs));
@@ -178,7 +176,7 @@ public class BorrowRecordDAO {
         List<Object> params = new ArrayList<>();
         appendFilters(sql, params, statusFilter, search);
 
-        try (PreparedStatement ps = getConn().prepareStatement(sql.toString())) {
+        try (Connection conn = DBContext.getInstance().getConnection(); PreparedStatement ps = conn.prepareStatement(sql.toString())) {
             bindParams(ps, params);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) return rs.getInt(1);
@@ -198,7 +196,7 @@ public class BorrowRecordDAO {
     public boolean updateNote(int recordId, int userId, String note) {
         String sql = "UPDATE borrow_records SET note = ?, updated_at = NOW() "
                    + "WHERE id = ? AND user_id = ? AND status = 'PENDING'";
-        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
+        try (Connection conn = DBContext.getInstance().getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, note);
             ps.setInt(2, recordId);
             ps.setInt(3, userId);
@@ -215,7 +213,7 @@ public class BorrowRecordDAO {
     public boolean cancelRecord(int recordId, int userId) {
         String sql = "UPDATE borrow_records SET status = 'CANCELLED', updated_at = NOW() "
                    + "WHERE id = ? AND user_id = ? AND status = 'PENDING'";
-        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
+        try (Connection conn = DBContext.getInstance().getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, recordId);
             ps.setInt(2, userId);
             return ps.executeUpdate() > 0;
@@ -240,7 +238,7 @@ public class BorrowRecordDAO {
                    + "    librarian_note = ?, status = 'BORROWING', "
                    + "    confirmed_by = ?, confirmed_at = NOW(), updated_at = NOW() "
                    + "WHERE id = ? AND status = 'PENDING'";
-        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
+        try (Connection conn = DBContext.getInstance().getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, copyId);
             ps.setDate(2, java.sql.Date.valueOf(borrowDate));
             ps.setDate(3, java.sql.Date.valueOf(dueDate));
@@ -262,7 +260,7 @@ public class BorrowRecordDAO {
                    + "SET status = 'REJECTED', librarian_note = ?, "
                    + "    confirmed_by = ?, confirmed_at = NOW(), updated_at = NOW() "
                    + "WHERE id = ? AND status = 'PENDING'";
-        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
+        try (Connection conn = DBContext.getInstance().getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, librarianNote);
             ps.setInt(2, confirmedBy);
             ps.setInt(3, recordId);
@@ -281,7 +279,7 @@ public class BorrowRecordDAO {
                    + "SET return_date = ?, status = 'RETURNED', note = CONCAT(COALESCE(note,''), ?), "
                    + "    updated_at = NOW() "
                    + "WHERE id = ? AND status IN ('BORROWING', 'OVERDUE')";
-        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
+        try (Connection conn = DBContext.getInstance().getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setDate(1, java.sql.Date.valueOf(returnDate));
             ps.setString(2, (note != null && !note.isEmpty()) ? "\n[Librarian]: " + note : "");
             ps.setInt(3, recordId);
@@ -297,7 +295,7 @@ public class BorrowRecordDAO {
      */
     public boolean updateCopyStatusAvailable(int copyId) {
         String sql = "UPDATE book_copies SET status = 'AVAILABLE', updated_at = NOW() WHERE id = ?";
-        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
+        try (Connection conn = DBContext.getInstance().getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, copyId);
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
@@ -311,7 +309,7 @@ public class BorrowRecordDAO {
      */
     public boolean updateCopyStatusBorrowed(int copyId) {
         String sql = "UPDATE book_copies SET status = 'BORROWED', updated_at = NOW() WHERE id = ?";
-        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
+        try (Connection conn = DBContext.getInstance().getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, copyId);
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
