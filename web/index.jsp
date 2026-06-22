@@ -39,7 +39,7 @@
                 <form class="hero-search" action="<%= request.getContextPath() %>/books" method="get" role="search"
                       onsubmit="return validateHeroSearch(this)">
                     <input type="text" name="keyword" id="heroSearchInput"
-                           placeholder="Tìm tên sách, tác giả, chủ đề..."
+                           placeholder="Tìm theo tên sách, ISBN, nhà xuất bản..."
                            maxlength="200"
                            autocomplete="off">
                     <button type="submit">
