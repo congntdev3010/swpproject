@@ -22,7 +22,7 @@ public class AdminUserServlet extends HttpServlet {
             return;
         }
         User logged = (User) session.getAttribute("loggedUser");
-        if (!logged.isAdminOrLibrarian()) {
+        if (!logged.isAdmin()) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
@@ -57,7 +57,7 @@ public class AdminUserServlet extends HttpServlet {
             return;
         }
         User logged = (User) session.getAttribute("loggedUser");
-        if (!logged.isAdminOrLibrarian()) {
+        if (!logged.isAdmin()) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
         }

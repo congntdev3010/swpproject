@@ -131,11 +131,13 @@
                             </a>
                         </li>
                         <li class="dropdown-divider"></li>
+                        <% if (navUser.isAdmin()) { %>
                         <li>
                             <a href="<%= request.getContextPath() %>/admin/users" class="dropdown-item">
                                 <i class="fa-solid fa-user-gear"></i> Tài khoản
                             </a>
                         </li>
+                        <% } %>
                     </ul>
                 </li>
                 <% } %>
