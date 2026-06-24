@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!-- ===== FOOTER ===== -->
 <footer class="footer">
     <div class="container">
@@ -16,7 +17,14 @@
                     <li><a href="${pageContext.request.contextPath}/home"><i class="fa-solid fa-house fa-xs"></i> Trang chủ</a></li>
                     <li><a href="${pageContext.request.contextPath}/books"><i class="fa-solid fa-book fa-xs"></i> Danh sách sách</a></li>
                     <li><a href="${pageContext.request.contextPath}/about"><i class="fa-solid fa-circle-info fa-xs"></i> Giới thiệu</a></li>
-                    <li><a href="${pageContext.request.contextPath}/login"><i class="fa-solid fa-right-to-bracket fa-xs"></i> Đăng nhập</a></li>
+                    <c:choose>
+                        <c:when test="${empty sessionScope.loggedUser}">
+                            <li><a href="${pageContext.request.contextPath}/login"><i class="fa-solid fa-right-to-bracket fa-xs"></i> Đăng nhập</a></li>
+                        </c:when>
+                        <c:otherwise>
+                            <li><a href="${pageContext.request.contextPath}/logout"><i class="fa-solid fa-right-from-bracket fa-xs"></i> Đăng xuất</a></li>
+                        </c:otherwise>
+                    </c:choose>
                 </ul>
             </div>
 
