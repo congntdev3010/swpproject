@@ -146,9 +146,33 @@ public class ShelfServlet extends HttpServlet {
             copies = copyDAO.getAllCopies();
         }
 
+        int totalCopies = copies.size();
+        
+        // Paginaton logic
+        int page = 1;
+        int pageSize = 20; // Set to 20 copies per page
+        String pageParam = request.getParameter("page");
+        if (pageParam != null) {
+            try {
+                page = Integer.parseInt(pageParam);
+            } catch (NumberFormatException e) {}
+        }
+        
+        int totalPages = (int) Math.ceil((double) totalCopies / pageSize);
+        if (page < 1) page = 1;
+        if (page > totalPages && totalPages > 0) page = totalPages;
+        
+        int start = (page - 1) * pageSize;
+        int end = Math.min(start + pageSize, totalCopies);
+        
+        List<BookCopy> paginatedCopies = new ArrayList<>();
+        if (start < totalCopies) {
+            paginatedCopies = copies.subList(start, end);
+        }
+
         // Group: area -> shelf -> List<BookCopy>
         Map<String, Map<String, List<BookCopy>>> layout = new LinkedHashMap<>();
-        for (BookCopy bc : copies) {
+        for (BookCopy bc : paginatedCopies) {
             String area  = bc.getArea()  != null ? bc.getArea()  : "Chưa xếp";
             String shelf = bc.getShelf() != null ? bc.getShelf() : "Chưa xếp";
             layout.computeIfAbsent(area,  k -> new LinkedHashMap<>())
@@ -164,9 +188,12 @@ public class ShelfServlet extends HttpServlet {
         request.setAttribute("filterArea",  filterArea);
         request.setAttribute("filterShelf", filterShelf);
         request.setAttribute("filterSlot",  filterSlot);
-        request.setAttribute("totalFiltered", copies.size());
+        request.setAttribute("totalFiltered", totalCopies);
         request.setAttribute("hasFilter", hasFilter);
         request.setAttribute("successMsg", request.getParameter("success"));
+        
+        request.setAttribute("currentPage", page);
+        request.setAttribute("totalPages", totalPages);
 
         request.getRequestDispatcher("/shelf-layout.jsp").forward(request, response);
     }

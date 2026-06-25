@@ -1,126 +1,135 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
-<!DOCTYPE html>
-<html lang="vi">
-    <head>
-        <meta charset="UTF-8">
-        <title>Sơ đồ kho thư viện</title>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-        <style>
-            /* ── Layout blocks ── */
-            .area-block   {
-                border: 2px solid #0d6efd;
-                border-radius: 10px;
-                margin-bottom: 28px;
-            }
-            .area-header  {
-                background: #0d6efd;
-                color: #fff;
-                padding: 10px 18px;
-                font-weight: 700;
-                border-radius: 8px 8px 0 0;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-            }
-            .shelf-block  {
-                border: 1px solid #dee2e6;
-                border-radius: 8px;
-                margin: 12px;
-            }
-            .shelf-header {
-                background: #eef2ff;
-                padding: 7px 14px;
-                font-weight: 600;
-                border-radius: 8px 8px 0 0;
-                font-size: .92rem;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-            }
-            .copy-row:hover {
-                background: #f8f9fa;
-            }
-            .highlight    {
-                background: #fff3cd !important;
-            }
+<%
+    com.swp391.model.User loggedUser = (com.swp391.model.User) session.getAttribute("loggedUser");
+    if (loggedUser == null || !loggedUser.isAdminOrLibrarian()) {
+        response.sendRedirect(request.getContextPath() + "/login");
+        return;
+    }
+    request.setAttribute("activePage", "shelf");
+    request.setAttribute("pageTitle", "Sơ đồ kho thư viện");
+%>
+<%@ include file="/WEB-INF/jsp/header.jsp" %>
+<style>
+  /* ── Polyfill for removed Bootstrap ── */
+  .container, .container-fluid { width: 100%; max-width: 1400px; margin: 0 auto; padding: 0 15px; box-sizing: border-box; }
+  .row { display: flex; flex-wrap: wrap; margin-left: -10px; margin-right: -10px; }
+  .col-md-3, .col-md-4, .col-auto { padding: 0 10px; box-sizing: border-box; }
+  .col-md-3 { width: 25%; }
+  .col-md-4 { width: 33.333333%; }
+  .col-auto { width: auto; }
+  @media (max-width: 768px) { .col-md-3, .col-md-4 { width: 100%; } }
+  .d-flex { display: flex; }
+  .justify-content-between { justify-content: space-between; }
+  .justify-content-center { justify-content: center; }
+  .align-items-center { align-items: center; }
+  .align-items-end { align-items: flex-end; }
+  .gap-2 { gap: 0.5rem; }
+  .gap-3 { gap: 1rem; }
+  .mb-0 { margin-bottom: 0; }
+  .mb-1 { margin-bottom: 0.25rem; }
+  .mb-2 { margin-bottom: 0.5rem; }
+  .mb-3 { margin-bottom: 1rem; }
+  .mb-4 { margin-bottom: 1.5rem; }
+  .mt-1 { margin-top: 0.25rem; }
+  .mt-2 { margin-top: 0.5rem; }
+  .mt-4 { margin-top: 1.5rem; }
+  .py-4 { padding-top: 1.5rem; padding-bottom: 1.5rem; }
+  .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+  .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+  .p-3 { padding: 1rem; }
+  .ms-1 { margin-left: 0.25rem; }
+  .fw-bold { font-weight: 700; }
+  .fw-semibold { font-weight: 600; }
+  .text-white { color: #fff; }
+  .text-muted { color: #6c757d; }
+  .text-danger { color: #dc3545; }
+  .text-primary { color: #0d6efd; }
+  .text-truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .small { font-size: 0.875em; }
+  .bg-light { background-color: #f8f9fa; }
+  .w-100 { width: 100%; }
+  .opacity-75 { opacity: 0.75; }
+  .rounded { border-radius: 0.375rem; }
+  .shadow-sm { box-shadow: 0 .125rem .25rem rgba(0,0,0,.075); }
 
-            /* ── Status badges ── */
-            .badge-AVAILABLE   {
-                background: #198754;
-                color: #fff;
-            }
-            .badge-BORROWED    {
-                background: #dc3545;
-                color: #fff;
-            }
-            .badge-RESERVED    {
-                background: #ffc107;
-                color: #000;
-            }
-            .badge-MAINTENANCE {
-                background: #6c757d;
-                color: #fff;
-            }
-            .badge-LOST        {
-                background: #343a40;
-                color: #fff;
-            }
+  /* ── Tables ── */
+  .table { width: 100%; border-collapse: collapse; margin-bottom: 1rem; }
+  .table th, .table td { padding: 0.5rem; vertical-align: middle; border-bottom: 1px solid #dee2e6; text-align: left; }
+  .table-borderless th, .table-borderless td { border-bottom: none; }
+  
+  /* ── Forms ── */
+  .form-label { margin-bottom: 0.5rem; display: inline-block; font-weight: 500;}
+  .form-select, .form-control { display: block; width: 100%; padding: 0.375rem 2.25rem 0.375rem 0.75rem; font-size: 1rem; font-weight: 400; line-height: 1.5; color: #212529; background-color: #fff; border: 1px solid #ced4da; border-radius: 0.25rem; box-sizing: border-box; }
+  .form-control-sm, .form-select-sm { padding-top: 0.25rem; padding-bottom: 0.25rem; font-size: 0.875rem; border-radius: 0.2rem; }
+  
+  /* ── Alerts ── */
+  .alert { position: relative; padding: 1rem 1rem; margin-bottom: 1rem; border: 1px solid transparent; border-radius: .25rem; }
+  .alert-success { color: #0f5132; background-color: #d1e7dd; border-color: #badbcc; }
+  .alert-dismissible { padding-right: 3rem; }
+  .alert-dismissible .btn-close { position: absolute; top: 0; right: 0; z-index: 2; padding: 1.25rem 1rem; }
+  .fade { transition: opacity .15s linear; }
+  
+  /* ── Custom Modal ── */
+  .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1050; overflow-x: hidden; overflow-y: auto; }
+  .modal.show { display: flex; align-items: center; justify-content: center; }
+  .modal-dialog { width: 500px; max-width: 90%; background: #fff; border-radius: 8px; position: relative; margin: 1.75rem auto; pointer-events: auto; }
+  .modal-content { display: flex; flex-direction: column; width: 100%; background-color: #fff; background-clip: padding-box; border: 1px solid rgba(0,0,0,.2); border-radius: .3rem; outline: 0; }
+  .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1rem; border-bottom: 1px solid #dee2e6; border-top-left-radius: calc(.3rem - 1px); border-top-right-radius: calc(.3rem - 1px); }
+  .modal-title { margin-bottom: 0; line-height: 1.5; margin-top: 0; }
+  .modal-body { position: relative; flex: 1 1 auto; padding: 1rem; }
+  .modal-footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; padding: .75rem; border-top: 1px solid #dee2e6; border-bottom-right-radius: calc(.3rem - 1px); border-bottom-left-radius: calc(.3rem - 1px); gap: .5rem; }
+  .btn-close { box-sizing: content-box; width: 1em; height: 1em; padding: .25em .25em; color: #000; border: 0; border-radius: .25rem; opacity: .5; background: transparent; cursor: pointer; font-size: 1.5rem; line-height: 1; }
+  .btn-close::before { content: "×"; }
+  .btn-close:hover { color: #000; text-decoration: none; opacity: .75; }
 
-            /* ── Filter card ── */
-            .filter-card {
-                border: 1.5px solid #c7d7ff;
-                border-radius: 10px;
-                background: #f6f8ff;
-            }
+  /* ── Layout blocks ── */
+  .area-block   { border: 2px solid #0d6efd; border-radius: 10px; margin-bottom: 28px; }
+  .area-header  { background: #0d6efd; color: #fff; padding: 10px 18px; font-weight: 700; border-radius: 8px 8px 0 0; display: flex; justify-content: space-between; align-items: center; }
+  .shelf-block  { border: 1px solid #dee2e6; border-radius: 8px; margin: 12px; }
+  .shelf-header { background: #eef2ff; padding: 7px 14px; font-weight: 600; border-radius: 8px 8px 0 0; font-size: .92rem; display: flex; justify-content: space-between; align-items: center; }
+  .copy-row:hover { background: #f8f9fa; }
+  .highlight    { background: #fff3cd !important; }
+  .badge { display: inline-block; padding: 0.35em 0.65em; font-size: 0.75em; font-weight: 700; line-height: 1; color: #fff; text-align: center; white-space: nowrap; vertical-align: baseline; border-radius: 0.25rem; }
+  .badge-AVAILABLE   { background: #198754; color: #fff; }
+  .badge-BORROWED    { background: #dc3545; color: #fff; }
+  .badge-RESERVED    { background: #ffc107; color: #000; }
+  .badge-MAINTENANCE { background: #6c757d; color: #fff; }
+  .badge-LOST        { background: #343a40; color: #fff; }
+  .filter-card { border: 1.5px solid #c7d7ff; border-radius: 10px; background: #f6f8ff; }
+  .area-unplaced { border-color: #fd7e14; }
+  .area-unplaced .area-header { background: #fd7e14; }
+  .btn-move { font-size: .78rem; padding: 2px 10px; }
+  .toggle-shelf { cursor: pointer; user-select: none; }
+  .toggle-shelf:hover { color: #0d6efd; }
+</style>
 
-            /* ── Unplaced warning ── */
-            .area-unplaced {
-                border-color: #fd7e14;
-            }
-            .area-unplaced .area-header {
-                background: #fd7e14;
-            }
-
-            /* ── Move button ── */
-            .btn-move {
-                font-size: .78rem;
-                padding: 2px 10px;
-            }
-
-            /* ── Collapse toggle ── */
-            .toggle-shelf {
-                cursor: pointer;
-                user-select: none;
-            }
-            .toggle-shelf:hover {
-                color: #0d6efd;
-            }
-        </style>
-    </head>
-    <body class="bg-light">
-        <div class="container-fluid py-4" style="max-width: 1400px;">
-
-            <!-- ── Header ── -->
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <div class="d-flex align-items-center gap-3">
-                    <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">← Quay lại</a>
-                    <h4 class="mb-0 fw-bold">📚 Sơ đồ kho thư viện</h4>
-                </div>
-                <div class="text-muted small">
-                    <c:choose>
-                        <c:when test="${hasFilter}">
-                            Tìm thấy <strong>${totalFiltered}</strong> bản sao phù hợp
-                        </c:when>
-                        <c:otherwise>
-                            Tổng: <strong>${totalFiltered}</strong> bản sao
-                        </c:otherwise>
-                    </c:choose>
+<div class="page-hero" style="background: linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%); padding:3rem 0 2rem;">
+    <div class="container" style="max-width: 1400px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+            <div style="display:flex;align-items:center;gap:1rem;">
+                <div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#e94560,#c62a47);display:flex;align-items:center;justify-content:center;font-size:1.4rem;">📚</div>
+                <div>
+                    <h1 style="color:#fff;font-size:1.8rem;font-weight:700;margin:0;">Sơ đồ kho thư viện</h1>
+                    <p style="color:rgba(255,255,255,0.6);margin:0;font-size:0.9rem;">Quản lý vị trí bản sao sách trên kệ</p>
                 </div>
             </div>
+            <div class="text-white opacity-75 small">
+                <c:choose>
+                    <c:when test="${hasFilter}">
+                        Tìm thấy <strong class="text-white">${totalFiltered}</strong> bản sao
+                    </c:when>
+                    <c:otherwise>
+                        Tổng kho: <strong class="text-white">${totalFiltered}</strong> bản sao
+                    </c:otherwise>
+                </c:choose>
+            </div>
+        </div>
+    </div>
+</div>
 
-            <!-- ── Toast thành công ── -->
+<div class="container py-4" style="max-width: 1400px;">
             <c:if test="${successMsg == 'updated' or successMsg == 'moved'}">
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
                     <i class="bi bi-check-circle-fill me-1"></i>
@@ -132,60 +141,70 @@
             <!-- ════════════════════════════════════════════════
                  BỘ LỌC CASCADE: Tầng → Kệ → Ngăn
             ════════════════════════════════════════════════ -->
-            <div class="filter-card p-3 mb-4 shadow-sm">
-                <div class="fw-semibold mb-2">🔍 Lọc theo vị trí</div>
-                <form method="get" action="shelf" id="filterForm" class="row g-2 align-items-end">
-                    <input type="hidden" name="action" value="filter">
-
-                    <!-- Tầng -->
-                    <div class="col-md-3">
-                        <label class="form-label form-label-sm mb-1">Tầng</label>
-                        <select class="form-select form-select-sm" name="filterArea" id="selArea">
-                            <option value="">-- Tất cả tầng --</option>
-                            <c:forEach var="a" items="${allAreas}">
-                                <option value="${a}" ${filterArea == a ? 'selected' : ''}>${a}</option>
-                            </c:forEach>
-                        </select>
+            <!-- ════════════════════════════════════════════════
+                 BỘ LỌC VÀ TÌM KIẾM
+            ════════════════════════════════════════════════ -->
+            <div style="background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; margin-bottom: 30px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                <div style="display: flex; flex-wrap: wrap; gap: 24px;">
+                    
+                    <!-- Lọc theo vị trí -->
+                    <div style="flex: 2; min-width: 300px;">
+                        <div style="font-weight: 600; color: #111827; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                            <i class="fa-solid fa-filter" style="color: #3b82f6;"></i> Lọc theo vị trí
+                        </div>
+                        <form method="get" action="shelf" id="filterForm" style="display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap;">
+                            <input type="hidden" name="action" value="filter">
+                            <div style="flex: 1; min-width: 120px;">
+                                <label style="display: block; font-size: 13px; font-weight: 500; color: #4b5563; margin-bottom: 6px;">Tầng</label>
+                                <select name="filterArea" id="selArea" style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; color: #111827; background-color: #f9fafb;">
+                                    <option value="">-- Tất cả tầng --</option>
+                                    <c:forEach var="a" items="${allAreas}">
+                                        <option value="${a}" ${filterArea == a ? 'selected' : ''}>${a}</option>
+                                    </c:forEach>
+                                </select>
+                            </div>
+                            <div style="flex: 1; min-width: 120px;">
+                                <label style="display: block; font-size: 13px; font-weight: 500; color: #4b5563; margin-bottom: 6px;">Kệ</label>
+                                <select name="filterShelf" id="selShelf" style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; color: #111827; background-color: #f9fafb;">
+                                    <option value="">-- Tất cả kệ --</option>
+                                </select>
+                            </div>
+                            <div style="flex: 1; min-width: 120px;">
+                                <label style="display: block; font-size: 13px; font-weight: 500; color: #4b5563; margin-bottom: 6px;">Ngăn</label>
+                                <select name="filterSlot" id="selSlot" style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; color: #111827; background-color: #f9fafb;">
+                                    <option value="">-- Tất cả ngăn --</option>
+                                </select>
+                            </div>
+                            <div style="display: flex; gap: 8px;">
+                                <button type="submit" style="background: #3b82f6; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 500; font-size: 14px; cursor: pointer; transition: background 0.2s;">
+                                    Lọc
+                                </button>
+                                <a href="shelf?action=layout" style="background: white; color: #4b5563; border: 1px solid #d1d5db; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-weight: 500; font-size: 14px; transition: background 0.2s;">
+                                    Xóa lọc
+                                </a>
+                            </div>
+                        </form>
                     </div>
 
-                    <!-- Kệ (tải động qua AJAX) -->
-                    <div class="col-md-3">
-                        <label class="form-label form-label-sm mb-1">Kệ</label>
-                        <select class="form-select form-select-sm" name="filterShelf" id="selShelf">
-                            <option value="">-- Tất cả kệ --</option>
-                            <%-- Options sẽ được điền bởi JS khi có filterArea;
-                                 option được chọn cũng được điền lại bởi JS --%>
-                        </select>
+                    <!-- Tìm kiếm barcode -->
+                    <div style="flex: 1; min-width: 250px; border-left: 1px dashed #d1d5db; padding-left: 24px;">
+                        <div style="font-weight: 600; color: #111827; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                            <i class="fa-solid fa-barcode" style="color: #8b5cf6;"></i> Tìm theo Barcode
+                        </div>
+                        <form method="get" action="shelf" style="display: flex; gap: 8px; align-items: stretch;">
+                            <input type="hidden" name="action" value="search">
+                            <div style="flex: 1;">
+                                <input type="text" name="barcode" value="${searchBarcode}" placeholder="Nhập mã barcode..." required 
+                                       style="width: 100%; height: 100%; box-sizing: border-box; margin: 0; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; color: #111827; background-color: #f9fafb;">
+                            </div>
+                            <button type="submit" style="margin: 0; box-sizing: border-box; background: #10b981; color: white; border: none; padding: 0 16px; border-radius: 6px; font-weight: 500; font-size: 14px; cursor: pointer; transition: background 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                                <i class="fa-solid fa-magnifying-glass"></i> Tìm
+                            </button>
+                        </form>
                     </div>
 
-                    <!-- Ngăn (tải động qua AJAX) -->
-                    <div class="col-md-3">
-                        <label class="form-label form-label-sm mb-1">Ngăn</label>
-                        <select class="form-select form-select-sm" name="filterSlot" id="selSlot">
-                            <option value="">-- Tất cả ngăn --</option>
-                        </select>
-                    </div>
-
-                    <!-- Nút -->
-                    <div class="col-auto">
-                        <button type="submit" class="btn btn-primary btn-sm">Lọc</button>
-                        <a href="shelf?action=layout" class="btn btn-outline-secondary btn-sm ms-1">Xem tất cả</a>
-                    </div>
-                </form>
-
-                <!-- Tìm kiếm barcode -->
-                <hr class="my-2">
-                <form method="get" action="shelf" class="row g-2 align-items-end">
-                    <input type="hidden" name="action" value="search">
-                    <div class="col-md-4">
-                        <label class="form-label form-label-sm mb-1">Tìm theo barcode</label>
-                        <input type="text" class="form-control form-control-sm" name="barcode"
-                               value="${searchBarcode}" placeholder="Nhập barcode bản sao...">
-                    </div>
-                    <div class="col-auto">
-                        <button type="submit" class="btn btn-secondary btn-sm">Tìm</button>
-                    </div>
-                </form>
+                </div>
+            </div>
 
                 <!-- Kết quả tìm barcode -->
                 <c:if test="${searchBarcode != null}">
@@ -280,26 +299,28 @@
                                                                         ${copy.status}
                                                                     </span>
                                                                 </td>
-                                                                <td>
-                                                                    <%-- LIBRARIAN & ADMIN đều có thể chuyển vị trí --%>
-                                                                    <button type="button"
-                                                                            class="btn btn-outline-warning btn-move"
-                                                                            data-copyid="${copy.id}"
-                                                                            data-barcode="${copy.barcode}"
-                                                                            data-title="${copy.book.title}"
-                                                                            data-area="${copy.area}"
-                                                                            data-shelf="${copy.shelf}"
-                                                                            data-slot="${copy.slot}"
-                                                                            onclick="openMoveModal(this)">
-                                                                        ✏️ Chuyển vị trí
-                                                                    </button>
-                                                                    <%-- ADMIN còn có thêm nút sửa đầy đủ --%>
-                                                                    <c:if test="${sessionScope.loggedUser.role == 'ADMIN'}">
-                                                                        <a href="shelf?action=editForm&copyId=${copy.id}"
-                                                                           class="btn btn-outline-primary btn-move ms-1">
-                                                                            Sửa
-                                                                        </a>
-                                                                    </c:if>
+                                                                <td style="text-align: center;">
+                                                                    <div style="display: flex; gap: 8px; justify-content: center; align-items: center;">
+                                                                        <%-- LIBRARIAN & ADMIN đều có thể chuyển vị trí --%>
+                                                                        <button type="button"
+                                                                                data-copyid="${copy.id}"
+                                                                                data-barcode="${copy.barcode}"
+                                                                                data-title="${copy.book.title}"
+                                                                                data-area="${copy.area}"
+                                                                                data-shelf="${copy.shelf}"
+                                                                                data-slot="${copy.slot}"
+                                                                                onclick="openMoveModal(this)"
+                                                                                style="border: 1px solid #d1d5db; padding: 6px 12px; border-radius: 6px; text-decoration: none; color: #d97706; font-weight: 500; background: white; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                                                                            <i class="fa-solid fa-arrows-up-down-left-right"></i> Chuyển
+                                                                        </button>
+                                                                        <%-- ADMIN còn có thêm nút sửa đầy đủ --%>
+                                                                        <c:if test="${sessionScope.loggedUser.role == 'ADMIN'}">
+                                                                            <a href="shelf?action=editForm&copyId=${copy.id}"
+                                                                               style="border: 1px solid #d1d5db; padding: 6px 12px; border-radius: 6px; text-decoration: none; color: #3b82f6; font-weight: 500; background: white; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                                                                                <i class="fa-solid fa-pen-to-square"></i> Sửa
+                                                                            </a>
+                                                                        </c:if>
+                                                                    </div>
                                                                 </td>
                                                             </tr>
                                                         </c:forEach>
@@ -315,7 +336,35 @@
                 </c:otherwise>
             </c:choose>
 
-        </div><%-- end container --%>
+        <!-- ===== PAGINATION ===== -->
+        <c:if test="${totalPages > 1}">
+            <div style="padding: 16px 24px; display: flex; justify-content: center;">
+                <nav aria-label="Page navigation" class="pagination" style="display: inline-flex; gap: 6px; list-style: none; padding: 0; margin: 0;">
+                    <c:set var="queryParams" value="&filterArea=${filterArea}&filterShelf=${filterShelf}&filterSlot=${filterSlot}" />
+                    
+                    <a class="page-link" href="shelf?action=layout${queryParams}&page=${currentPage - 1}" 
+                       style="padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; text-decoration: none; color: #374151; font-weight: 500; background: white; ${currentPage == 1 ? 'pointer-events: none; opacity: 0.5;' : ''}">
+                        <i class="fa-solid fa-angle-left"></i> Trước
+                    </a>
+
+                    <c:forEach begin="1" end="${totalPages}" var="i">
+                        <c:if test="${i >= currentPage - 2 && i <= currentPage + 2}">
+                            <a class="page-link" href="shelf?action=layout${queryParams}&page=${i}" 
+                               style="padding: 8px 14px; border: 1px solid ${i == currentPage ? '#3b82f6' : '#d1d5db'}; border-radius: 6px; text-decoration: none; font-weight: 500; ${i == currentPage ? 'background: #3b82f6; color: white;' : 'background: white; color: #374151;'}">
+                                ${i}
+                            </a>
+                        </c:if>
+                    </c:forEach>
+
+                    <a class="page-link" href="shelf?action=layout${queryParams}&page=${currentPage + 1}" 
+                       style="padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; text-decoration: none; color: #374151; font-weight: 500; background: white; ${currentPage == totalPages ? 'pointer-events: none; opacity: 0.5;' : ''}">
+                        Sau <i class="fa-solid fa-angle-right"></i>
+                    </a>
+                </nav>
+            </div>
+        </c:if>
+
+    </div><%-- end container --%>
 
         <!-- ════════════════════════════════════════════════
              MODAL: Chuyển vị trí bản sao (LIBRARIAN + ADMIN)
@@ -390,7 +439,7 @@
         <!-- ════════════════════════════════════════════════
              SCRIPTS
         ════════════════════════════════════════════════ -->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
         <script>
                                                                                 /* ── Collapse kệ ── */
                                                                                 function toggleShelf(el) {
@@ -516,8 +565,16 @@
                                                                                         moveSelArea.value = '';
                                                                                     }
 
-                                                                                    new bootstrap.Modal(document.getElementById('moveModal')).show();
+                                                                                    document.getElementById('moveModal').classList.add('show');
                                                                                 }
+
+                                                                                // Vanilla JS modal close handlers
+                                                                                document.querySelectorAll('[data-bs-dismiss="modal"]').forEach(btn => {
+                                                                                    btn.addEventListener('click', function() {
+                                                                                        const modal = this.closest('.modal');
+                                                                                        if (modal) modal.classList.remove('show');
+                                                                                    });
+                                                                                });
 
                                                                                 function resetMoveShelf(placeholder) {
                                                                                     moveSelShelf.innerHTML = `<option value="">${placeholder}</option>`;
