@@ -1,5 +1,6 @@
 package com.swp391.dao;
 
+import com.swp391.model.Author;
 import com.swp391.model.Book;
 
 import java.sql.*;
@@ -163,6 +164,288 @@ public class BookDAOImpl implements BookDAO {
     }
 
     // ============================================================
+    //  createBook
+    // ============================================================
+    @Override
+    public int createBook(Book book) throws Exception {
+        String sql = "INSERT INTO books (isbn, title, category, category_id, publisher, "
+                   + "publish_year, price, quantity, available, description, cover_image, "
+                   + "subject, area, shelf, slot) "
+                   + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        try (Connection con = DBContext.getInstance().getConnection();
+             PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setString(1, book.getIsbn());
+            ps.setString(2, book.getTitle());
+            ps.setString(3, book.getCategory());
+            if (book.getCategoryId() > 0) {
+                ps.setInt(4, book.getCategoryId());
+            } else {
+                ps.setNull(4, Types.INTEGER);
+            }
+            ps.setString(5, book.getPublisher());
+            if (book.getPublishYear() != null) {
+                ps.setInt(6, book.getPublishYear());
+            } else {
+                ps.setNull(6, Types.INTEGER);
+            }
+            if (book.getPrice() != null) {
+                ps.setInt(7, book.getPrice());
+            } else {
+                ps.setNull(7, Types.INTEGER);
+            }
+            ps.setInt(8, book.getQuantity());
+            ps.setInt(9, book.getAvailable());
+            ps.setString(10, book.getDescription());
+            ps.setString(11, book.getCoverImage());
+            ps.setString(12, book.getSubject());
+            ps.setString(13, book.getArea());
+            ps.setString(14, book.getShelf());
+            ps.setString(15, book.getSlot());
+
+            int affected = ps.executeUpdate();
+            if (affected == 0) return -1;
+            try (ResultSet rs = ps.getGeneratedKeys()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+        }
+        return -1;
+    }
+
+    // ============================================================
+    //  updateBook
+    // ============================================================
+    @Override
+    public boolean updateBook(Book book) throws Exception {
+        String sql = "UPDATE books SET isbn = ?, title = ?, category = ?, category_id = ?, "
+                   + "publisher = ?, publish_year = ?, price = ?, quantity = ?, available = ?, "
+                   + "description = ?, cover_image = ?, subject = ?, area = ?, shelf = ?, slot = ? "
+                   + "WHERE id = ?";
+        try (Connection con = DBContext.getInstance().getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, book.getIsbn());
+            ps.setString(2, book.getTitle());
+            ps.setString(3, book.getCategory());
+            if (book.getCategoryId() > 0) {
+                ps.setInt(4, book.getCategoryId());
+            } else {
+                ps.setNull(4, Types.INTEGER);
+            }
+            ps.setString(5, book.getPublisher());
+            if (book.getPublishYear() != null) {
+                ps.setInt(6, book.getPublishYear());
+            } else {
+                ps.setNull(6, Types.INTEGER);
+            }
+            if (book.getPrice() != null) {
+                ps.setInt(7, book.getPrice());
+            } else {
+                ps.setNull(7, Types.INTEGER);
+            }
+            ps.setInt(8, book.getQuantity());
+            ps.setInt(9, book.getAvailable());
+            ps.setString(10, book.getDescription());
+            ps.setString(11, book.getCoverImage());
+            ps.setString(12, book.getSubject());
+            ps.setString(13, book.getArea());
+            ps.setString(14, book.getShelf());
+            ps.setString(15, book.getSlot());
+            ps.setInt(16, book.getId());
+            return ps.executeUpdate() > 0;
+        }
+    }
+
+    // ============================================================
+    //  deleteBook
+    // ============================================================
+    @Override
+    public boolean deleteBook(int id) throws Exception {
+        String deleteBorrowsSql = "DELETE FROM borrow_records WHERE book_id = ?";
+        String deleteAuthorsSql = "DELETE FROM book_authors WHERE book_id = ?";
+        String deleteBookSql = "DELETE FROM books WHERE id = ?";
+        
+        try (Connection con = DBContext.getInstance().getConnection()) {
+            con.setAutoCommit(false);
+            try {
+                // 1. Delete associated borrow records (will cascade delete fines)
+                try (PreparedStatement ps = con.prepareStatement(deleteBorrowsSql)) {
+                    ps.setInt(1, id);
+                    ps.executeUpdate();
+                }
+                
+                // 2. Delete book_authors relations
+                try (PreparedStatement ps = con.prepareStatement(deleteAuthorsSql)) {
+                    ps.setInt(1, id);
+                    ps.executeUpdate();
+                }
+                
+                // 3. Delete book (will cascade delete copies, reviews, and reservations)
+                int affected = 0;
+                try (PreparedStatement ps = con.prepareStatement(deleteBookSql)) {
+                    ps.setInt(1, id);
+                    affected = ps.executeUpdate();
+                }
+                
+                con.commit();
+                return affected > 0;
+            } catch (Exception e) {
+                con.rollback();
+                throw e;
+            } finally {
+                con.setAutoCommit(true);
+            }
+        }
+    }
+
+    // ============================================================
+    //  isIsbnExists
+    // ============================================================
+    @Override
+    public boolean isIsbnExists(String isbn) throws Exception {
+        String sql = "SELECT COUNT(*) FROM books WHERE isbn = ?";
+        try (Connection con = DBContext.getInstance().getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, isbn);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getInt(1) > 0;
+            }
+        }
+        return false;
+    }
+
+    // ============================================================
+    //  isIsbnExistsExcluding
+    // ============================================================
+    @Override
+    public boolean isIsbnExistsExcluding(String isbn, int excludeId) throws Exception {
+        String sql = "SELECT COUNT(*) FROM books WHERE isbn = ? AND id != ?";
+        try (Connection con = DBContext.getInstance().getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, isbn);
+            ps.setInt(2, excludeId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getInt(1) > 0;
+            }
+        }
+        return false;
+    }
+
+    // ============================================================
+    //  hasPhysicalCopies
+    // ============================================================
+    @Override
+    public boolean hasPhysicalCopies(int bookId) throws Exception {
+        String sql = "SELECT COUNT(*) FROM book_copies WHERE book_id = ?";
+        try (Connection con = DBContext.getInstance().getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, bookId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getInt(1) > 0;
+            }
+        }
+        return false;
+    }
+
+    // ============================================================
+    //  hasActiveBorrowsOrReservations
+    // ============================================================
+    @Override
+    public boolean hasActiveBorrowsOrReservations(int bookId) throws Exception {
+        String sql = "SELECT "
+                   + "(SELECT COUNT(*) FROM borrow_records WHERE book_id = ? AND status IN ('BORROWING','OVERDUE')) + "
+                   + "(SELECT COUNT(*) FROM book_reservations WHERE book_id = ? AND status IN ('PENDING','READY')) "
+                   + "AS total";
+        try (Connection con = DBContext.getInstance().getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, bookId);
+            ps.setInt(2, bookId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getInt("total") > 0;
+            }
+        }
+        return false;
+    }
+
+    // ============================================================
+    //  getAuthorsByBookId
+    // ============================================================
+    @Override
+    public List<Author> getAuthorsByBookId(int bookId) throws Exception {
+        String sql = "SELECT a.id, a.name, a.nationality, a.birth_date, a.bio, a.avatar_url, a.created_at "
+                   + "FROM authors a "
+                   + "INNER JOIN book_authors ba ON a.id = ba.author_id "
+                   + "WHERE ba.book_id = ? "
+                   + "ORDER BY ba.role, a.name";
+        List<Author> list = new ArrayList<>();
+        try (Connection con = DBContext.getInstance().getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, bookId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Author a = new Author();
+                    a.setId(rs.getInt("id"));
+                    a.setName(rs.getString("name"));
+                    a.setNationality(rs.getString("nationality"));
+                    java.sql.Date sqlDate = rs.getDate("birth_date");
+                    if (sqlDate != null) a.setBirthDate(sqlDate.toLocalDate());
+                    a.setBio(rs.getString("bio"));
+                    a.setAvatarUrl(rs.getString("avatar_url"));
+                    Timestamp t1 = rs.getTimestamp("created_at");
+                    if (t1 != null) a.setCreatedAt(t1.toLocalDateTime());
+                    list.add(a);
+                }
+            }
+        }
+        return list;
+    }
+
+    // ============================================================
+    //  getAuthorIdsByBookId
+    // ============================================================
+    @Override
+    public List<Integer> getAuthorIdsByBookId(int bookId) throws Exception {
+        String sql = "SELECT author_id FROM book_authors WHERE book_id = ?";
+        List<Integer> ids = new ArrayList<>();
+        try (Connection con = DBContext.getInstance().getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, bookId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    ids.add(rs.getInt("author_id"));
+                }
+            }
+        }
+        return ids;
+    }
+
+    // ============================================================
+    //  setBookAuthors
+    // ============================================================
+    @Override
+    public void setBookAuthors(int bookId, List<Integer> authorIds) throws Exception {
+        // Xóa tất cả liên kết cũ
+        String deleteSql = "DELETE FROM book_authors WHERE book_id = ?";
+        try (Connection con = DBContext.getInstance().getConnection();
+             PreparedStatement ps = con.prepareStatement(deleteSql)) {
+            ps.setInt(1, bookId);
+            ps.executeUpdate();
+        }
+
+        // Thêm liên kết mới
+        if (authorIds != null && !authorIds.isEmpty()) {
+            String insertSql = "INSERT INTO book_authors (book_id, author_id, role) VALUES (?, ?, 'PRIMARY')";
+            try (Connection con = DBContext.getInstance().getConnection();
+                 PreparedStatement ps = con.prepareStatement(insertSql)) {
+                for (Integer authorId : authorIds) {
+                    ps.setInt(1, bookId);
+                    ps.setInt(2, authorId);
+                    ps.addBatch();
+                }
+                ps.executeBatch();
+            }
+        }
+    }
+
+    // ============================================================
     //  Private helpers
     // ============================================================
 
@@ -212,3 +495,4 @@ public class BookDAOImpl implements BookDAO {
         }
     }
 }
+

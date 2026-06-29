@@ -91,14 +91,61 @@
         <url-pattern>/admin/users</url-pattern>
     </servlet-mapping>
 
-
     <servlet>
-        <servlet-name>AdminServlet</servlet-name>
-        <servlet-class>com.swp391.servlet.AdminServlet</servlet-class>
+        <servlet-name>BookDetailServlet</servlet-name>
+        <servlet-class>com.swp391.servlet.BookDetailServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>AdminServlet</servlet-name>
-        <url-pattern>/admin</url-pattern>
+        <servlet-name>BookDetailServlet</servlet-name>
+        <url-pattern>/book/detail</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>BookDetailServlet</servlet-name>
+        <url-pattern>/book/add</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>BookDetailServlet</servlet-name>
+        <url-pattern>/book/edit</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>BookDetailServlet</servlet-name>
+        <url-pattern>/book/delete</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>BookCopyListServlet</servlet-name>
+        <servlet-class>com.swp391.servlet.BookCopyListServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>BookCopyListServlet</servlet-name>
+        <url-pattern>/book/copies</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>BookCopyServlet</servlet-name>
+        <servlet-class>com.swp391.servlet.BookCopyServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>BookCopyServlet</servlet-name>
+        <url-pattern>/book/copy/add</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>BookCopyServlet</servlet-name>
+        <url-pattern>/book/copy/edit</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>BookCopyServlet</servlet-name>
+        <url-pattern>/book/copy/delete</url-pattern>
+    </servlet-mapping>
+
+
+    <servlet>
+        <servlet-name>BorrowServlet</servlet-name>
+        <servlet-class>com.swp391.servlet.BorrowServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>BorrowServlet</servlet-name>
+        <url-pattern>/borrow</url-pattern>
     </servlet-mapping>
 
     <servlet>
@@ -110,18 +157,10 @@
         <url-pattern>/admin/borrow</url-pattern>
     </servlet-mapping>
 
-    <servlet>
-        <servlet-name>AdminReturnServlet</servlet-name>
-        <servlet-class>com.swp391.servlet.AdminReturnServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>AdminReturnServlet</servlet-name>
-        <url-pattern>/admin/return</url-pattern>
-    </servlet-mapping>
-
     <session-config>
         <session-timeout>60</session-timeout>
     </session-config>
+
 
     <filter>
         <filter-name>EncodingFilter</filter-name>

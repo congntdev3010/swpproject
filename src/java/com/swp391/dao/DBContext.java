@@ -17,20 +17,32 @@ public class DBContext {
     private static final String PASS = "1234"; // <-- điền password MySQL của bạn
 
     private static DBContext instance;
+    protected Connection connection;
 
-    private DBContext() {
+    private DBContext() throws ClassNotFoundException, SQLException {
+        Class.forName(DRIVER);
+        connection = DriverManager.getConnection(URL, USER, PASS);
     }
 
-    public static DBContext getInstance() {
-        if (instance == null) {
+    public static DBContext getInstance() throws ClassNotFoundException, SQLException {
+        if (instance == null || instance.connection.isClosed()) {
             instance = new DBContext();
         }
         return instance;
     }
 
-    public Connection getConnection() throws ClassNotFoundException, SQLException {
-        Class.forName(DRIVER);
-        return DriverManager.getConnection(URL, USER, PASS);
+    public Connection getConnection() {
+        return connection;
+    }
+
+    public void closeConnection() {
+        try {
+            if (connection != null && !connection.isClosed()) {
+                connection.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void main(String[] args) {

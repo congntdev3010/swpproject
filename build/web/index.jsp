@@ -1,4 +1,4 @@
-﻿<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
     if (request.getAttribute("featuredBooks") == null) {
         response.sendRedirect(request.getContextPath() + "/home");
@@ -135,19 +135,16 @@
                                 <div class="book-price"><%= book.getFormattedPrice() %></div>
                             </div>
                             <div class="book-footer">
-                                <span style="font-size:0.78rem;color:var(--text-muted);">
-                                    <i class="fa-solid fa-layer-group fa-xs"></i>
-                                    <%= book.getAvailable() %>/<%= book.getQuantity() %> còn lại
-                                </span>
-                                <div style="display:flex; gap:6px;">
-                                    <% if (loggedUser != null && !loggedUser.isAdminOrLibrarian()) { %>
-                                        <button type="button" class="btn btn-outline btn-sm" onclick="addToBorrowCart(<%= book.getId() %>)" title="Mượn sách">
-                                            <i class="fa-solid fa-cart-plus"></i>
-                                        </button>
-                                    <% } %>
-                                    <a href="<%= request.getContextPath() %>/book-review?bookId=<%= book.getId() %>"
-                                       class="btn btn-primary btn-sm">Chi tiết</a>
-                                </div>
+                                <% if (loggedUser != null) { %>
+                                    <span style="font-size:0.78rem;color:var(--text-muted);">
+                                        <i class="fa-solid fa-layer-group fa-xs"></i>
+                                        <%= book.getAvailable() %>/<%= book.getQuantity() %> còn lại
+                                    </span>
+                                <% } else { %>
+                                    <span></span>
+                                <% } %>
+                                <a href="<%= request.getContextPath() %>/books?keyword=<%= java.net.URLEncoder.encode(book.getTitle(),"UTF-8") %>"
+                                   class="btn btn-primary btn-sm">Chi tiết</a>
                             </div>
                         </div>
                     <% } %>
@@ -231,4 +228,3 @@ function validateHeroSearch(form) {
     return true;
 }
 </script>
-

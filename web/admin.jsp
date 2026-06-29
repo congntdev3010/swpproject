@@ -30,24 +30,24 @@
         </div>
 
        <nav class="admin-nav" aria-label="Admin management menu">
-    <a class="admin-nav-item admin-nav-user
-        <%= request.getAttribute("activeTab") != null && "users".equals(request.getAttribute("activeTab")) ? "active" : "" %>"
+    <a class="admin-nav-item <%= "users".equals(request.getAttribute("activeTab")) || request.getAttribute("activeTab") != null && !"borrow".equals(request.getAttribute("activeTab")) ? "active" : "" %>"
        href="<%= request.getContextPath() %>/admin/users">
-
         <i class="fa-solid fa-users"></i>
         <span>Quản lý người dùng</span>
     </a>
-    <a class="admin-nav-item admin-nav-user
-        <%= request.getAttribute("activeTab") != null && "borrow".equals(request.getAttribute("activeTab")) ? "active" : "" %>"
+    <a class="admin-nav-item <%= "borrow".equals(request.getAttribute("activeTab")) ? "active" : "" %>"
        href="<%= request.getContextPath() %>/admin/borrow">
-        <i class="fa-solid fa-book-bookmark"></i>
-        <span>Phiếu mượn</span>
-    </a>
-    <a class="admin-nav-item admin-nav-user
-        <%= request.getAttribute("activeTab") != null && "return".equals(request.getAttribute("activeTab")) ? "active" : "" %>"
-       href="<%= request.getContextPath() %>/admin/return">
-        <i class="fa-solid fa-rotate-left"></i>
-        <span>Trả sách</span>
+        <i class="fa-solid fa-book-open-reader"></i>
+        <span>Quản lý mượn sách</span>
+        <%
+            try {
+                com.swp391.dao.BorrowDAO borrowDao = new com.swp391.dao.BorrowDAO();
+                int pendingCnt = borrowDao.countPending();
+                if (pendingCnt > 0) {
+        %>
+        <span style="background:var(--danger);color:#fff;font-size:0.7rem;font-weight:800;padding:2px 7px;border-radius:99px;margin-left:auto;"><%= pendingCnt %></span>
+        <%  }
+            } catch (Exception ex) { } %>
     </a>
 </nav>
 

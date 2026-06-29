@@ -1,6 +1,6 @@
 package com.swp391.servlet;
 
-import com.swp391.dao.BorrowRecordDAO;
+import com.swp391.dao.BorrowDAO;
 import com.swp391.model.BorrowRecord;
 import com.swp391.model.User;
 import jakarta.servlet.*;
@@ -10,60 +10,102 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * AdminBorrowServlet – xử lý URL /admin/borrow.
- * Hiển thị danh sách phiếu mượn trong giao diện admin panel.
+ * Servlet quản lý phiếu mượn sách cho ADMIN và LIBRARIAN.
+ * URL: /admin/borrow
+ *
+ * GET  /admin/borrow                → Hiển thị danh sách phiếu mượn
+ * POST /admin/borrow?action=approve → Duyệt phiếu
+ * POST /admin/borrow?action=reject  → Từ chối phiếu
+ * POST /admin/borrow?action=return  → Xác nhận trả sách
  */
 @WebServlet(name = "AdminBorrowServlet", urlPatterns = {"/admin/borrow"})
 public class AdminBorrowServlet extends HttpServlet {
 
-    private final BorrowRecordDAO borrowDAO = new BorrowRecordDAO();
-    private static final int PAGE_SIZE = 15;
-
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
+        HttpSession session = req.getSession(false);
         if (session == null || session.getAttribute("loggedUser") == null) {
-            response.sendRedirect(request.getContextPath() + "/login");
+            resp.sendRedirect(req.getContextPath() + "/login");
             return;
         }
         User logged = (User) session.getAttribute("loggedUser");
         if (!logged.isAdminOrLibrarian()) {
-            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            resp.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
 
-        String statusFilter = request.getParameter("status");
-        String search       = request.getParameter("search");
-        int page = 1;
-        try {
-            String p = request.getParameter("page");
-            if (p != null) page = Math.max(1, Integer.parseInt(p.trim()));
-        } catch (NumberFormatException ignored) {}
+        String statusFilter = req.getParameter("status"); // null = tất cả
 
         try {
-            List<BorrowRecord> records = borrowDAO.getAll(statusFilter, search, page, PAGE_SIZE);
-            int total = borrowDAO.countAll(statusFilter, search);
-            int totalPages = (int) Math.ceil((double) total / PAGE_SIZE);
-            if (totalPages < 1) totalPages = 1;
+            BorrowDAO dao = new BorrowDAO();
+            // Lấy danh sách PENDING riêng (luôn hiển thị ở đầu)
+            List<BorrowRecord> pendingList  = dao.getAllBorrows("PENDING");
+            List<BorrowRecord> borrowingList = dao.getAllBorrows("BORROWING");
+            List<BorrowRecord> returnedList = dao.getAllBorrows("RETURNED");
+            List<BorrowRecord> rejectedList = dao.getAllBorrows("REJECTED");
 
-            request.setAttribute("records",      records);
-            request.setAttribute("total",        total);
-            request.setAttribute("totalPages",   totalPages);
-            request.setAttribute("currentPage",  page);
-            request.setAttribute("statusFilter", statusFilter);
-            request.setAttribute("search",       search);
+            req.setAttribute("pendingList",  pendingList);
+            req.setAttribute("borrowingList", borrowingList);
+            req.setAttribute("returnedList", returnedList);
+            req.setAttribute("rejectedList", rejectedList);
+            req.setAttribute("pendingCount", pendingList.size());
+            req.setAttribute("statusFilter", statusFilter);
+            req.setAttribute("activeTab", "borrow");
+
         } catch (Exception e) {
-            request.setAttribute("errorMsg", "Không thể tải danh sách phiếu mượn: " + e.getMessage());
+            req.setAttribute("error", "Lỗi tải dữ liệu: " + e.getMessage());
         }
 
-        request.getRequestDispatcher("/admin-borrow.jsp").forward(request, response);
+        req.getRequestDispatcher("/admin_borrow.jsp").forward(req, resp);
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        // Chuyển các action POST sang BorrowServlet
-        response.sendRedirect(request.getContextPath() + "/admin/borrow");
+        req.setCharacterEncoding("UTF-8");
+        HttpSession session = req.getSession(false);
+        if (session == null || session.getAttribute("loggedUser") == null) {
+            resp.sendRedirect(req.getContextPath() + "/login");
+            return;
+        }
+        User logged = (User) session.getAttribute("loggedUser");
+        if (!logged.isAdminOrLibrarian()) {
+            resp.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+
+        String action = req.getParameter("action");
+        String borrowIdStr = req.getParameter("borrowId");
+
+        if (borrowIdStr == null || borrowIdStr.isEmpty()) {
+            resp.sendRedirect(req.getContextPath() + "/admin/borrow");
+            return;
+        }
+
+        try {
+            int borrowId = Integer.parseInt(borrowIdStr);
+            BorrowDAO dao = new BorrowDAO();
+
+            if ("approve".equals(action)) {
+                boolean ok = dao.approveRequest(borrowId);
+                session.setAttribute("adminBorrowMsg", ok ? "approved" : "approve_failed");
+            } else if ("reject".equals(action)) {
+                boolean ok = dao.rejectRequest(borrowId);
+                session.setAttribute("adminBorrowMsg", ok ? "rejected" : "reject_failed");
+            } else if ("return".equals(action)) {
+                String condition = req.getParameter("condition");
+                if (condition == null || condition.isEmpty()) condition = "GOOD";
+                boolean ok = dao.returnBook(borrowId, condition);
+                session.setAttribute("adminBorrowMsg", ok ? "returned" : "return_failed");
+            }
+        } catch (NumberFormatException e) {
+            session.setAttribute("adminBorrowMsg", "invalid_id");
+        } catch (Exception e) {
+            e.printStackTrace();
+            session.setAttribute("adminBorrowMsg", "error");
+        }
+
+        resp.sendRedirect(req.getContextPath() + "/admin/borrow");
     }
 }

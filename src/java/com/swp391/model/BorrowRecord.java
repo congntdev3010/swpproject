@@ -16,9 +16,6 @@ public class BorrowRecord {
     private int renewalCount;
     private String status; // BORROWING, RETURNED, OVERDUE, LOST
     private String note;
-    private String librarianNote;   // Ghi chú xác thực của Librarian
-    private Integer confirmedBy;    // user_id của Librarian xác nhận
-    private LocalDateTime confirmedAt;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     
@@ -120,30 +117,6 @@ public class BorrowRecord {
 
     public void setNote(String note) {
         this.note = note;
-    }
-
-    public String getLibrarianNote() {
-        return librarianNote;
-    }
-
-    public void setLibrarianNote(String librarianNote) {
-        this.librarianNote = librarianNote;
-    }
-
-    public Integer getConfirmedBy() {
-        return confirmedBy;
-    }
-
-    public void setConfirmedBy(Integer confirmedBy) {
-        this.confirmedBy = confirmedBy;
-    }
-
-    public LocalDateTime getConfirmedAt() {
-        return confirmedAt;
-    }
-
-    public void setConfirmedAt(LocalDateTime confirmedAt) {
-        this.confirmedAt = confirmedAt;
     }
 
     public LocalDateTime getCreatedAt() {
