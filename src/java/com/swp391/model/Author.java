@@ -13,6 +13,10 @@ public class Author {
     private String bio;
     private String avatarUrl;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private boolean isDeleted;
+    private String createdBy;
+    private String updatedBy;
 
     private Set<BookAuthor> bookAuthors = new HashSet<>();
 
@@ -25,6 +29,8 @@ public class Author {
         this.bio = bio;
         this.avatarUrl = avatarUrl;
         this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+        this.isDeleted = false;
     }
 
     // Getters and Setters
@@ -84,6 +90,38 @@ public class Author {
         this.createdAt = createdAt;
     }
 
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(boolean isDeleted) {
+        this.isDeleted = isDeleted;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public String getUpdatedBy() {
+        return updatedBy;
+    }
+
+    public void setUpdatedBy(String updatedBy) {
+        this.updatedBy = updatedBy;
+    }
+
     public Set<BookAuthor> getBookAuthors() {
         return bookAuthors;
     }
@@ -102,6 +140,10 @@ public class Author {
                 ", bio='" + bio + '\'' +
                 ", avatarUrl='" + avatarUrl + '\'' +
                 ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", isDeleted=" + isDeleted +
+                ", createdBy='" + createdBy + '\'' +
+                ", updatedBy='" + updatedBy + '\'' +
                 '}';
     }
 }

@@ -55,6 +55,12 @@
                         <i class="fa-solid fa-layer-group"></i> Vị trí kệ
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="<%= request.getContextPath() %>/authors"
+                       class="nav-link <%= "authors".equals(currentPage) ? "active" : "" %>">
+                        <i class="fa-solid fa-user-pen"></i> Tác giả
+                    </a>
+                </li>
                 <% } %>
             </ul>
 
