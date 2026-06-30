@@ -61,6 +61,12 @@
                         <i class="fa-solid fa-user-pen"></i> Tác giả
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="<%= request.getContextPath() %>/categories"
+                       class="nav-link <%= "categories".equals(currentPage) ? "active" : "" %>">
+                        <i class="fa-solid fa-tags"></i> Danh mục
+                    </a>
+                </li>
                 <% } %>
             </ul>
 
@@ -100,5 +106,3 @@
         });
     })();
 </script>
-</body>
-</html>
