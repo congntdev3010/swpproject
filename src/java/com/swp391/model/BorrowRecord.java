@@ -14,8 +14,9 @@ public class BorrowRecord {
     private LocalDate dueDate;
     private LocalDate returnDate;
     private int renewalCount;
-    private String status; // BORROWING, RETURNED, OVERDUE, LOST
+    private String status; // PENDING, BORROWING, RETURNED, OVERDUE, LOST, REJECTED
     private String note;
+    private String requestGroupId; // UUID nhóm các sách trong cùng 1 phiếu mượn
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     
@@ -109,6 +110,14 @@ public class BorrowRecord {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getRequestGroupId() {
+        return requestGroupId;
+    }
+
+    public void setRequestGroupId(String requestGroupId) {
+        this.requestGroupId = requestGroupId;
     }
 
     public String getNote() {

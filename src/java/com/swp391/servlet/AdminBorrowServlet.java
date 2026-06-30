@@ -13,10 +13,12 @@ import java.util.List;
  * Servlet quản lý phiếu mượn sách cho ADMIN và LIBRARIAN.
  * URL: /admin/borrow
  *
- * GET  /admin/borrow                → Hiển thị danh sách phiếu mượn
- * POST /admin/borrow?action=approve → Duyệt phiếu
- * POST /admin/borrow?action=reject  → Từ chối phiếu
- * POST /admin/borrow?action=return  → Xác nhận trả sách
+ * GET  /admin/borrow                     → Hiển thị danh sách phiếu mượn (nhóm theo phiếu)
+ * POST /admin/borrow?action=approveGroup → Duyệt toàn bộ phiếu trong nhóm
+ * POST /admin/borrow?action=rejectGroup  → Từ chối toàn bộ phiếu trong nhóm
+ * POST /admin/borrow?action=approve      → Duyệt 1 phiếu đơn lẻ (compat)
+ * POST /admin/borrow?action=reject       → Từ chối 1 phiếu đơn lẻ (compat)
+ * POST /admin/borrow?action=return       → Xác nhận trả sách
  */
 @WebServlet(name = "AdminBorrowServlet", urlPatterns = {"/admin/borrow"})
 public class AdminBorrowServlet extends HttpServlet {
@@ -35,23 +37,23 @@ public class AdminBorrowServlet extends HttpServlet {
             return;
         }
 
-        String statusFilter = req.getParameter("status"); // null = tất cả
-
         try {
             BorrowDAO dao = new BorrowDAO();
-            // Lấy danh sách PENDING riêng (luôn hiển thị ở đầu)
-            List<BorrowRecord> pendingList  = dao.getAllBorrows("PENDING");
-            List<BorrowRecord> borrowingList = dao.getAllBorrows("BORROWING");
-            List<BorrowRecord> returnedList = dao.getAllBorrows("RETURNED");
-            List<BorrowRecord> rejectedList = dao.getAllBorrows("REJECTED");
 
-            req.setAttribute("pendingList",  pendingList);
-            req.setAttribute("borrowingList", borrowingList);
-            req.setAttribute("returnedList", returnedList);
-            req.setAttribute("rejectedList", rejectedList);
-            req.setAttribute("pendingCount", pendingList.size());
-            req.setAttribute("statusFilter", statusFilter);
-            req.setAttribute("activeTab", "borrow");
+            // Phiếu PENDING: lấy theo nhóm (mỗi nhóm = 1 lần gửi giỏ sách)
+            List<List<BorrowRecord>> pendingGroups = dao.getPendingGrouped();
+
+            // Phiếu đang mượn / đã trả / từ chối
+            List<BorrowRecord> borrowingList = dao.getAllBorrows("BORROWING");
+            List<BorrowRecord> returnedList  = dao.getAllBorrows("RETURNED");
+            List<BorrowRecord> rejectedList  = dao.getAllBorrows("REJECTED");
+
+            req.setAttribute("pendingGroups",  pendingGroups);
+            req.setAttribute("pendingCount",   pendingGroups.size());  // số phiếu (nhóm) chờ duyệt
+            req.setAttribute("borrowingList",  borrowingList);
+            req.setAttribute("returnedList",   returnedList);
+            req.setAttribute("rejectedList",   rejectedList);
+            req.setAttribute("activeTab",      "borrow");
 
         } catch (Exception e) {
             req.setAttribute("error", "Lỗi tải dữ liệu: " + e.getMessage());
@@ -76,29 +78,66 @@ public class AdminBorrowServlet extends HttpServlet {
         }
 
         String action = req.getParameter("action");
-        String borrowIdStr = req.getParameter("borrowId");
-
-        if (borrowIdStr == null || borrowIdStr.isEmpty()) {
-            resp.sendRedirect(req.getContextPath() + "/admin/borrow");
-            return;
-        }
 
         try {
-            int borrowId = Integer.parseInt(borrowIdStr);
             BorrowDAO dao = new BorrowDAO();
 
-            if ("approve".equals(action)) {
-                boolean ok = dao.approveRequest(borrowId);
-                session.setAttribute("adminBorrowMsg", ok ? "approved" : "approve_failed");
+            if ("approveGroup".equals(action)) {
+                // Duyệt toàn bộ sách trong 1 phiếu (nhóm)
+                String groupId = req.getParameter("groupId");
+                if (groupId != null && !groupId.isEmpty()) {
+                    int approved = dao.approveGroup(groupId);
+                    session.setAttribute("adminBorrowMsg", approved > 0 ? "approved" : "approve_failed");
+                } else {
+                    session.setAttribute("adminBorrowMsg", "approve_failed");
+                }
+
+            } else if ("rejectGroup".equals(action)) {
+                // Từ chối toàn bộ sách trong 1 phiếu (nhóm)
+                String groupId = req.getParameter("groupId");
+                if (groupId != null && !groupId.isEmpty()) {
+                    boolean ok = dao.rejectGroup(groupId);
+                    session.setAttribute("adminBorrowMsg", ok ? "rejected" : "reject_failed");
+                } else {
+                    session.setAttribute("adminBorrowMsg", "reject_failed");
+                }
+
+            } else if ("removeItem".equals(action)) {
+                // Xóa 1 sách khỏi phiếu nhóm (từ chối riêng quyển đó do sách gặp vấn đề)
+                String borrowIdStr = req.getParameter("borrowId");
+                if (borrowIdStr != null && !borrowIdStr.isEmpty()) {
+                    boolean ok = dao.rejectRequest(Integer.parseInt(borrowIdStr));
+                    session.setAttribute("adminBorrowMsg", ok ? "item_removed" : "approve_failed");
+                }
+
+            } else if ("approve".equals(action)) {
+                // Duyệt từng phiếu đơn lẻ (tương thích ngược)
+                String borrowIdStr = req.getParameter("borrowId");
+                if (borrowIdStr != null && !borrowIdStr.isEmpty()) {
+                    boolean ok = dao.approveRequest(Integer.parseInt(borrowIdStr));
+                    session.setAttribute("adminBorrowMsg", ok ? "approved" : "approve_failed");
+                }
+
             } else if ("reject".equals(action)) {
-                boolean ok = dao.rejectRequest(borrowId);
-                session.setAttribute("adminBorrowMsg", ok ? "rejected" : "reject_failed");
+                // Từ chối từng phiếu đơn lẻ (tương thích ngược)
+                String borrowIdStr = req.getParameter("borrowId");
+                if (borrowIdStr != null && !borrowIdStr.isEmpty()) {
+                    boolean ok = dao.rejectRequest(Integer.parseInt(borrowIdStr));
+                    session.setAttribute("adminBorrowMsg", ok ? "rejected" : "reject_failed");
+                }
+
             } else if ("return".equals(action)) {
-                String condition = req.getParameter("condition");
-                if (condition == null || condition.isEmpty()) condition = "GOOD";
-                boolean ok = dao.returnBook(borrowId, condition);
-                session.setAttribute("adminBorrowMsg", ok ? "returned" : "return_failed");
+                // Xác nhận trả sách
+                String borrowIdStr = req.getParameter("borrowId");
+                if (borrowIdStr != null && !borrowIdStr.isEmpty()) {
+                    int borrowId = Integer.parseInt(borrowIdStr);
+                    String condition = req.getParameter("condition");
+                    if (condition == null || condition.isEmpty()) condition = "GOOD";
+                    boolean ok = dao.returnBook(borrowId, condition);
+                    session.setAttribute("adminBorrowMsg", ok ? "returned" : "return_failed");
+                }
             }
+
         } catch (NumberFormatException e) {
             session.setAttribute("adminBorrowMsg", "invalid_id");
         } catch (Exception e) {

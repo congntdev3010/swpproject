@@ -311,34 +311,6 @@ INSERT INTO user_tokens (user_id, token, type, expiry)
 VALUES (4, 'MYSQL_TOKEN_VALID_AUTH_SESSION_KEY_2026_V5', 'REGISTRATION', '2026-08-30 00:00:00');
 
 
--- ============================================================================
--- PHẦN 5: XUẤT BẢNG THỐNG KÊ ĐỂ BIỂU DIỄN VÀ KIỂM TRA SỐ LƯỢNG THỰC TẾ
--- ============================================================================
-SELECT 'AUTHORS (Tác giả)' AS `Tên bảng`, COUNT(*) AS `Tổng số bản ghi thực tế`
-FROM authors
-UNION
-SELECT 'BOOKS (Sách)', COUNT(*)
-FROM books
-UNION
-SELECT 'BOOK_AUTHORS (Trung gian liên kết)', COUNT(*)
-FROM book_authors
-UNION
-SELECT 'USERS (Người dùng)', COUNT(*)
-FROM users
-UNION
-SELECT 'USER_MEMBERSHIPS (Liên kết thành viên)', COUNT(*)
-FROM user_memberships
-UNION
-SELECT 'BORROW_RECORDS (Lượt mượn sách)', COUNT(*)
-FROM borrow_records
-UNION
-SELECT 'FINES (Bản ghi phạt tiền)', COUNT(*)
-FROM fines;
-
-ALTER TABLE book_copies
-    ADD COLUMN area VARCHAR(50) NULL COMMENT 'Khu vực (Tầng 1, Tầng 2...)',
-ADD COLUMN shelf VARCHAR(20) NULL COMMENT 'Kệ (K01, K02...)',
-ADD COLUMN slot VARCHAR(20) NULL COMMENT 'Ngăn (N01, N02...)';
 -- Tầng 1 - Khu Khoa học tự nhiên (id 1-200)
 UPDATE book_copies SET area='Tầng 1', shelf='K01', slot='N01' WHERE id BETWEEN 1 AND 25;
 UPDATE book_copies SET area='Tầng 1', shelf='K01', slot='N02' WHERE id BETWEEN 26 AND 50;

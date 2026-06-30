@@ -6,10 +6,16 @@
         response.sendRedirect(request.getContextPath() + "/login");
         return;
     }
-    List<BorrowRecord> pendingList   = (List<BorrowRecord>) request.getAttribute("pendingList");
+
+    @SuppressWarnings("unchecked")
+    List<List<BorrowRecord>> pendingGroups  = (List<List<BorrowRecord>>) request.getAttribute("pendingGroups");
+    @SuppressWarnings("unchecked")
     List<BorrowRecord> borrowingList = (List<BorrowRecord>) request.getAttribute("borrowingList");
+    @SuppressWarnings("unchecked")
     List<BorrowRecord> returnedList  = (List<BorrowRecord>) request.getAttribute("returnedList");
+    @SuppressWarnings("unchecked")
     List<BorrowRecord> rejectedList  = (List<BorrowRecord>) request.getAttribute("rejectedList");
+
     Integer pendingCount = (Integer) request.getAttribute("pendingCount");
     if (pendingCount == null) pendingCount = 0;
 
@@ -90,6 +96,7 @@
             <i class="fa-solid <%= msg.contains("failed") || msg.contains("error") ? "fa-circle-xmark" : "fa-circle-check" %>"></i>
             <%
                 if ("approved".equals(msg)) out.print("Đã duyệt phiếu mượn thành công! Sách đã được đánh dấu là đang mượn.");
+                else if ("item_removed".equals(msg)) out.print("Đã xóa sách khỏi phiếu mượn. Các sách còn lại trong phiếu vẫn chờ duyệt.");
                 else if ("rejected".equals(msg)) out.print("Đã từ chối phiếu mượn.");
                 else if ("returned".equals(msg)) out.print("Xác nhận trả sách thành công! Số lượng tồn kho đã được cập nhật.");
                 else if ("approve_failed".equals(msg)) out.print("Duyệt thất bại – có thể sách đã hết bản hoặc phiếu không hợp lệ.");
@@ -103,103 +110,124 @@
         <div class="alert alert-danger"><i class="fa-solid fa-circle-xmark"></i> <%= error %></div>
         <% } %>
 
-        <!-- ==================== PENDING SECTION ==================== -->
+        <!-- ==================== PENDING SECTION (NHÓM PHIẾU) ==================== -->
         <section class="admin-card" style="margin-bottom:28px;">
             <div class="admin-section-head">
                 <h2>
                     <i class="fa-solid fa-clock" style="color:var(--warning);"></i>
                     Phiếu chờ duyệt
                     <% if (pendingCount > 0) { %>
-                    <span class="badge badge-warning" style="font-size:0.78rem; vertical-align:middle;"><%= pendingCount %> chờ</span>
+                    <span class="badge badge-warning" style="font-size:0.78rem; vertical-align:middle;"><%= pendingCount %> phiếu</span>
                     <% } %>
                 </h2>
-                <span style="color:var(--text-muted); font-size:0.85rem;">Phiếu mượn từ độc giả đang chờ xét duyệt</span>
+                <span style="color:var(--text-muted); font-size:0.85rem;">Mỗi phiếu có thể bao gồm nhiều sách từ cùng một lần mượn</span>
             </div>
-            <div class="admin-table-wrap">
-                <table class="admin-table">
-                    <thead>
-                        <tr>
-                            <th style="width:50px;">STT</th>
-                            <th>Tên người dùng</th>
-                            <th>Danh sách sách</th>
-                            <th style="width:140px;">Ngày yêu cầu</th>
-                            <th style="width:200px; text-align:center;">Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    <%
-                        if (pendingList != null && !pendingList.isEmpty()) {
-                            int idx = 1;
-                            for (BorrowRecord br : pendingList) {
-                    %>
-                    <tr>
-                        <td style="color:var(--text-muted); font-size:0.82rem;"><%= idx++ %></td>
-                        <td>
-                            <div style="font-weight:600; color:var(--text-primary);">
-                                <%= br.getUser() != null ? (br.getUser().getFullName() != null ? br.getUser().getFullName() : br.getUser().getUsername()) : "N/A" %>
+
+            <%
+                if (pendingGroups != null && !pendingGroups.isEmpty()) {
+                    int phieuIdx = 1;
+                    for (List<BorrowRecord> group : pendingGroups) {
+                        if (group == null || group.isEmpty()) continue;
+                        BorrowRecord first = group.get(0);
+                        User borrower = first.getUser();
+                        String groupId = first.getRequestGroupId() != null ? first.getRequestGroupId() : "solo_" + first.getId();
+                        String displayName = (borrower != null && borrower.getFullName() != null)
+                                            ? borrower.getFullName() : (borrower != null ? borrower.getUsername() : "N/A");
+            %>
+            <!-- === PHIẾU #<%= phieuIdx %> === -->
+            <div class="borrow-group-card">
+                <!-- Header của phiếu -->
+                <div class="borrow-group-header">
+                    <div class="borrow-group-badge">Phiếu #<%= phieuIdx++ %></div>
+                    <div class="borrow-group-user">
+                        <div class="borrow-group-avatar">
+                            <%= displayName.charAt(0) %>
+                        </div>
+                        <div>
+                            <div class="borrow-group-name"><%= displayName %></div>
+                            <div class="borrow-group-meta">
+                                <% if (borrower != null) { %>
+                                <span><i class="fa-solid fa-envelope fa-xs"></i> <%= borrower.getEmail() != null ? borrower.getEmail() : "" %></span>
+                                <% if (borrower.getStudentId() != null && !borrower.getStudentId().isEmpty()) { %>
+                                <span><i class="fa-solid fa-id-card fa-xs"></i> <%= borrower.getStudentId() %></span>
+                                <% } } %>
                             </div>
-                            <div style="font-size:0.78rem; color:var(--text-muted);">
-                                <%= br.getUser() != null ? br.getUser().getEmail() : "" %>
-                                <% if (br.getUser() != null && br.getUser().getStudentId() != null) { %>
-                                · <%= br.getUser().getStudentId() %>
-                                <% } %>
-                            </div>
-                        </td>
-                        <td>
-                            <div style="font-size:0.9rem; font-weight:500; color:var(--text-primary);">
-                                <i class="fa-solid fa-book fa-xs" style="color:var(--primary); margin-right:4px;"></i>
-                                <%= br.getBook() != null ? br.getBook().getTitle() : "#" + br.getBookId() %>
-                            </div>
-                            <% if (br.getBook() != null) { %>
-                            <div style="font-size:0.75rem; color:var(--text-muted);">
-                                Còn <strong style="color:var(--success);"><%= br.getBook().getAvailable() %></strong>/<%= br.getBook().getQuantity() %> bản
-                            </div>
+                        </div>
+                    </div>
+                    <div class="borrow-group-date">
+                        <i class="fa-solid fa-calendar-days fa-xs"></i>
+                        <%= first.getCreatedAt() != null ? first.getCreatedAt().toLocalDate() : "—" %>
+                    </div>
+                    <div class="borrow-group-count">
+                        <i class="fa-solid fa-books fa-xs"></i>
+                        <%= group.size() %> quyển
+                    </div>
+                </div>
+
+                <!-- Danh sách sách trong phiếu -->
+                <div class="borrow-group-books">
+                    <div style="font-size:0.78rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px;">
+                        <i class="fa-solid fa-list-check fa-xs"></i> Danh sách sách · <%= group.size() %> quyển
+                        <span style="font-size:0.72rem; font-weight:400; color:var(--warning); margin-left:8px;">
+                            <i class="fa-solid fa-circle-info fa-xs"></i> Có thể xóa sách bị lỗi trước khi duyệt
+                        </span>
+                    </div>
+                    <% int bookIdx = 1; for (BorrowRecord item : group) { %>
+                    <div class="borrow-group-book-item">
+                        <span class="borrow-book-num"><%= bookIdx++ %></span>
+                        <i class="fa-solid fa-book" style="color:var(--primary); font-size:0.9rem;"></i>
+                        <div class="borrow-book-info">
+                            <span class="borrow-book-title"><%= item.getBook() != null ? item.getBook().getTitle() : "#" + item.getBookId() %></span>
+                            <% if (item.getBook() != null) { %>
+                            <span class="borrow-book-avail <%= item.getBook().getAvailable() > 0 ? "avail-ok" : "avail-none" %>">
+                                Còn <%= item.getBook().getAvailable() %>/<%= item.getBook().getQuantity() %> bản
+                            </span>
                             <% } %>
-                        </td>
-                        <td style="font-size:0.82rem; color:var(--text-muted);">
-                            <%= br.getCreatedAt() != null ? br.getCreatedAt().toLocalDate() : "—" %>
-                        </td>
-                        <td style="text-align:center;">
-                            <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
-                                <!-- Approve -->
-                                <form method="post" action="<%= ctx %>/admin/borrow"
-                                      onsubmit="return confirm('Duyệt phiếu mượn sách «<%= br.getBook() != null ? br.getBook().getTitle().replace("'","") : "này" %>»?')">
-                                    <input type="hidden" name="action" value="approve">
-                                    <input type="hidden" name="borrowId" value="<%= br.getId() %>">
-                                    <button type="submit" class="btn btn-primary btn-sm">
-                                        <i class="fa-solid fa-check"></i> Chấp nhận
-                                    </button>
-                                </form>
-                                <!-- Reject -->
-                                <form method="post" action="<%= ctx %>/admin/borrow"
-                                      onsubmit="return confirm('Từ chối phiếu mượn này?')">
-                                    <input type="hidden" name="action" value="reject">
-                                    <input type="hidden" name="borrowId" value="<%= br.getId() %>">
-                                    <button type="submit" class="btn btn-danger btn-sm">
-                                        <i class="fa-solid fa-xmark"></i> Từ chối
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                    <%      }
-                        } else { %>
-                    <tr>
-                        <td colspan="5">
-                            <div class="empty-state" style="padding:40px 24px;">
-                                <div class="empty-icon"><i class="fa-solid fa-inbox"></i></div>
-                                <h3>Không có phiếu nào đang chờ</h3>
-                                <p>Tất cả phiếu mượn đã được xử lý.</p>
-                            </div>
-                        </td>
-                    </tr>
+                        </div>
+                        <!-- Nút xóa từng sách khỏi phiếu -->
+                        <form method="post" action="<%= ctx %>/admin/borrow" style="margin:0; flex-shrink:0;"
+                              onsubmit="return confirm('Xóa sách &laquo;<%= item.getBook() != null ? item.getBook().getTitle().replace("'","") : "này" %>&raquo; khỏi phiếu?\nSách này sẽ bị từ chối. Các sách còn lại trong phiếu vẫn giữ nguyên.')">
+                            <input type="hidden" name="action" value="removeItem">
+                            <input type="hidden" name="borrowId" value="<%= item.getId() %>">
+                            <button type="submit" class="btn-remove-book" title="Xóa sách này khỏi phiếu (do sách gặp vấn đề)">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </form>
+                    </div>
                     <% } %>
-                    </tbody>
-                </table>
+                </div>
+
+                <!-- Nút hành động cho cả phiếu -->
+                <div class="borrow-group-actions">
+                    <form method="post" action="<%= ctx %>/admin/borrow"
+                          onsubmit="return confirm('Duyệt phiếu mượn <%= group.size() %> sách của <%= displayName.replace("'","") %>?')">
+                        <input type="hidden" name="action" value="approveGroup">
+                        <input type="hidden" name="groupId" value="<%= groupId %>">
+                        <button type="submit" class="btn btn-primary btn-sm" style="padding:8px 20px;">
+                            <i class="fa-solid fa-check-double"></i> Chấp nhận phiếu
+                        </button>
+                    </form>
+                    <form method="post" action="<%= ctx %>/admin/borrow"
+                          onsubmit="return confirm('Từ chối toàn bộ phiếu mượn này?')">
+                        <input type="hidden" name="action" value="rejectGroup">
+                        <input type="hidden" name="groupId" value="<%= groupId %>">
+                        <button type="submit" class="btn btn-danger btn-sm" style="padding:8px 20px;">
+                            <i class="fa-solid fa-ban"></i> Từ chối phiếu
+                        </button>
+                    </form>
+                </div>
             </div>
+            <%  }
+                } else { %>
+            <div class="empty-state" style="padding:50px 24px;">
+                <div class="empty-icon"><i class="fa-solid fa-inbox"></i></div>
+                <h3>Không có phiếu nào đang chờ</h3>
+                <p>Tất cả phiếu mượn đã được xử lý.</p>
+            </div>
+            <% } %>
         </section>
 
-        <!-- ==================== BORROWING SECTION (Đang mượn - Trả sách) ==================== -->
+        <!-- ==================== BORROWING SECTION ==================== -->
         <section class="admin-card" style="margin-bottom:28px;">
             <div class="admin-section-head">
                 <h2>
@@ -294,7 +322,7 @@
             </div>
         </section>
 
-        <!-- ==================== RETURNED/REJECTED SECTION ==================== -->
+        <!-- ==================== HISTORY SECTION ==================== -->
         <section class="admin-card">
             <div class="admin-section-head">
                 <h2>
@@ -374,6 +402,7 @@
 </div>
 
 <style>
+/* ===== Admin Nav Badge ===== */
 .admin-nav-badge {
     background: var(--danger);
     color: #fff;
@@ -384,6 +413,144 @@
     margin-left: auto;
     min-width: 20px;
     text-align: center;
+}
+
+/* ===== Borrow Group Card ===== */
+.borrow-group-card {
+    background: var(--bg-surface, #f8f9fa);
+    border: 1px solid var(--border, #e0e0e0);
+    border-radius: 12px;
+    margin-bottom: 18px;
+    overflow: hidden;
+    transition: box-shadow 0.2s ease;
+}
+.borrow-group-card:hover {
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+/* Group Header */
+.borrow-group-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+    background: var(--bg-card, #fff);
+    border-bottom: 1px solid var(--border, #e0e0e0);
+    flex-wrap: wrap;
+}
+.borrow-group-badge {
+    background: linear-gradient(135deg, var(--primary, #f47920), #e06010);
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 800;
+    padding: 4px 12px;
+    border-radius: 99px;
+    white-space: nowrap;
+    letter-spacing: 0.5px;
+}
+.borrow-group-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 200px;
+}
+.borrow-group-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary, #f47920), #e06010);
+    color: #fff;
+    font-weight: 700;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.borrow-group-name {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--text-primary, #1a1a2e);
+}
+.borrow-group-meta {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    font-size: 0.78rem;
+    color: var(--text-muted, #888);
+    margin-top: 2px;
+}
+.borrow-group-date, .borrow-group-count {
+    font-size: 0.82rem;
+    color: var(--text-muted, #888);
+    white-space: nowrap;
+}
+
+/* Book list inside group */
+.borrow-group-books {
+    padding: 14px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.borrow-group-book-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    background: var(--bg-card, #fff);
+    border: 1px solid var(--border, #e0e0e0);
+    border-radius: 8px;
+    transition: background 0.15s;
+}
+.borrow-group-book-item:hover {
+    background: rgba(244, 121, 32, 0.04);
+    border-color: rgba(244, 121, 32, 0.25);
+}
+.borrow-book-num {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--bg-surface, #f4f4f4);
+    color: var(--text-muted, #888);
+    font-size: 0.72rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.borrow-book-info {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.borrow-book-title {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text-primary, #1a1a2e);
+}
+.borrow-book-avail {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 99px;
+}
+.avail-ok  { background: rgba(46,213,115,0.12); color: #27ae60; }
+.avail-none { background: rgba(255,71,87,0.12); color: #e74c3c; }
+
+/* Actions */
+.borrow-group-actions {
+    display: flex;
+    gap: 10px;
+    padding: 14px 20px;
+    border-top: 1px solid var(--border, #e0e0e0);
+    background: var(--bg-surface, #f8f9fa);
+    justify-content: flex-end;
+    flex-wrap: wrap;
 }
 </style>
 </body>
