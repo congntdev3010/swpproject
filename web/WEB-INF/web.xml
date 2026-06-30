@@ -138,6 +138,110 @@
         <url-pattern>/book/copy/delete</url-pattern>
     </servlet-mapping>
 
+    <!-- ===== Borrow ===== -->
+    <servlet>
+        <servlet-name>BorrowServlet</servlet-name>
+        <servlet-class>com.swp391.servlet.BorrowServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>BorrowServlet</servlet-name>
+        <url-pattern>/borrow/list</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>BorrowServlet</servlet-name>
+        <url-pattern>/borrow/my</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>BorrowServlet</servlet-name>
+        <url-pattern>/borrow/checkout</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>BorrowServlet</servlet-name>
+        <url-pattern>/borrow/return</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>BorrowServlet</servlet-name>
+        <url-pattern>/borrow/renew</url-pattern>
+    </servlet-mapping>
+
+    <!-- ===== Reservation ===== -->
+    <servlet>
+        <servlet-name>ReservationServlet</servlet-name>
+        <servlet-class>com.swp391.servlet.ReservationServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ReservationServlet</servlet-name>
+        <url-pattern>/reservation/my</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ReservationServlet</servlet-name>
+        <url-pattern>/reservation/list</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ReservationServlet</servlet-name>
+        <url-pattern>/reservation/create</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ReservationServlet</servlet-name>
+        <url-pattern>/reservation/confirm</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ReservationServlet</servlet-name>
+        <url-pattern>/reservation/cancel</url-pattern>
+    </servlet-mapping>
+
+    <!-- ===== Fine ===== -->
+    <servlet>
+        <servlet-name>FineServlet</servlet-name>
+        <servlet-class>com.swp391.servlet.FineServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>FineServlet</servlet-name>
+        <url-pattern>/fine/my</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>FineServlet</servlet-name>
+        <url-pattern>/fine/list</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>FineServlet</servlet-name>
+        <url-pattern>/fine/create</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>FineServlet</servlet-name>
+        <url-pattern>/fine/waive</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>FineServlet</servlet-name>
+        <url-pattern>/fine/pay</url-pattern>
+    </servlet-mapping>
+
+    <!-- ===== Notification ===== -->
+    <servlet>
+        <servlet-name>NotificationServlet</servlet-name>
+        <servlet-class>com.swp391.servlet.NotificationServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>NotificationServlet</servlet-name>
+        <url-pattern>/notification/my</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>NotificationServlet</servlet-name>
+        <url-pattern>/notification/manage</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>NotificationServlet</servlet-name>
+        <url-pattern>/notification/publish</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>NotificationServlet</servlet-name>
+        <url-pattern>/notification/mark-read</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>NotificationServlet</servlet-name>
+        <url-pattern>/notification/mark-all-read</url-pattern>
+    </servlet-mapping>
+
     <session-config>
         <session-timeout>60</session-timeout>
     </session-config>

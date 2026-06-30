@@ -48,6 +48,32 @@
                     </a>
                 </li>
                 
+                <% if (loggedUser != null) { %>
+                <li class="nav-item">
+                    <a href="<%= request.getContextPath() %>/borrow/my"
+                       class="nav-link <%= "borrows".equals(currentPage) ? "active" : "" %>">
+                        <i class="fa-solid fa-book-open"></i> Mượn sách
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="<%= request.getContextPath() %>/reservation/my"
+                       class="nav-link <%= "reservations".equals(currentPage) ? "active" : "" %>">
+                        <i class="fa-solid fa-bookmark"></i> Đặt trước
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="<%= request.getContextPath() %>/fine/my"
+                       class="nav-link <%= "fines".equals(currentPage) ? "active" : "" %>">
+                        <i class="fa-solid fa-coins"></i> Phạt
+                    </a>
+                </li>
+                <li class="nav-item" style="position:relative;">
+                    <a href="<%= request.getContextPath() %>/notification/my"
+                       class="nav-link <%= "notifications".equals(currentPage) ? "active" : "" %>">
+                        <i class="fa-solid fa-bell"></i> Thông báo
+                    </a>
+                </li>
+                <% } %>
                 <% if (loggedUser != null && loggedUser.isAdminOrLibrarian()) { %>
                 <li class="nav-item">
                     <a href="<%= request.getContextPath() %>/shelf"
