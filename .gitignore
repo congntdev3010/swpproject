@@ -3,6 +3,9 @@
 # Build output
 /build/
 /Source/build/
+*.class
+web/WEB-INF/classes/
+
 
 # NetBeans private settings (local paths, credentials)
 nbproject/private/
@@ -19,4 +22,6 @@ src/java/com/swp391/dao/DBContext.java
 
 # Database credentials (never commit these)
 db.properties
+
+.idea
 
