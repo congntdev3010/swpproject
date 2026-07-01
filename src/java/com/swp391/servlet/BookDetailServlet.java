@@ -182,13 +182,17 @@ public class BookDetailServlet extends HttpServlet {
 
             // Validate
             List<String> errors = validateBook(book, dao, true, 0);
+            List<Integer> authorIds = getSelectedAuthorIds(request);
+            if (authorIds.isEmpty()) {
+                errors.add("Vui lòng chọn ít nhất một tác giả.");
+            }
             if (!errors.isEmpty()) {
                 request.setAttribute("formMode", "add");
                 request.setAttribute("book", book);
                 request.setAttribute("errors", errors);
                 request.setAttribute("currentPage", "books");
                 request.setAttribute("pageTitle", "Thêm sách mới – FPT Library");
-                request.setAttribute("selectedAuthorIds", getSelectedAuthorIds(request));
+                request.setAttribute("selectedAuthorIds", authorIds);
                 loadFormData(request);
                 request.getRequestDispatcher("/book_form.jsp").forward(request, response);
                 return;
@@ -197,7 +201,6 @@ public class BookDetailServlet extends HttpServlet {
             int newId = dao.createBook(book);
             if (newId > 0) {
                 // Set authors
-                List<Integer> authorIds = getSelectedAuthorIds(request);
                 if (!authorIds.isEmpty()) {
                     dao.setBookAuthors(newId, authorIds);
                 }
@@ -252,6 +255,10 @@ public class BookDetailServlet extends HttpServlet {
 
             // Validate
             List<String> errors = validateBook(book, dao, false, id);
+            List<Integer> authorIds = getSelectedAuthorIds(request);
+            if (authorIds.isEmpty()) {
+                errors.add("Vui lòng chọn ít nhất một tác giả.");
+            }
             if (!errors.isEmpty()) {
                 request.setAttribute("formMode", "edit");
                 request.setAttribute("book", book);
@@ -259,7 +266,7 @@ public class BookDetailServlet extends HttpServlet {
                 request.setAttribute("hasCopies", hasCopies);
                 request.setAttribute("currentPage", "books");
                 request.setAttribute("pageTitle", "Sửa sách – FPT Library");
-                request.setAttribute("selectedAuthorIds", getSelectedAuthorIds(request));
+                request.setAttribute("selectedAuthorIds", authorIds);
                 loadFormData(request);
                 request.getRequestDispatcher("/book_form.jsp").forward(request, response);
                 return;
@@ -268,7 +275,6 @@ public class BookDetailServlet extends HttpServlet {
             boolean updated = dao.updateBook(book);
             if (updated) {
                 // Update authors
-                List<Integer> authorIds = getSelectedAuthorIds(request);
                 dao.setBookAuthors(id, authorIds);
                 response.sendRedirect(ctx + "/book/detail?id=" + id + "&success=updated");
             } else {

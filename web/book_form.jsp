@@ -142,7 +142,8 @@
 
                         <!-- Authors -->
                         <div class="form-group">
-                            <label for="authorSelect" class="form-label">Tác giả</label>
+                            <label for="authorSelect" class="form-label">Tác giả <span class="required">*</span></label>
+                            <input type="text" id="authorSearch" placeholder="🔍 Nhập để tìm kiếm tác giả nhanh..." class="form-control" style="margin-bottom: 8px; font-size: 13.5px; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px;">
                             <select id="authorSelect" name="authorIds" class="form-select" multiple
                                     size="5" style="min-height:120px;">
                                 <% if (authorsList != null) {
@@ -293,6 +294,20 @@ function syncAvailable() {
 
 // ---- Client-side validation ----
 document.getElementById('bookForm').addEventListener('submit', function(e) {
+    // Restore all original author options to DOM before validation and submission
+    var select = document.getElementById('authorSelect');
+    if (select && window.originalAuthorOptions && window.originalAuthorOptions.length > 0) {
+        select.innerHTML = '';
+        for (var i = 0; i < window.originalAuthorOptions.length; i++) {
+            var opt = window.originalAuthorOptions[i];
+            var el = document.createElement('option');
+            el.value = opt.value;
+            el.text = opt.text;
+            el.selected = opt.selected;
+            select.appendChild(el);
+        }
+    }
+
     var titleVal = document.getElementById('titleInput').value.trim();
     var isbnVal  = document.getElementById('isbnInput').value.trim();
     var catVal   = document.getElementById('categorySelect').value;
@@ -303,6 +318,19 @@ document.getElementById('bookForm').addEventListener('submit', function(e) {
     if (!isbnVal)         errors.push('ISBN không được để trống.');
     if (isbnVal.length > 20)  errors.push('ISBN không vượt quá 20 ký tự.');
     if (!catVal)          errors.push('Vui lòng chọn danh mục.');
+
+    // Enforce author selection
+    var selectedAuthorsCount = 0;
+    if (select) {
+        for (var i = 0; i < select.options.length; i++) {
+            if (select.options[i].selected) {
+                selectedAuthorsCount++;
+            }
+        }
+    }
+    if (selectedAuthorsCount === 0) {
+        errors.push('Vui lòng chọn ít nhất một tác giả.');
+    }
 
     var yearVal = document.getElementById('publishYearInput').value.trim();
     if (yearVal) {
@@ -322,6 +350,69 @@ document.getElementById('bookForm').addEventListener('submit', function(e) {
     if (errors.length > 0) {
         e.preventDefault();
         alert(errors.join('\n'));
+
+        // Re-apply search filter after blocking submit so UI doesn't reset unexpectedly
+        var searchInput = document.getElementById('authorSearch');
+        if (searchInput && select) {
+            var filter = searchInput.value.toLowerCase().trim();
+            select.innerHTML = '';
+            for (var i = 0; i < window.originalAuthorOptions.length; i++) {
+                var opt = window.originalAuthorOptions[i];
+                if (opt.text.toLowerCase().indexOf(filter) > -1) {
+                    var el = document.createElement('option');
+                    el.value = opt.value;
+                    el.text = opt.text;
+                    el.selected = opt.selected;
+                    select.appendChild(el);
+                }
+            }
+        }
     }
 });
+
+// ---- Searchable Author Select Box ----
+(function() {
+    var searchInput = document.getElementById('authorSearch');
+    var select = document.getElementById('authorSelect');
+    if (!searchInput || !select) return;
+
+    window.originalAuthorOptions = [];
+    for (var i = 0; i < select.options.length; i++) {
+        window.originalAuthorOptions.push({
+            value: select.options[i].value,
+            text: select.options[i].text,
+            selected: select.options[i].selected
+        });
+    }
+
+    // Sync selected state on manual selection changes
+    select.addEventListener('change', function() {
+        for (var i = 0; i < select.options.length; i++) {
+            var val = select.options[i].value;
+            var isSel = select.options[i].selected;
+            for (var j = 0; j < window.originalAuthorOptions.length; j++) {
+                if (window.originalAuthorOptions[j].value === val) {
+                    window.originalAuthorOptions[j].selected = isSel;
+                    break;
+                }
+            }
+        }
+    });
+
+    // Rebuild options on search input
+    searchInput.addEventListener('input', function() {
+        var filter = this.value.toLowerCase().trim();
+        select.innerHTML = '';
+        for (var i = 0; i < window.originalAuthorOptions.length; i++) {
+            var opt = window.originalAuthorOptions[i];
+            if (opt.text.toLowerCase().indexOf(filter) > -1) {
+                var el = document.createElement('option');
+                el.value = opt.value;
+                el.text = opt.text;
+                el.selected = opt.selected;
+                select.appendChild(el);
+            }
+        }
+    });
+})();
 </script>
