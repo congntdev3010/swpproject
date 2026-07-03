@@ -32,6 +32,7 @@
                         <div class="form-group">
                             <label for="username">Tên đăng nhập</label>
                             <input type="text" id="username" name="username"
+                                   value="${param.username}"
                                    required placeholder="Nhập tên đăng nhập"
                                    class="form-control">
                         </div>

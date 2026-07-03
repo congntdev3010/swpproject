@@ -219,7 +219,7 @@
                                 Giá <i class="fa-solid <%= "price".equals(sortField) ? ("ASC".equals(sortOrder)?"fa-sort-up":"fa-sort-down") : "fa-sort" %> sort-icon fa-xs"></i>
                             </a>
                         </th>
-                        <% if (isAdmin) { %><th style="width:140px; text-align:center;">Thao tác</th><% } %>
+                        <% if (isAdmin || (loggedUser != null && !isAdminLib)) { %><th style="width:140px; text-align:center;">Thao tác</th><% } %>
                     </tr>
                 </thead>
                 <tbody>
@@ -260,9 +260,10 @@
                                 <% } %>
                             </td>
                             <td style="font-weight:600; color:var(--accent);"><%= b.getFormattedPrice() %></td>
-                            <% if (isAdmin) { %>
+                            <% if (isAdmin || (loggedUser != null && !isAdminLib)) { %>
                             <td style="text-align:center;">
                                 <div style="display:flex; gap:6px; justify-content:center;">
+                                    <% if (isAdmin) { %>
                                     <a href="<%= ctx %>/book/detail?id=<%= b.getId() %>"
                                        class="btn btn-outline btn-sm" title="Xem chi tiết">
                                         <i class="fa-solid fa-eye"></i>
