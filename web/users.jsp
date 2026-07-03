@@ -1,97 +1,376 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.List" %>
 <%@ page import="com.swp391.model.User" %>
-<jsp:include page="/WEB-INF/jsp/header.jsp" />
-<div class="container" style="padding:2rem;">
-    <h2>Quản lý người dùng</h2>
-    <% if (request.getAttribute("error") != null) { %>
-        <div class="alert alert-danger"><%= request.getAttribute("error") %></div>
-    <% } %>
-    <% if (request.getAttribute("success") != null) { %>
-        <div class="alert alert-success"><%= request.getAttribute("success") %></div>
-    <% } %>
+<%@ include file="/WEB-INF/jsp/header.jsp" %>
+<%
+    List<User> users = (List<User>) request.getAttribute("users");
+    Integer totalRecords = (Integer) request.getAttribute("totalRecords");
+    Integer totalPages   = (Integer) request.getAttribute("totalPages");
+    Integer currentPageNum = (Integer) request.getAttribute("currentPageNum");
+    String q           = (String) request.getAttribute("q");
+    String roleFilter  = (String) request.getAttribute("roleFilter");
+    Integer activeFilter = (Integer) request.getAttribute("activeFilter");
+    String sortField   = (String) request.getAttribute("sortField");
+    String sortOrder   = (String) request.getAttribute("sortOrder");
 
-    <form method="get" action="<%= request.getContextPath() %>/users" style="margin-bottom:1rem;">
-        <input type="text" name="q" placeholder="Tìm theo tên đăng nhập, tên đầy đủ, email" value="<%= request.getAttribute("q") != null ? request.getAttribute("q") : "" %>" />
-        <select name="role">
-            <option value="">-- Tất cả vai trò --</option>
-            <option value="ADMIN" <%= "ADMIN".equals(request.getAttribute("roleFilter")) ? "selected" : "" %>>ADMIN</option>
-            <option value="LIBRARIAN" <%= "LIBRARIAN".equals(request.getAttribute("roleFilter")) ? "selected" : "" %>>LIBRARIAN</option>
-            <option value="READER" <%= "READER".equals(request.getAttribute("roleFilter")) ? "selected" : "" %>>READER</option>
-        </select>
-        <select name="active">
-            <option value="">-- Tất cả trạng thái --</option>
-            <option value="1" <%= Integer.valueOf(1).equals(request.getAttribute("activeFilter")) ? "selected" : "" %>>Active</option>
-            <option value="0" <%= Integer.valueOf(0).equals(request.getAttribute("activeFilter")) ? "selected" : "" %>>Locked</option>
-        </select>
-        <button class="btn">Tìm</button>
-    </form>
+    // Read session messages (pattern consistent with author/category)
+    String sessionSuccess = (String) session.getAttribute("successMsg");
+    if (sessionSuccess != null) { request.setAttribute("successMsg", sessionSuccess); session.removeAttribute("successMsg"); }
+    String sessionError = (String) session.getAttribute("errorMsg");
+    if (sessionError != null) { request.setAttribute("errorMsg", sessionError); session.removeAttribute("errorMsg"); }
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Username</th>
-                <th>Họ tên</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Active</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        <%
-            List<User> users = (List<User>) request.getAttribute("users");
-            User logged = (User) session.getAttribute("loggedUser");
-            if (users != null) {
-                for (User u : users) {
-        %>
-            <tr>
-                <td><%= u.getId() %></td>
-                <td><a href="<%= request.getContextPath()%>/user/profile?id=<%=u.getId()%>"><%= u.getUsername() %></a></td>
-                <td><%= u.getFullName() %></td>
-                <td><%= u.getEmail() %></td>
-                <td><%= u.getRole() %></td>
-                <td><%= u.getActive() == 1 ? "Active" : "Locked" %></td>
-                <td>
-                    <a href="<%= request.getContextPath()%>/user/profile?id=<%=u.getId()%>">View</a>
-                    <% if (logged != null && logged.isAdmin()) { %>
-                        | <form method="post" action="<%= request.getContextPath()%>/admin/users" style="display:inline;">
-                            <input type="hidden" name="action" value="delete" />
-                            <input type="hidden" name="id" value="<%= u.getId() %>" />
-                            <button onclick="return confirm('Xác nhận xóa?')">Delete</button>
-                          </form>
-                        | <form method="post" action="<%= request.getContextPath()%>/admin/users" style="display:inline;">
-                            <input type="hidden" name="action" value="<%= u.getActive()==1?"lock":"unlock" %>" />
-                            <input type="hidden" name="id" value="<%= u.getId() %>" />
-                            <button><%= u.getActive()==1?"Lock":"Unlock" %></button>
-                          </form>
-                    <% } %>
-                </td>
-            </tr>
-        <%      }
-            }
-        %>
-        </tbody>
-    </table>
+    String successMsg = (String) request.getAttribute("successMsg");
+    String errorMsg   = (String) request.getAttribute("errorMsg");
+    // Also support legacy request params from AdminUserServlet redirects
+    if (successMsg == null) successMsg = (String) request.getAttribute("success");
+    if (errorMsg   == null) errorMsg   = (String) request.getAttribute("error");
 
-    <% if (session.getAttribute("loggedUser") != null && ((User)session.getAttribute("loggedUser")).isAdmin()) { %>
-        <h3>Tạo người dùng mới</h3>
-        <form method="post" action="<%= request.getContextPath()%>/admin/users">
-            <input type="hidden" name="action" value="create" />
-            <input name="username" placeholder="username" required />
-            <input name="password" placeholder="password" />
-            <input name="fullName" placeholder="Họ tên" />
-            <input name="email" placeholder="Email" />
-            <select name="role">
-                <option value="READER">READER</option>
-                <option value="LIBRARIAN">LIBRARIAN</option>
-                <option value="ADMIN">ADMIN</option>
-            </select>
-            <button type="submit">Tạo</button>
+    User logged = (User) session.getAttribute("loggedUser");
+    boolean isAdmin = (logged != null && logged.isAdmin());
+    String ctx = request.getContextPath();
+
+    if (totalRecords   == null) totalRecords   = (users != null ? users.size() : 0);
+    if (totalPages     == null) totalPages     = 1;
+    if (currentPageNum == null) currentPageNum = 1;
+    if (q              == null) q              = "";
+    if (sortField      == null) sortField      = "username";
+    if (sortOrder      == null) sortOrder      = "ASC";
+
+    String nextOrder = "ASC".equals(sortOrder) ? "DESC" : "ASC";
+%>
+
+<main class="page-wrapper">
+
+    <!-- ===== PAGE HEADER ===== -->
+    <div class="books-page-header">
+        <div class="container">
+            <div class="books-page-header-inner">
+                <div>
+                    <div class="hero-eyebrow" style="margin-bottom:10px;">
+                        <i class="fa-solid fa-users"></i> Người dùng
+                    </div>
+                    <h1 class="books-page-title">Quản lý Người dùng</h1>
+                    <p class="books-page-subtitle">Xem, tìm kiếm và quản lý tài khoản trong hệ thống thư viện</p>
+                </div>
+                <div class="books-page-stats">
+                    <div class="bps-item">
+                        <span class="bps-num"><%= totalRecords %></span>
+                        <span class="bps-lbl">Người dùng</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container" style="padding-top:28px;">
+
+        <!-- ===== SEARCH BAR ===== -->
+        <form id="searchForm" action="<%= ctx %>/user" method="get">
+            <input type="hidden" name="sort"  value="<%= sortField %>">
+            <input type="hidden" name="order" value="<%= sortOrder %>">
+            <input type="hidden" name="page"  value="1">
+
+            <div class="search-bar-wrapper">
+                <div class="search-bar-inner">
+                    <!-- Keyword -->
+                    <div class="search-field" style="flex:2;">
+                        <label for="keywordInput">Tìm kiếm người dùng</label>
+                        <div class="search-input-wrap">
+                            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                            <input type="text" id="keywordInput" name="q"
+                                   class="form-control"
+                                   placeholder="Tìm theo tên đăng nhập, họ tên, email..."
+                                   value="<%= q %>"
+                                   maxlength="200"
+                                   autocomplete="off">
+                        </div>
+                    </div>
+
+                    <!-- Role filter -->
+                    <div class="search-field select-field">
+                        <label for="roleSelect">Vai trò</label>
+                        <select id="roleSelect" name="role" class="form-select">
+                            <option value="">-- Tất cả vai trò --</option>
+                            <option value="ADMIN"     <%= "ADMIN".equals(roleFilter)     ? "selected" : "" %>>ADMIN</option>
+                            <option value="LIBRARIAN" <%= "LIBRARIAN".equals(roleFilter) ? "selected" : "" %>>LIBRARIAN</option>
+                            <option value="READER"    <%= "READER".equals(roleFilter)    ? "selected" : "" %>>READER</option>
+                        </select>
+                    </div>
+
+                    <!-- Active filter -->
+                    <div class="search-field select-field">
+                        <label for="activeSelect">Trạng thái</label>
+                        <select id="activeSelect" name="active" class="form-select">
+                            <option value="">-- Tất cả --</option>
+                            <option value="1" <%= Integer.valueOf(1).equals(activeFilter) ? "selected" : "" %>>Active</option>
+                            <option value="0" <%= Integer.valueOf(0).equals(activeFilter) ? "selected" : "" %>>Locked</option>
+                        </select>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div style="display:flex; gap:8px; align-items:flex-end;">
+                        <button type="submit" class="btn btn-primary" id="searchBtn">
+                            <i class="fa-solid fa-search"></i> Tìm
+                        </button>
+                        <a href="<%= ctx %>/user" class="btn btn-outline" title="Xóa bộ lọc">
+                            <i class="fa-solid fa-rotate-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
         </form>
-    <% } %>
 
+        <!-- ===== NOTIFICATIONS ===== -->
+        <% if (successMsg != null) { %>
+            <div class="alert alert-success">
+                <i class="fa-solid fa-circle-check"></i> <%= successMsg %>
+            </div>
+        <% } %>
+        <% if (errorMsg != null) { %>
+            <div class="alert alert-danger">
+                <i class="fa-solid fa-circle-exclamation"></i> <%= errorMsg %>
+            </div>
+        <% } %>
+
+        <!-- ===== TOPBAR ===== -->
+        <div class="books-topbar" style="margin-top: 20px;">
+            <div class="results-info" style="margin-bottom:0;">
+                <% if (!q.isEmpty() || roleFilter != null && !roleFilter.isEmpty() || activeFilter != null) { %>
+                    <i class="fa-solid fa-filter fa-xs" style="color:var(--primary);"></i>
+                    Kết quả: <strong><%= totalRecords %></strong> người dùng
+                <% } else { %>
+                    <i class="fa-solid fa-users fa-xs" style="color:var(--primary); margin-right:4px;"></i>
+                    Tổng cộng <strong><%= totalRecords %></strong> người dùng
+                <% } %>
+            </div>
+
+            <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                <!-- Sort -->
+                <div class="sort-group">
+                    <span class="sort-label"><i class="fa-solid fa-arrow-up-wide-short"></i> Sắp xếp:</span>
+                    <%
+                        String[][] sortOptions = {
+                            {"username", "Tên đăng nhập"},
+                            {"full_name","Họ tên"},
+                            {"role",     "Vai trò"},
+                            {"active",   "Trạng thái"}
+                        };
+                        for (String[] so : sortOptions) {
+                            String sf = so[0], sl = so[1];
+                            boolean active = sf.equals(sortField);
+                            String thisOrder = active ? nextOrder : "ASC";
+                            String icon = active ? ("ASC".equals(sortOrder) ? " ▲" : " ▼") : "";
+                    %>
+                        <a href="<%= ctx %>/user?q=<%= java.net.URLEncoder.encode(q,"UTF-8") %>&role=<%= roleFilter != null ? roleFilter : "" %>&active=<%= activeFilter != null ? activeFilter : "" %>&sort=<%= sf %>&order=<%= thisOrder %>&page=1"
+                           class="sort-btn <%= active ? "sort-btn-active" : "" %>">
+                            <%= sl %><%= icon %>
+                        </a>
+                    <% } %>
+                </div>
+
+                <!-- Admin: Thêm người dùng button -->
+                <% if (isAdmin) { %>
+                    <button type="button" class="btn btn-primary btn-sm" onclick="document.getElementById('createUserModal').style.display='flex'">
+                        <i class="fa-solid fa-plus"></i> Thêm người dùng
+                    </button>
+                <% } %>
+            </div>
+        </div>
+
+        <!-- ===== USERS TABLE CARD ===== -->
+        <div class="admin-card" style="background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: 1px solid #e5e7eb; overflow: hidden; margin-top: 15px;">
+            <div class="admin-section-head" style="padding: 20px 24px; border-bottom: 1px solid #f3f4f6; display: flex; justify-content: space-between; align-items: center;">
+                <h2 style="font-size: 18px; font-weight: 600; color: #111827; margin: 0;">Danh sách người dùng</h2>
+                <span style="font-size: 13px; color: #6b7280; font-weight: 500;"><%= totalRecords %> bản ghi</span>
+            </div>
+
+            <div class="admin-table-wrap" style="overflow-x: auto;">
+                <table class="admin-table" style="width: 100%; border-collapse: collapse; text-align: left;">
+                    <thead>
+                        <tr style="background: #f9fafb; border-bottom: 1px solid #e5e7eb;">
+                            <th style="padding: 14px 24px; font-weight: 600; font-size: 13px; color: #4b5563; width:60px;">ID</th>
+                            <th style="padding: 14px 24px; font-weight: 600; font-size: 13px; color: #4b5563;">Tên đăng nhập</th>
+                            <th style="padding: 14px 24px; font-weight: 600; font-size: 13px; color: #4b5563;">Họ tên</th>
+                            <th style="padding: 14px 24px; font-weight: 600; font-size: 13px; color: #4b5563;">Email</th>
+                            <th style="padding: 14px 24px; font-weight: 600; font-size: 13px; color: #4b5563;">Vai trò</th>
+                            <th style="padding: 14px 24px; font-weight: 600; font-size: 13px; color: #4b5563;">Trạng thái</th>
+                            <th style="padding: 14px 16px; font-weight: 600; font-size: 13px; color: #4b5563; text-align: center; min-width: 200px;">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <%
+                        if (users != null && !users.isEmpty()) {
+                            for (User u : users) {
+                                String roleClass = "ADMIN".equals(u.getRole()) ? "badge-danger" :
+                                                   "LIBRARIAN".equals(u.getRole()) ? "badge-warning" : "badge-primary";
+                    %>
+                        <tr style="border-bottom: 1px solid #f3f4f6; transition: background 0.15s;" class="copy-row">
+                            <td style="padding: 16px 24px; color: #6b7280; font-weight: 600;"><%= u.getId() %></td>
+                            <td style="padding: 16px 24px; font-weight: 500; color: #111827;">
+                                <a href="<%= ctx %>/user/profile?id=<%= u.getId() %>" style="color: #3b82f6; text-decoration: none; font-weight: 600;">
+                                    <%= u.getUsername() %>
+                                </a>
+                            </td>
+                            <td style="padding: 16px 24px; color: #374151;"><%= u.getFullName() != null ? u.getFullName() : "—" %></td>
+                            <td style="padding: 16px 24px; color: #6b7280; font-size: 13.5px;"><%= u.getEmail() != null ? u.getEmail() : "—" %></td>
+                            <td style="padding: 16px 24px;">
+                                <span class="badge <%= roleClass %>"><%= u.getRole() %></span>
+                            </td>
+                            <td style="padding: 16px 24px;">
+                                <% if (u.getActive() == 1) { %>
+                                    <span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:0.76rem;font-weight:600;background:#d1fae5;color:#065f46;">
+                                        <i class="fa-solid fa-circle" style="font-size:7px;"></i> Active
+                                    </span>
+                                <% } else { %>
+                                    <span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:0.76rem;font-weight:600;background:#fee2e2;color:#991b1b;">
+                                        <i class="fa-solid fa-circle" style="font-size:7px;"></i> Locked
+                                    </span>
+                                <% } %>
+                            </td>
+                            <td style="padding: 12px 16px; text-align: center;">
+                                <div class="admin-row-actions" style="display: flex; gap: 6px; justify-content: center; flex-wrap: nowrap; align-items: center;">
+                                    <a href="<%= ctx %>/user/profile?id=<%= u.getId() %>"
+                                       style="border: 1px solid #d1d5db; padding: 5px 10px; border-radius: 6px; text-decoration: none; color: #6b7280; font-weight: 500; display: inline-flex; align-items: center; gap: 4px; font-size: 12px; white-space:nowrap;">
+                                        <i class="fa-solid fa-eye"></i> Xem
+                                    </a>
+                                    <% if (logged != null && logged.isAdmin()) { %>
+                                    <form method="post" action="<%= ctx %>/user" style="display:inline;margin:0;">
+                                        <input type="hidden" name="action" value="<%= u.getActive()==1 ? "lock" : "unlock" %>">
+                                        <input type="hidden" name="id" value="<%= u.getId() %>">
+                                        <button type="submit"
+                                                style="padding: 5px 10px; border-radius: 6px; border: 1px solid <%= u.getActive()==1 ? "#fcd34d" : "#6ee7b7" %>; background: <%= u.getActive()==1 ? "#fef9c3" : "#d1fae5" %>; color: <%= u.getActive()==1 ? "#92400e" : "#065f46" %>; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; font-size: 12px; white-space:nowrap;">
+                                            <i class="fa-solid <%= u.getActive()==1 ? "fa-lock" : "fa-lock-open" %>"></i>
+                                            <%= u.getActive()==1 ? "Khóa" : "Mở khóa" %>
+                                        </button>
+                                    </form>
+                                    <form method="post" action="<%= ctx %>/user" style="display:inline;margin:0;"
+                                          onsubmit="return confirm('Xác nhận xóa người dùng <%= u.getUsername().replace("'", "\\'") %>?')">
+                                        <input type="hidden" name="action" value="delete">
+                                        <input type="hidden" name="id" value="<%= u.getId() %>">
+                                        <button type="submit"
+                                                style="background: #fee2e2; border: 1px solid #fecaca; padding: 5px 10px; border-radius: 6px; color: #ef4444; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; font-size: 12px; white-space:nowrap;">
+                                            <i class="fa-solid fa-trash"></i> Xóa
+                                        </button>
+                                    </form>
+                                    <% } %>
+                                </div>
+                            </td>
+                        </tr>
+                    <%
+                            }
+                        } else {
+                    %>
+                        <tr>
+                            <td colspan="7" style="padding: 40px; text-align: center;">
+                                <div class="empty-state">
+                                    <div style="font-size: 48px; margin-bottom: 12px;">👤</div>
+                                    <h3 style="font-size: 16px; font-weight: 600; color: #4b5563; margin: 0 0 6px 0;">Không tìm thấy người dùng</h3>
+                                    <p style="margin: 0; font-size: 14px; color: #9ca3af;">Hãy thử tìm kiếm với từ khóa khác.</p>
+                                </div>
+                            </td>
+                        </tr>
+                    <% } %>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- ===== PAGINATION ===== -->
+            <% if (totalPages > 1) { %>
+            <div style="padding: 16px 24px; border-top: 1px solid #e5e7eb; display: flex; justify-content: center; background: #f9fafb;">
+                <nav aria-label="Page navigation" class="pagination" style="display: inline-flex; gap: 6px; list-style: none; padding: 0; margin: 0;">
+                    <a class="page-link" href="<%= ctx %>/user?q=<%= java.net.URLEncoder.encode(q,"UTF-8") %>&role=<%= roleFilter != null ? roleFilter : "" %>&active=<%= activeFilter != null ? activeFilter : "" %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= currentPageNum - 1 %>"
+                       style="padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; text-decoration: none; color: #374151; font-weight: 500; background: white; <%= currentPageNum == 1 ? "pointer-events: none; opacity: 0.5;" : "" %>">
+                        <i class="fa-solid fa-angle-left"></i> Trước
+                    </a>
+                    <% for (int pg = 1; pg <= totalPages; pg++) { %>
+                        <a class="page-link" href="<%= ctx %>/user?q=<%= java.net.URLEncoder.encode(q,"UTF-8") %>&role=<%= roleFilter != null ? roleFilter : "" %>&active=<%= activeFilter != null ? activeFilter : "" %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= pg %>"
+                           style="padding: 8px 14px; border: 1px solid <%= pg == currentPageNum ? "#3b82f6" : "#d1d5db" %>; border-radius: 6px; text-decoration: none; font-weight: 500; <%= pg == currentPageNum ? "background: #3b82f6; color: white;" : "background: white; color: #374151;" %>">
+                            <%= pg %>
+                        </a>
+                    <% } %>
+                    <a class="page-link" href="<%= ctx %>/user?q=<%= java.net.URLEncoder.encode(q,"UTF-8") %>&role=<%= roleFilter != null ? roleFilter : "" %>&active=<%= activeFilter != null ? activeFilter : "" %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= currentPageNum + 1 %>"
+                       style="padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; text-decoration: none; color: #374151; font-weight: 500; background: white; <%= currentPageNum >= totalPages ? "pointer-events: none; opacity: 0.5;" : "" %>">
+                        Sau <i class="fa-solid fa-angle-right"></i>
+                    </a>
+                </nav>
+            </div>
+            <% } %>
+        </div>
+    </div>
+</main>
+
+<!-- ===== CREATE USER MODAL (Admin only) ===== -->
+<% if (isAdmin) { %>
+<div id="createUserModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center; backdrop-filter:blur(4px);">
+    <div style="background:#fff; border-radius:16px; padding:36px; max-width:520px; width:92%; box-shadow:0 20px 60px rgba(0,0,0,0.2); position:relative; max-height:90vh; overflow-y:auto;">
+        <div style="position:absolute; top:0; left:0; right:0; height:4px; background:linear-gradient(to right,#3b82f6,#8b5cf6); border-radius:16px 16px 0 0;"></div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+            <h3 style="font-size:1.2rem; font-weight:700; color:#111827; margin:0;">
+                <i class="fa-solid fa-user-plus" style="color:#3b82f6;"></i> Tạo người dùng mới
+            </h3>
+            <button onclick="document.getElementById('createUserModal').style.display='none'"
+                    style="background:none;border:none;font-size:1.4rem;cursor:pointer;color:#9ca3af;line-height:1;">×</button>
+        </div>
+        <form method="post" action="<%= ctx %>/user">
+            <input type="hidden" name="action" value="create">
+            <div style="display:grid; gap:14px;">
+                <div>
+                    <label style="font-size:13px;font-weight:600;color:#374151;display:block;margin-bottom:5px;">Tên đăng nhập *</label>
+                    <input name="username" required placeholder="Nhập username..."
+                           style="width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;box-sizing:border-box;">
+                </div>
+                <div>
+                    <label style="font-size:13px;font-weight:600;color:#374151;display:block;margin-bottom:5px;">Mật khẩu</label>
+                    <input name="password" type="password" placeholder="Mặc định: password"
+                           style="width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;box-sizing:border-box;">
+                </div>
+                <div>
+                    <label style="font-size:13px;font-weight:600;color:#374151;display:block;margin-bottom:5px;">Họ và tên</label>
+                    <input name="fullName" placeholder="Nhập họ tên..."
+                           style="width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;box-sizing:border-box;">
+                </div>
+                <div>
+                    <label style="font-size:13px;font-weight:600;color:#374151;display:block;margin-bottom:5px;">Email</label>
+                    <input name="email" type="email" placeholder="Nhập email..."
+                           style="width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;box-sizing:border-box;">
+                </div>
+                <div>
+                    <label style="font-size:13px;font-weight:600;color:#374151;display:block;margin-bottom:5px;">Số điện thoại</label>
+                    <input name="phone" placeholder="Nhập số điện thoại..."
+                           style="width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;box-sizing:border-box;">
+                </div>
+                <div>
+                    <label style="font-size:13px;font-weight:600;color:#374151;display:block;margin-bottom:5px;">Mã sinh viên</label>
+                    <input name="studentId" placeholder="Nhập mã sinh viên..."
+                           style="width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;box-sizing:border-box;">
+                </div>
+                <div>
+                    <label style="font-size:13px;font-weight:600;color:#374151;display:block;margin-bottom:5px;">Vai trò</label>
+                    <select name="role" style="width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;box-sizing:border-box;">
+                        <option value="READER">READER</option>
+                        <option value="LIBRARIAN">LIBRARIAN</option>
+                        <option value="ADMIN">ADMIN</option>
+                    </select>
+                </div>
+            </div>
+            <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:24px;">
+                <button type="button" onclick="document.getElementById('createUserModal').style.display='none'"
+                        style="padding:10px 20px;border:1px solid #d1d5db;border-radius:8px;background:white;color:#374151;font-weight:600;cursor:pointer;">
+                    Hủy
+                </button>
+                <button type="submit"
+                        style="padding:10px 20px;border:none;border-radius:8px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:white;font-weight:600;cursor:pointer;">
+                    <i class="fa-solid fa-plus"></i> Tạo người dùng
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
-<jsp:include page="/WEB-INF/jsp/footer.jsp" />
+<script>
+document.getElementById('createUserModal').addEventListener('click', function(e) {
+    if (e.target === this) this.style.display = 'none';
+});
+</script>
+<% } %>
 
+<%@ include file="/WEB-INF/jsp/footer.jsp" %>

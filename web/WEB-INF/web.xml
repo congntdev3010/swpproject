@@ -82,14 +82,7 @@
         <url-pattern>/user/profile</url-pattern>
     </servlet-mapping>
 
-    <servlet>
-        <servlet-name>AdminUserServlet</servlet-name>
-        <servlet-class>com.swp391.servlet.AdminUserServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>AdminUserServlet</servlet-name>
-        <url-pattern>/admin/users</url-pattern>
-    </servlet-mapping>
+
 
     <servlet>
         <servlet-name>BookDetailServlet</servlet-name>

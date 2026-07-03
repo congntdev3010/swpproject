@@ -98,6 +98,26 @@
                     <%= book.getStatusLabel() %>
                 </span>
             </div>
+
+            <!-- User: Đặt trước button -->
+            <% if (loggedUser != null && !loggedUser.isAdminOrLibrarian()) { %>
+            <div class="book-detail-actions" style="margin-top:14px;">
+                <form method="post" action="<%= ctx %>/reservation/create" style="width:100%; margin:0;">
+                    <input type="hidden" name="bookId" value="<%= book.getId() %>">
+                    <button type="submit"
+                            style="width:100%; padding:12px 20px; border:none; border-radius:10px;
+                                   background:linear-gradient(135deg,#667eea,#764ba2);
+                                   color:#fff; font-size:0.95rem; font-weight:700; cursor:pointer;
+                                   display:flex; align-items:center; justify-content:center; gap:8px;
+                                   box-shadow:0 4px 15px rgba(102,126,234,0.4);
+                                   transition:opacity 0.2s;"
+                            onmouseover="this.style.opacity='0.88'" onmouseout="this.style.opacity='1'">
+                        <i class="fa-solid fa-bookmark"></i> Đặt trước sách này
+                    </button>
+                </form>
+            </div>
+            <% } %>
+
             <!-- Admin Actions -->
             <% if (isAdmin) { %>
             <div class="book-detail-actions">
