@@ -17,13 +17,26 @@
 %>
 <%@ include file="/WEB-INF/jsp/header.jsp" %>
 
-<div class="page-hero" style="background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);padding:3rem 0 2rem;">
+<div class="books-page-header">
     <div class="container">
-        <div style="display:flex;align-items:center;gap:1rem;">
-            <div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#f093fb,#f5576c);display:flex;align-items:center;justify-content:center;font-size:1.4rem;">📌</div>
+        <div class="books-page-header-inner">
             <div>
-                <h1 style="color:#fff;font-size:1.8rem;font-weight:700;margin:0;"><%= isStaff ? "Quản lý đặt trước sách" : "Phiếu đặt trước của tôi" %></h1>
-                <p style="color:rgba(255,255,255,0.6);margin:0;font-size:0.9rem;">Đặt trước · Xác nhận · Hủy phiếu</p>
+                <div class="hero-eyebrow" style="margin-bottom:10px;">
+                    <i class="fa-solid fa-bookmark"></i> Đặt trước
+                </div>
+                <h1 class="books-page-title"><%= isStaff ? "Quản lý đặt trước sách" : "Phiếu đặt trước của tôi" %></h1>
+                <p class="books-page-subtitle">Quản lý và theo dõi các yêu cầu đặt trước sách của độc giả</p>
+            </div>
+            <div class="books-page-stats">
+                <div class="bps-item">
+                    <span class="bps-num"><%= activeCount %></span>
+                    <span class="bps-lbl">Đang đặt</span>
+                </div>
+                <div class="bps-divider"></div>
+                <div class="bps-item">
+                    <span class="bps-num"><%= maxLimit %></span>
+                    <span class="bps-lbl">Giới hạn</span>
+                </div>
             </div>
         </div>
     </div>
@@ -66,8 +79,8 @@
             <form method="post" action="<%= request.getContextPath() %>/reservation/create" style="display:flex;gap:0.5rem;">
                 <input type="number" name="bookId" placeholder="Nhập Book ID..." required
                        style="flex:1;padding:0.5rem 0.8rem;border:1px solid #ddd;border-radius:8px;">
-                <button type="submit"
-                        style="padding:0.5rem 1rem;background:linear-gradient(135deg,#667eea,#764ba2);border:none;color:#fff;border-radius:8px;cursor:pointer;font-weight:600;white-space:nowrap;">
+                <button type="submit" class="btn btn-primary"
+                        style="padding:0.5rem 1rem;background:linear-gradient(135deg,var(--primary),var(--primary-dark));border:none;color:#fff;border-radius:8px;cursor:pointer;font-weight:600;white-space:nowrap;">
                     <i class="fa-solid fa-plus"></i> Đặt trước
                 </button>
             </form>
@@ -87,7 +100,7 @@
                 <option value="COMPLETED" <%= "COMPLETED".equals(statusFilter) ? "selected" : "" %>>Hoàn thành</option>
                 <option value="CANCELLED" <%= "CANCELLED".equals(statusFilter) ? "selected" : "" %>>Đã hủy</option>
             </select>
-            <button type="submit" style="padding:0.5rem 1rem;background:linear-gradient(135deg,#e94560,#c62a47);border:none;color:#fff;border-radius:8px;cursor:pointer;">
+            <button type="submit" class="btn btn-primary" style="padding:0.5rem 1rem;background:linear-gradient(135deg,var(--primary),var(--primary-dark));border:none;color:#fff;border-radius:8px;cursor:pointer;">
                 <i class="fa-solid fa-magnifying-glass"></i> Tìm
             </button>
         </form>
@@ -95,16 +108,16 @@
     <% } %>
 
     <!-- Table -->
-    <div style="background:#fff;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,0.06);overflow:hidden;">
-        <table style="width:100%;border-collapse:collapse;">
-            <thead style="background:linear-gradient(135deg,#1a1a2e,#16213e);color:#fff;">
+    <div class="data-table-wrap">
+        <table class="data-table">
+            <thead>
                 <tr>
-                    <th style="padding:1rem 0.8rem;text-align:left;font-weight:600;">ID</th>
-                    <% if (isStaff) { %><th style="padding:1rem 0.8rem;text-align:left;font-weight:600;">Người đặt</th><% } %>
-                    <th style="padding:1rem 0.8rem;text-align:left;font-weight:600;">Sách</th>
-                    <th style="padding:1rem 0.8rem;text-align:left;font-weight:600;">Ngày đặt</th>
-                    <th style="padding:1rem 0.8rem;text-align:left;font-weight:600;">Trạng thái</th>
-                    <th style="padding:1rem 0.8rem;text-align:center;font-weight:600;">Thao tác</th>
+                    <th style="text-align:left;">ID</th>
+                    <% if (isStaff) { %><th style="text-align:left;">Người đặt</th><% } %>
+                    <th style="text-align:left;">Sách</th>
+                    <th style="text-align:left;">Ngày đặt</th>
+                    <th style="text-align:left;">Trạng thái</th>
+                    <th style="text-align:center;">Thao tác</th>
                 </tr>
             </thead>
             <tbody>
@@ -170,7 +183,7 @@
         <% for (int i = 1; i <= totalPages; i++) { %>
         <a href="?page=<%= i %>&keyword=<%= keyword != null ? keyword : "" %>&status=<%= statusFilter != null ? statusFilter : "" %>"
            style="padding:0.4rem 0.8rem;border-radius:6px;text-decoration:none;border:1px solid #ddd;
-                  background:<%= i == currentPage ? "linear-gradient(135deg,#e94560,#c62a47)" : "#fff" %>;
+                  background:<%= i == currentPage ? "linear-gradient(135deg,var(--primary),var(--primary-dark))" : "#fff" %>;
                   color:<%= i == currentPage ? "#fff" : "#333" %>;">
             <%= i %>
         </a>

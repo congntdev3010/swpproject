@@ -15,13 +15,21 @@
 %>
 <%@ include file="/WEB-INF/jsp/header.jsp" %>
 
-<div class="page-hero" style="background: linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%); padding:3rem 0 2rem;">
+<div class="books-page-header">
     <div class="container">
-        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.5rem;">
-            <div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#e94560,#c62a47);display:flex;align-items:center;justify-content:center;font-size:1.4rem;">📋</div>
+        <div class="books-page-header-inner">
             <div>
-                <h1 style="color:#fff;font-size:1.8rem;font-weight:700;margin:0;">Quản lý Mượn sách</h1>
-                <p style="color:rgba(255,255,255,0.6);margin:0;font-size:0.9rem;">Checkout · Trả sách · Gia hạn</p>
+                <div class="hero-eyebrow" style="margin-bottom:10px;">
+                    <i class="fa-solid fa-hand-holding-hand"></i> Quản lý
+                </div>
+                <h1 class="books-page-title">Quản lý Mượn sách</h1>
+                <p class="books-page-subtitle">Thực hiện mượn sách, trả sách và gia hạn cho độc giả</p>
+            </div>
+            <div class="books-page-stats">
+                <div class="bps-item">
+                    <span class="bps-num"><%= total %></span>
+                    <span class="bps-lbl">Lượt mượn</span>
+                </div>
             </div>
         </div>
     </div>
@@ -76,37 +84,38 @@
                 <option value="OVERDUE" <%= "OVERDUE".equals(statusFilter) ? "selected" : "" %>>Quá hạn</option>
                 <option value="RETURNED" <%= "RETURNED".equals(statusFilter) ? "selected" : "" %>>Đã trả</option>
             </select>
-            <button type="submit" class="btn btn-primary btn-sm" style="padding:0.5rem 1rem;background:linear-gradient(135deg,#e94560,#c62a47);border:none;color:#fff;border-radius:8px;cursor:pointer;">
+            <button type="submit" class="btn btn-primary btn-sm" style="padding:0.5rem 1rem;background:linear-gradient(135deg,var(--primary),var(--primary-dark));border:none;color:#fff;border-radius:8px;cursor:pointer;">
                 <i class="fa-solid fa-magnifying-glass"></i> Tìm
             </button>
         </form>
 
         <!-- Form Checkout -->
         <button onclick="document.getElementById('checkoutModal').style.display='flex'"
-                style="padding:0.55rem 1.2rem;background:linear-gradient(135deg,#28a745,#1e7e34);border:none;color:#fff;border-radius:8px;cursor:pointer;font-weight:600;">
+                style="padding:0.55rem 1.2rem;background:linear-gradient(135deg,var(--primary),var(--primary-dark));border:none;color:#fff;border-radius:8px;cursor:pointer;font-weight:600;">
             <i class="fa-solid fa-plus"></i> Checkout sách
         </button>
     </div>
 
     <!-- Table -->
-    <div style="background:#fff;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,0.06);overflow:hidden;">
-        <table style="width:100%;border-collapse:collapse;">
-            <thead style="background:linear-gradient(135deg,#1a1a2e,#16213e);color:#fff;">
+    <div class="data-table-wrap" style="overflow-x: auto;">
+        <table class="data-table" style="width: 100%; min-width: 1250px; table-layout: auto;">
+            <thead>
                 <tr>
-                    <th style="padding:1rem 0.8rem;text-align:left;font-weight:600;">ID</th>
-                    <th style="padding:1rem 0.8rem;text-align:left;font-weight:600;">Người mượn</th>
-                    <th style="padding:1rem 0.8rem;text-align:left;font-weight:600;">Sách</th>
-                    <th style="padding:1rem 0.8rem;text-align:left;font-weight:600;">Barcode</th>
-                    <th style="padding:1rem 0.8rem;text-align:left;font-weight:600;">Ngày mượn</th>
-                    <th style="padding:1rem 0.8rem;text-align:left;font-weight:600;">Hạn trả</th>
-                    <th style="padding:1rem 0.8rem;text-align:left;font-weight:600;">Trạng thái</th>
-                    <th style="padding:1rem 0.8rem;text-align:center;font-weight:600;">Thao tác</th>
+                    <th style="text-align:left; width: 70px; white-space: nowrap;">ID</th>
+                    <th style="text-align:left; min-width: 200px; white-space: nowrap;">Người mượn</th>
+                    <th style="text-align:left; min-width: 280px; white-space: nowrap;">Sách</th>
+                    <th style="text-align:left; width: 110px; white-space: nowrap;">Barcode</th>
+                    <th style="text-align:left; width: 110px; white-space: nowrap;">Ngày mượn</th>
+                    <th style="text-align:left; width: 110px; white-space: nowrap;">Hạn trả</th>
+                    <th style="text-align:left; width: 110px; white-space: nowrap;">Ngày trả</th>
+                    <th style="text-align:left; width: 120px; white-space: nowrap;">Trạng thái</th>
+                    <th style="text-align:center; width: 180px; min-width: 180px; white-space: nowrap;">Thao tác</th>
                 </tr>
             </thead>
             <tbody>
                 <% if (borrows == null || borrows.isEmpty()) { %>
                 <tr>
-                    <td colspan="8" style="padding:3rem;text-align:center;color:#999;">
+                    <td colspan="9" style="padding:3rem;text-align:center;color:#999;">
                         <i class="fa-solid fa-inbox" style="font-size:2rem;margin-bottom:0.5rem;display:block;"></i>
                         Không có phiếu mượn nào.
                     </td>
@@ -122,20 +131,21 @@
                     </td>
                     <td style="padding:0.8rem;font-weight:500;"><%= b.getBook() != null ? b.getBook().getTitle() : "N/A" %></td>
                     <td style="padding:0.8rem;font-family:monospace;color:#666;"><%= b.getBookCopy() != null ? b.getBookCopy().getBarcode() : "-" %></td>
-                    <td style="padding:0.8rem;color:#555;"><%= b.getBorrowDate() %></td>
-                    <td style="padding:0.8rem;color:<%= isOverdue ? "#e94560" : "#555" %>;font-weight:<%= isOverdue ? "700" : "400" %>;">
+                    <td style="padding:0.8rem;color:#555;white-space:nowrap;"><%= b.getBorrowDate() %></td>
+                    <td style="padding:0.8rem;color:<%= isOverdue ? "#e94560" : "#555" %>;font-weight:<%= isOverdue ? "700" : "400" %>;white-space:nowrap;">
                         <%= b.getDueDate() %><%= isOverdue ? " ⚠️" : "" %>
                     </td>
-                    <td style="padding:0.8rem;">
+                    <td style="padding:0.8rem;color:#555;white-space:nowrap;"><%= b.getReturnDate() != null ? b.getReturnDate() : "-" %></td>
+                    <td style="padding:0.8rem;white-space:nowrap;">
                         <% String st = b.getStatus(); %>
-                        <span style="padding:0.25rem 0.7rem;border-radius:20px;font-size:0.78rem;font-weight:600;
+                        <span style="padding:0.25rem 0.7rem;border-radius:20px;font-size:0.78rem;font-weight:600;white-space:nowrap;
                             background:<%= "BORROWING".equals(st) ? "#e3f2fd" : "OVERDUE".equals(st) ? "#fdecea" : "RETURNED".equals(st) ? "#e8f5e9" : "#f5f5f5" %>;
                             color:<%= "BORROWING".equals(st) ? "#1565c0" : "OVERDUE".equals(st) ? "#c62828" : "RETURNED".equals(st) ? "#2e7d32" : "#555" %>;">
                             <%= "BORROWING".equals(st) ? "Đang mượn" : "OVERDUE".equals(st) ? "Quá hạn" : "RETURNED".equals(st) ? "Đã trả" : st %>
                         </span>
                     </td>
-                    <td style="padding:0.8rem;text-align:center;">
-                        <div style="display:flex;gap:0.4rem;justify-content:center;">
+                    <td style="padding:0.8rem;text-align:center;white-space:nowrap;">
+                        <div style="display:flex;gap:0.4rem;justify-content:center;flex-wrap:nowrap;">
                         <% if (!"RETURNED".equals(b.getStatus())) { %>
                             <form method="post" action="<%= request.getContextPath() %>/borrow/return" onsubmit="return confirm('Xác nhận trả sách?')">
                                 <input type="hidden" name="borrowId" value="<%= b.getId() %>">
@@ -146,8 +156,8 @@
                             </form>
                             <form method="post" action="<%= request.getContextPath() %>/borrow/renew">
                                 <input type="hidden" name="borrowId" value="<%= b.getId() %>">
-                                <button type="submit" title="Gia hạn"
-                                        style="padding:0.3rem 0.7rem;background:#17a2b8;border:none;color:#fff;border-radius:6px;cursor:pointer;font-size:0.8rem;">
+                                <button type="submit"
+                                        style="padding:0.3rem 0.7rem;background:linear-gradient(135deg,var(--primary),var(--primary-dark));border:none;color:#fff;border-radius:6px;cursor:pointer;font-size:0.8rem;">
                                     <i class="fa-solid fa-arrows-rotate"></i> Gia hạn
                                 </button>
                             </form>
@@ -167,9 +177,9 @@
     <div style="display:flex;justify-content:center;gap:0.4rem;margin-top:1.5rem;">
         <% for (int i = 1; i <= totalPages; i++) { %>
         <a href="?page=<%= i %>&keyword=<%= keyword != null ? keyword : "" %>&status=<%= statusFilter != null ? statusFilter : "" %>"
-           style="padding:0.4rem 0.8rem;border-radius:6px;text-decoration:none;border:1px solid #ddd;
-                  background:<%= i == currentPage ? "linear-gradient(135deg,#e94560,#c62a47)" : "#fff" %>;
-                  color:<%= i == currentPage ? "#fff" : "#333" %>;">
+           style="padding:0.5rem 0.9rem;border-radius:8px;text-decoration:none;border:1px solid #ddd;
+                  background:<%= i == currentPage ? "var(--primary)" : "#fff" %>;
+                  color:<%= i == currentPage ? "#fff" : "#333" %>;font-weight:600;">
             <%= i %>
         </a>
         <% } %>
@@ -209,8 +219,8 @@
             <div style="display:flex;gap:0.8rem;">
                 <button type="button" onclick="document.getElementById('checkoutModal').style.display='none'"
                         style="flex:1;padding:0.7rem;background:#f5f5f5;border:1px solid #ddd;border-radius:8px;cursor:pointer;">Hủy</button>
-                <button type="submit"
-                        style="flex:2;padding:0.7rem;background:linear-gradient(135deg,#28a745,#1e7e34);border:none;color:#fff;border-radius:8px;cursor:pointer;font-weight:600;">
+                 <button type="submit"
+                        style="flex:2;padding:0.7rem;background:linear-gradient(135deg,var(--primary),var(--primary-dark));border:none;color:#fff;border-radius:8px;cursor:pointer;font-weight:600;">
                     <i class="fa-solid fa-check"></i> Xác nhận Checkout
                 </button>
             </div>

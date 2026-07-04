@@ -9,28 +9,31 @@
 %>
 <%@ include file="/WEB-INF/jsp/header.jsp" %>
 
-<div class="page-hero" style="background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f2460 100%);padding:3rem 0 2rem;">
+<div class="books-page-header">
     <div class="container">
-        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
-            <div style="display:flex;align-items:center;gap:1rem;">
-                <div style="position:relative;width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;font-size:1.4rem;">
-                    🔔
-                    <% if (unreadCount > 0) { %>
-                    <span style="position:absolute;top:-6px;right:-6px;background:#e94560;color:#fff;border-radius:50%;width:20px;height:20px;font-size:0.7rem;display:flex;align-items:center;justify-content:center;font-weight:700;"><%= unreadCount > 9 ? "9+" : unreadCount %></span>
-                    <% } %>
+        <div class="books-page-header-inner">
+            <div>
+                <div class="hero-eyebrow" style="margin-bottom:10px;">
+                    <i class="fa-solid fa-bell"></i> Thông báo
                 </div>
-                <div>
-                    <h1 style="color:#fff;font-size:1.8rem;font-weight:700;margin:0;">Thông báo của tôi</h1>
-                    <p style="color:rgba(255,255,255,0.6);margin:0;font-size:0.9rem;"><%= unreadCount %> chưa đọc</p>
-                </div>
+                <h1 class="books-page-title">Thông báo của tôi</h1>
+                <p class="books-page-subtitle">Nhận các cập nhật và thông báo mới nhất từ thư viện</p>
             </div>
-            <% if (unreadCount > 0) { %>
-            <form method="post" action="<%= request.getContextPath() %>/notification/mark-all-read">
-                <button type="submit" style="padding:0.5rem 1.2rem;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:#fff;border-radius:8px;cursor:pointer;font-weight:500;">
-                    <i class="fa-solid fa-check-double"></i> Đánh dấu tất cả đã đọc
-                </button>
-            </form>
-            <% } %>
+            <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
+                <div class="books-page-stats">
+                    <div class="bps-item">
+                        <span class="bps-num"><%= unreadCount %></span>
+                        <span class="bps-lbl">Chưa đọc</span>
+                    </div>
+                </div>
+                <% if (unreadCount > 0) { %>
+                <form method="post" action="<%= request.getContextPath() %>/notification/mark-all-read" style="margin:0;">
+                    <button type="submit" class="btn btn-outline" style="font-weight:600; padding:10px 18px; border-radius:var(--radius-md);">
+                        <i class="fa-solid fa-check-double"></i> Đánh dấu tất cả đã đọc
+                    </button>
+                </form>
+                <% } %>
+            </div>
         </div>
     </div>
 </div>

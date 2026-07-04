@@ -12,13 +12,26 @@
 %>
 <%@ include file="/WEB-INF/jsp/header.jsp" %>
 
-<div class="page-hero" style="background:linear-gradient(135deg,#0f2027 0%,#203a43 50%,#2c5364 100%);padding:3rem 0 2rem;">
+<div class="books-page-header">
     <div class="container">
-        <div style="display:flex;align-items:center;gap:1rem;">
-            <div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;font-size:1.4rem;">📚</div>
+        <div class="books-page-header-inner">
             <div>
-                <h1 style="color:#fff;font-size:1.8rem;font-weight:700;margin:0;">Sách đang mượn</h1>
-                <p style="color:rgba(255,255,255,0.6);margin:0;font-size:0.9rem;">Theo dõi tình trạng mượn & gia hạn sách của bạn</p>
+                <div class="hero-eyebrow" style="margin-bottom:10px;">
+                    <i class="fa-solid fa-book-open"></i> Mượn sách
+                </div>
+                <h1 class="books-page-title">Sách đang mượn</h1>
+                <p class="books-page-subtitle">Theo dõi tình trạng mượn và gia hạn sách của bạn</p>
+            </div>
+            <div class="books-page-stats">
+                <div class="bps-item">
+                    <span class="bps-num"><%= activeCount %></span>
+                    <span class="bps-lbl">Đang mượn</span>
+                </div>
+                <div class="bps-divider"></div>
+                <div class="bps-item">
+                    <span class="bps-num"><%= maxLimit %></span>
+                    <span class="bps-lbl">Giới hạn</span>
+                </div>
             </div>
         </div>
     </div>
@@ -76,22 +89,22 @@
     <h2 style="font-size:1.1rem;font-weight:700;margin-bottom:1rem;color:#1a1a2e;">
         <i class="fa-solid fa-book-open" style="color:#667eea;"></i> Đang mượn
     </h2>
-    <div style="background:#fff;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,0.06);overflow:hidden;margin-bottom:2rem;">
+    <div class="data-table-wrap" style="margin-bottom:2rem;">
         <% if (activeBorrows == null || activeBorrows.isEmpty()) { %>
         <div style="padding:3rem;text-align:center;color:#aaa;">
             <i class="fa-solid fa-book" style="font-size:2rem;margin-bottom:0.5rem;display:block;"></i>
             Bạn chưa mượn cuốn sách nào.
         </div>
         <% } else { %>
-        <table style="width:100%;border-collapse:collapse;">
-            <thead style="background:#f8f9fa;">
+        <table class="data-table">
+            <thead>
                 <tr>
-                    <th style="padding:0.9rem 1rem;text-align:left;font-size:0.85rem;color:#666;font-weight:600;">Sách</th>
-                    <th style="padding:0.9rem 1rem;text-align:left;font-size:0.85rem;color:#666;font-weight:600;">Ngày mượn</th>
-                    <th style="padding:0.9rem 1rem;text-align:left;font-size:0.85rem;color:#666;font-weight:600;">Hạn trả</th>
-                    <th style="padding:0.9rem 1rem;text-align:left;font-size:0.85rem;color:#666;font-weight:600;">Gia hạn</th>
-                    <th style="padding:0.9rem 1rem;text-align:left;font-size:0.85rem;color:#666;font-weight:600;">Trạng thái</th>
-                    <th style="padding:0.9rem 1rem;text-align:center;font-size:0.85rem;color:#666;font-weight:600;">Gia hạn</th>
+                    <th style="text-align:left;">Sách</th>
+                    <th style="text-align:left;">Ngày mượn</th>
+                    <th style="text-align:left;">Hạn trả</th>
+                    <th style="text-align:left;">Gia hạn</th>
+                    <th style="text-align:left;">Trạng thái</th>
+                    <th style="text-align:center;">Gia hạn</th>
                 </tr>
             </thead>
             <tbody>
@@ -123,8 +136,8 @@
                 <td style="padding:0.9rem 1rem;text-align:center;">
                     <form method="post" action="<%= request.getContextPath() %>/borrow/renew">
                         <input type="hidden" name="borrowId" value="<%= b.getId() %>">
-                        <button type="submit"
-                                style="padding:0.35rem 0.9rem;background:linear-gradient(135deg,#17a2b8,#138496);border:none;color:#fff;border-radius:6px;cursor:pointer;font-size:0.82rem;font-weight:600;">
+                        <button type="submit" class="btn btn-primary btn-sm"
+                                style="padding:0.35rem 0.9rem;background:linear-gradient(135deg,var(--primary),var(--primary-dark));border:none;color:#fff;border-radius:6px;cursor:pointer;font-size:0.82rem;font-weight:600;">
                             <i class="fa-solid fa-arrows-rotate"></i> Gia hạn
                         </button>
                     </form>
@@ -140,17 +153,17 @@
     <h2 style="font-size:1.1rem;font-weight:700;margin-bottom:1rem;color:#1a1a2e;">
         <i class="fa-solid fa-clock-rotate-left" style="color:#aaa;"></i> Lịch sử mượn
     </h2>
-    <div style="background:#fff;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,0.06);overflow:hidden;">
+    <div class="data-table-wrap">
         <% if (borrowHistory == null || borrowHistory.isEmpty()) { %>
         <div style="padding:3rem;text-align:center;color:#aaa;">Chưa có lịch sử mượn.</div>
         <% } else { %>
-        <table style="width:100%;border-collapse:collapse;">
-            <thead style="background:#f8f9fa;">
+        <table class="data-table">
+            <thead>
                 <tr>
-                    <th style="padding:0.9rem 1rem;text-align:left;font-size:0.85rem;color:#666;font-weight:600;">Sách</th>
-                    <th style="padding:0.9rem 1rem;text-align:left;font-size:0.85rem;color:#666;font-weight:600;">Ngày mượn</th>
-                    <th style="padding:0.9rem 1rem;text-align:left;font-size:0.85rem;color:#666;font-weight:600;">Ngày trả</th>
-                    <th style="padding:0.9rem 1rem;text-align:left;font-size:0.85rem;color:#666;font-weight:600;">Trạng thái</th>
+                    <th style="text-align:left;">Sách</th>
+                    <th style="text-align:left;">Ngày mượn</th>
+                    <th style="text-align:left;">Ngày trả</th>
+                    <th style="text-align:left;">Trạng thái</th>
                 </tr>
             </thead>
             <tbody>

@@ -6,6 +6,16 @@
     <meta charset="UTF-8">
     <title>Sửa vị trí bản sao</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        .btn-primary {
+            background-color: #f47920 !important;
+            border-color: #f47920 !important;
+        }
+        .btn-primary:hover {
+            background-color: #d4600a !important;
+            border-color: #d4600a !important;
+        }
+    </style>
 </head>
 <body class="bg-light">
 <div class="container py-4" style="max-width:560px">

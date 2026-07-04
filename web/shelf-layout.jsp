@@ -13,7 +13,7 @@
 <%@ include file="/WEB-INF/jsp/header.jsp" %>
 <style>
   /* ── Polyfill for removed Bootstrap ── */
-  .container, .container-fluid { width: 100%; max-width: 1400px; margin: 0 auto; padding: 0 15px; box-sizing: border-box; }
+  .container, .container-fluid { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 15px; box-sizing: border-box; }
   .row { display: flex; flex-wrap: wrap; margin-left: -10px; margin-right: -10px; }
   .col-md-3, .col-md-4, .col-auto { padding: 0 10px; box-sizing: border-box; }
   .col-md-3 { width: 25%; }
@@ -85,8 +85,8 @@
   .btn-close:hover { color: #000; text-decoration: none; opacity: .75; }
 
   /* ── Layout blocks ── */
-  .area-block   { border: 2px solid #0d6efd; border-radius: 10px; margin-bottom: 28px; }
-  .area-header  { background: #0d6efd; color: #fff; padding: 10px 18px; font-weight: 700; border-radius: 8px 8px 0 0; display: flex; justify-content: space-between; align-items: center; }
+  .area-block   { border: 2px solid var(--primary); border-radius: 10px; margin-bottom: 28px; }
+  .area-header  { background: var(--primary); color: #fff; padding: 10px 18px; font-weight: 700; border-radius: 8px 8px 0 0; display: flex; justify-content: space-between; align-items: center; }
   .shelf-block  { border: 1px solid #dee2e6; border-radius: 8px; margin: 12px; }
   .shelf-header { background: #eef2ff; padding: 7px 14px; font-weight: 600; border-radius: 8px 8px 0 0; font-size: .92rem; display: flex; justify-content: space-between; align-items: center; }
   .copy-row:hover { background: #f8f9fa; }
@@ -102,34 +102,35 @@
   .area-unplaced .area-header { background: #fd7e14; }
   .btn-move { font-size: .78rem; padding: 2px 10px; }
   .toggle-shelf { cursor: pointer; user-select: none; }
-  .toggle-shelf:hover { color: #0d6efd; }
+  .toggle-shelf:hover { color: var(--primary); }
 </style>
 
-<div class="page-hero" style="background: linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%); padding:3rem 0 2rem;">
-    <div class="container" style="max-width: 1400px;">
-        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
-            <div style="display:flex;align-items:center;gap:1rem;">
-                <div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#e94560,#c62a47);display:flex;align-items:center;justify-content:center;font-size:1.4rem;">📚</div>
-                <div>
-                    <h1 style="color:#fff;font-size:1.8rem;font-weight:700;margin:0;">Sơ đồ kho thư viện</h1>
-                    <p style="color:rgba(255,255,255,0.6);margin:0;font-size:0.9rem;">Quản lý vị trí bản sao sách trên kệ</p>
+<div class="books-page-header">
+    <div class="container">
+        <div class="books-page-header-inner">
+            <div>
+                <div class="hero-eyebrow" style="margin-bottom:10px;">
+                    <i class="fa-solid fa-layer-group"></i> Kệ sách
                 </div>
+                <h1 class="books-page-title">Sơ đồ kho thư viện</h1>
+                <p class="books-page-subtitle">Quản lý vị trí các bản sao sách trên kệ trong thư viện</p>
             </div>
-            <div class="text-white opacity-75 small">
-                <c:choose>
-                    <c:when test="${hasFilter}">
-                        Tìm thấy <strong class="text-white">${totalFiltered}</strong> bản sao
-                    </c:when>
-                    <c:otherwise>
-                        Tổng kho: <strong class="text-white">${totalFiltered}</strong> bản sao
-                    </c:otherwise>
-                </c:choose>
+            <div class="books-page-stats">
+                <div class="bps-item">
+                    <span class="bps-num">${totalFiltered}</span>
+                    <span class="bps-lbl">
+                        <c:choose>
+                            <c:when test="${hasFilter}">Tìm thấy</c:when>
+                            <c:otherwise>Tổng kho</c:otherwise>
+                        </c:choose>
+                    </span>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="container py-4" style="max-width: 1400px;">
+<div class="container py-4">
             <c:if test="${successMsg == 'updated' or successMsg == 'moved'}">
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
                     <i class="bi bi-check-circle-fill me-1"></i>
@@ -150,7 +151,7 @@
                     <!-- Lọc theo vị trí -->
                     <div style="flex: 2; min-width: 300px;">
                         <div style="font-weight: 600; color: #111827; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
-                            <i class="fa-solid fa-filter" style="color: #3b82f6;"></i> Lọc theo vị trí
+                            <i class="fa-solid fa-filter" style="color: var(--primary);"></i> Lọc theo vị trí
                         </div>
                         <form method="get" action="shelf" id="filterForm" style="display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap;">
                             <input type="hidden" name="action" value="filter">
@@ -176,7 +177,7 @@
                                 </select>
                             </div>
                             <div style="display: flex; gap: 8px;">
-                                <button type="submit" style="background: #3b82f6; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 500; font-size: 14px; cursor: pointer; transition: background 0.2s;">
+                                <button type="submit" style="background: linear-gradient(135deg,var(--primary),var(--primary-dark)); color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 500; font-size: 14px; cursor: pointer; transition: background 0.2s;">
                                     Lọc
                                 </button>
                                 <a href="shelf?action=layout" style="background: white; color: #4b5563; border: 1px solid #d1d5db; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-weight: 500; font-size: 14px; transition: background 0.2s;">
@@ -189,7 +190,7 @@
                     <!-- Tìm kiếm barcode -->
                     <div style="flex: 1; min-width: 250px; border-left: 1px dashed #d1d5db; padding-left: 24px;">
                         <div style="font-weight: 600; color: #111827; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
-                            <i class="fa-solid fa-barcode" style="color: #8b5cf6;"></i> Tìm theo Barcode
+                            <i class="fa-solid fa-barcode" style="color: var(--primary);"></i> Tìm theo Barcode
                         </div>
                         <form method="get" action="shelf" style="display: flex; gap: 8px; align-items: stretch;">
                             <input type="hidden" name="action" value="search">
@@ -197,7 +198,7 @@
                                 <input type="text" name="barcode" value="${searchBarcode}" placeholder="Nhập mã barcode..." required 
                                        style="width: 100%; height: 100%; box-sizing: border-box; margin: 0; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; color: #111827; background-color: #f9fafb;">
                             </div>
-                            <button type="submit" style="margin: 0; box-sizing: border-box; background: #10b981; color: white; border: none; padding: 0 16px; border-radius: 6px; font-weight: 500; font-size: 14px; cursor: pointer; transition: background 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                            <button type="submit" style="margin: 0; box-sizing: border-box; background: linear-gradient(135deg,var(--primary),var(--primary-dark)); color: white; border: none; padding: 0 16px; border-radius: 6px; font-weight: 500; font-size: 14px; cursor: pointer; transition: background 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px;">
                                 <i class="fa-solid fa-magnifying-glass"></i> Tìm
                             </button>
                         </form>
@@ -228,7 +229,6 @@
                         </c:choose>
                     </div>
                 </c:if>
-            </div>
 
             <!-- ════════════════════════════════════════════════
                  SƠ ĐỒ KHO
@@ -271,16 +271,16 @@
                                         </div>
 
                                         <div id="shelf-${areaEntry.key}-${shelfEntry.key}">
-                                            <div class="table-responsive">
-                                                <table class="table table-sm mb-0">
-                                                    <thead class="table-light">
+                                            <div class="data-table-wrap" style="overflow-x: auto;">
+                                                <table class="data-table" style="width: 100%; min-width: 1100px; table-layout: auto;">
+                                                    <thead>
                                                         <tr>
-                                                            <th>Barcode</th>
-                                                            <th>Ngăn</th>
-                                                            <th>Tên sách</th>
-                                                            <th>Tình trạng</th>
-                                                            <th>Trạng thái</th>
-                                                            <th style="width:110px"></th>
+                                                            <th style="text-align:left; width: 120px; white-space: nowrap;">Barcode</th>
+                                                            <th style="text-align:left; width: 100px; white-space: nowrap;">Ngăn</th>
+                                                            <th style="text-align:left; min-width: 320px; white-space: nowrap;">Tên sách</th>
+                                                            <th style="text-align:left; width: 120px; white-space: nowrap;">Tình trạng</th>
+                                                            <th style="text-align:left; width: 120px; white-space: nowrap;">Trạng thái</th>
+                                                            <th style="text-align:center; width: 180px; min-width: 180px; white-space: nowrap;">Thao tác</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -289,7 +289,7 @@
                                                                 ${not empty foundCopy and foundCopy.id == copy.id ? 'highlight' : ''}">
                                                                 <td><code>${copy.barcode}</code></td>
                                                                 <td>${copy.slot != null ? copy.slot : '–'}</td>
-                                                                <td class="text-truncate" style="max-width:260px"
+                                                                <td class="text-truncate" style="max-width:350px"
                                                                     title="${copy.book.title}">
                                                                     ${copy.book.title}
                                                                 </td>
@@ -299,8 +299,8 @@
                                                                         ${copy.status}
                                                                     </span>
                                                                 </td>
-                                                                <td style="text-align: center;">
-                                                                    <div style="display: flex; gap: 8px; justify-content: center; align-items: center;">
+                                                                <td style="text-align: center; white-space: nowrap;">
+                                                                    <div style="display: flex; gap: 8px; justify-content: center; align-items: center; flex-wrap: nowrap;">
                                                                         <%-- LIBRARIAN & ADMIN đều có thể chuyển vị trí --%>
                                                                         <button type="button"
                                                                                 data-copyid="${copy.id}"
@@ -316,7 +316,7 @@
                                                                         <%-- ADMIN còn có thêm nút sửa đầy đủ --%>
                                                                         <c:if test="${sessionScope.loggedUser.role == 'ADMIN'}">
                                                                             <a href="shelf?action=editForm&copyId=${copy.id}"
-                                                                               style="border: 1px solid #d1d5db; padding: 6px 12px; border-radius: 6px; text-decoration: none; color: #3b82f6; font-weight: 500; background: white; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                                                                               style="border: 1px solid #d1d5db; padding: 6px 12px; border-radius: 6px; text-decoration: none; color: var(--primary); font-weight: 500; background: white; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
                                                                                 <i class="fa-solid fa-pen-to-square"></i> Sửa
                                                                             </a>
                                                                         </c:if>
@@ -350,7 +350,7 @@
                     <c:forEach begin="1" end="${totalPages}" var="i">
                         <c:if test="${i >= currentPage - 2 && i <= currentPage + 2}">
                             <a class="page-link" href="shelf?action=layout${queryParams}&page=${i}" 
-                               style="padding: 8px 14px; border: 1px solid ${i == currentPage ? '#3b82f6' : '#d1d5db'}; border-radius: 6px; text-decoration: none; font-weight: 500; ${i == currentPage ? 'background: #3b82f6; color: white;' : 'background: white; color: #374151;'}">
+                               style="padding: 8px 14px; border: 1px solid ${i == currentPage ? 'var(--primary)' : '#d1d5db'}; border-radius: 6px; text-decoration: none; font-weight: 500; ${i == currentPage ? 'background: var(--primary); color: white;' : 'background: white; color: #374151;'}">
                                 ${i}
                             </a>
                         </c:if>

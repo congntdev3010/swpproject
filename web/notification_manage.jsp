@@ -15,13 +15,21 @@
 %>
 <%@ include file="/WEB-INF/jsp/header.jsp" %>
 
-<div class="page-hero" style="background:linear-gradient(135deg,#0d1117 0%,#1c2951 50%,#283593 100%);padding:3rem 0 2rem;">
+<div class="books-page-header">
     <div class="container">
-        <div style="display:flex;align-items:center;gap:1rem;">
-            <div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#4facfe,#00f2fe);display:flex;align-items:center;justify-content:center;font-size:1.4rem;">📢</div>
+        <div class="books-page-header-inner">
             <div>
-                <h1 style="color:#fff;font-size:1.8rem;font-weight:700;margin:0;">Quản lý Thông báo</h1>
-                <p style="color:rgba(255,255,255,0.6);margin:0;font-size:0.9rem;">Soạn & gửi thông báo đến người dùng</p>
+                <div class="hero-eyebrow" style="margin-bottom:10px;">
+                    <i class="fa-solid fa-bullhorn"></i> Quản lý
+                </div>
+                <h1 class="books-page-title">Quản lý Thông báo</h1>
+                <p class="books-page-subtitle">Soạn và gửi thông báo đến người dùng trong hệ thống</p>
+            </div>
+            <div class="books-page-stats">
+                <div class="bps-item">
+                    <span class="bps-num"><%= total %></span>
+                    <span class="bps-lbl">Đã gửi</span>
+                </div>
             </div>
         </div>
     </div>
@@ -76,8 +84,8 @@
                     <input type="text" name="targetUserIds" placeholder="Vd: 1,2,5 hoặc để trống gửi tất cả..."
                            style="width:100%;padding:0.6rem 0.8rem;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
                 </div>
-                <button type="submit"
-                        style="padding:0.65rem 1.5rem;background:linear-gradient(135deg,#4facfe,#00f2fe);border:none;color:#fff;border-radius:8px;cursor:pointer;font-weight:700;white-space:nowrap;">
+                <button type="submit" class="btn btn-primary"
+                        style="padding:0.65rem 1.5rem;background:linear-gradient(135deg,var(--primary),var(--primary-dark));border:none;color:#fff;border-radius:8px;cursor:pointer;font-weight:700;white-space:nowrap;">
                     <i class="fa-solid fa-paper-plane"></i> Gửi ngay
                 </button>
             </div>
@@ -98,21 +106,21 @@
                 <option value="RESERVATION_CONFIRMED" <%= "RESERVATION_CONFIRMED".equals(typeFilter) ? "selected" : "" %>>Đặt trước</option>
                 <option value="ACCOUNT_LOCKED" <%= "ACCOUNT_LOCKED".equals(typeFilter) ? "selected" : "" %>>Khóa TK</option>
             </select>
-            <button type="submit" style="padding:0.4rem 0.8rem;background:#e8eaf6;border:1px solid #c5cef5;border-radius:8px;color:#333;cursor:pointer;font-size:0.88rem;">
+            <button type="submit" class="btn btn-outline btn-sm" style="padding:0.4rem 1.2rem; border-radius:8px; font-weight:600; cursor:pointer;">
                 <i class="fa-solid fa-filter"></i> Lọc
             </button>
         </form>
     </div>
 
-    <div style="background:#fff;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,0.06);overflow:hidden;">
-        <table style="width:100%;border-collapse:collapse;">
-            <thead style="background:linear-gradient(135deg,#0d1117,#1c2951);color:#fff;">
+    <div class="data-table-wrap">
+        <table class="data-table">
+            <thead>
                 <tr>
-                    <th style="padding:0.9rem 0.8rem;text-align:left;font-weight:600;">Người nhận</th>
-                    <th style="padding:0.9rem 0.8rem;text-align:left;font-weight:600;">Tiêu đề</th>
-                    <th style="padding:0.9rem 0.8rem;text-align:left;font-weight:600;">Loại</th>
-                    <th style="padding:0.9rem 0.8rem;text-align:left;font-weight:600;">Đã đọc</th>
-                    <th style="padding:0.9rem 0.8rem;text-align:left;font-weight:600;">Ngày gửi</th>
+                    <th style="text-align:left;">Người nhận</th>
+                    <th style="text-align:left;">Tiêu đề</th>
+                    <th style="text-align:left;">Loại</th>
+                    <th style="text-align:left;">Đã đọc</th>
+                    <th style="text-align:left;">Ngày gửi</th>
                 </tr>
             </thead>
             <tbody>
@@ -160,7 +168,7 @@
         <% for (int i = 1; i <= totalPages; i++) { %>
         <a href="?page=<%= i %>&type=<%= typeFilter != null ? typeFilter : "" %>"
            style="padding:0.4rem 0.8rem;border-radius:6px;text-decoration:none;border:1px solid #ddd;
-                  background:<%= i == currentPage ? "linear-gradient(135deg,#4facfe,#00f2fe)" : "#fff" %>;
+                  background:<%= i == currentPage ? "linear-gradient(135deg,var(--primary),var(--primary-dark))" : "#fff" %>;
                   color:<%= i == currentPage ? "#fff" : "#333" %>;">
             <%= i %>
         </a>

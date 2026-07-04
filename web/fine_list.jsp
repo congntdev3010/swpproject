@@ -17,13 +17,21 @@
 %>
 <%@ include file="/WEB-INF/jsp/header.jsp" %>
 
-<div class="page-hero" style="background:linear-gradient(135deg,#1a1a2e 0%,#3a0000 50%,#6b0000 100%);padding:3rem 0 2rem;">
+<div class="books-page-header">
     <div class="container">
-        <div style="display:flex;align-items:center;gap:1rem;">
-            <div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#ff6b6b,#ee5a24);display:flex;align-items:center;justify-content:center;font-size:1.4rem;">💸</div>
+        <div class="books-page-header-inner">
             <div>
-                <h1 style="color:#fff;font-size:1.8rem;font-weight:700;margin:0;"><%= isStaff ? "Quản lý Phạt" : "Phạt của tôi" %></h1>
-                <p style="color:rgba(255,255,255,0.6);margin:0;font-size:0.9rem;">Trễ hạn · Hư hỏng · Mất sách</p>
+                <div class="hero-eyebrow" style="margin-bottom:10px;">
+                    <i class="fa-solid fa-coins"></i> Tiền phạt
+                </div>
+                <h1 class="books-page-title"><%= isStaff ? "Quản lý Phạt" : "Phạt của tôi" %></h1>
+                <p class="books-page-subtitle">Theo dõi tình trạng phạt quá hạn, hư hỏng hoặc mất tài liệu</p>
+            </div>
+            <div class="books-page-stats">
+                <div class="bps-item">
+                    <span class="bps-num"><%= total %></span>
+                    <span class="bps-lbl">Phiếu phạt</span>
+                </div>
             </div>
         </div>
     </div>
@@ -62,29 +70,29 @@
                 <option value="PAID" <%= "PAID".equals(statusFilter) ? "selected" : "" %>>Đã thanh toán</option>
                 <option value="WAIVED" <%= "WAIVED".equals(statusFilter) ? "selected" : "" %>>Đã miễn giảm</option>
             </select>
-            <button type="submit" style="padding:0.5rem 1rem;background:linear-gradient(135deg,#ff6b6b,#ee5a24);border:none;color:#fff;border-radius:8px;cursor:pointer;">
+            <button type="submit" class="btn btn-primary" style="padding:0.5rem 1rem;background:linear-gradient(135deg,var(--primary),var(--primary-dark));border:none;color:#fff;border-radius:8px;cursor:pointer;">
                 <i class="fa-solid fa-magnifying-glass"></i> Tìm
             </button>
         </form>
         <button onclick="document.getElementById('createFineModal').style.display='flex'"
-                style="padding:0.55rem 1.2rem;background:linear-gradient(135deg,#ff6b6b,#ee5a24);border:none;color:#fff;border-radius:8px;cursor:pointer;font-weight:600;">
+                style="padding:0.55rem 1.2rem;background:linear-gradient(135deg,var(--primary),var(--primary-dark));border:none;color:#fff;border-radius:8px;cursor:pointer;font-weight:600;">
             <i class="fa-solid fa-plus"></i> Tạo phiếu phạt
         </button>
     </div>
     <% } %>
 
     <!-- Fine Table -->
-    <div style="background:#fff;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,0.06);overflow:hidden;">
-        <table style="width:100%;border-collapse:collapse;">
-            <thead style="background:linear-gradient(135deg,#1a1a2e,#3a0000);color:#fff;">
+    <div class="data-table-wrap">
+        <table class="data-table">
+            <thead>
                 <tr>
-                    <th style="padding:1rem 0.8rem;text-align:left;font-weight:600;">ID</th>
-                    <% if (isStaff) { %><th style="padding:1rem 0.8rem;text-align:left;font-weight:600;">Người dùng</th><% } %>
-                    <th style="padding:1rem 0.8rem;text-align:left;font-weight:600;">Lý do</th>
-                    <th style="padding:1rem 0.8rem;text-align:right;font-weight:600;">Số tiền</th>
-                    <th style="padding:1rem 0.8rem;text-align:left;font-weight:600;">Trạng thái</th>
-                    <th style="padding:1rem 0.8rem;text-align:left;font-weight:600;">Ngày tạo</th>
-                    <% if (isStaff) { %><th style="padding:1rem 0.8rem;text-align:center;font-weight:600;">Thao tác</th><% } %>
+                    <th style="text-align:left;">ID</th>
+                    <% if (isStaff) { %><th style="text-align:left;">Người dùng</th><% } %>
+                    <th style="text-align:left;">Lý do</th>
+                    <th style="text-align:right;">Số tiền</th>
+                    <th style="text-align:left;">Trạng thái</th>
+                    <th style="text-align:left;">Ngày tạo</th>
+                    <% if (isStaff) { %><th style="text-align:center;">Thao tác</th><% } %>
                 </tr>
             </thead>
             <tbody>
@@ -166,7 +174,7 @@
         <% for (int i = 1; i <= totalPages; i++) { %>
         <a href="?page=<%= i %>&keyword=<%= keyword != null ? keyword : "" %>&status=<%= statusFilter != null ? statusFilter : "" %>"
            style="padding:0.4rem 0.8rem;border-radius:6px;text-decoration:none;border:1px solid #ddd;
-                  background:<%= i == currentPage ? "linear-gradient(135deg,#ff6b6b,#ee5a24)" : "#fff" %>;
+                  background:<%= i == currentPage ? "linear-gradient(135deg,var(--primary),var(--primary-dark))" : "#fff" %>;
                   color:<%= i == currentPage ? "#fff" : "#333" %>;">
             <%= i %>
         </a>
@@ -200,7 +208,7 @@
                 <button type="button" onclick="document.getElementById('createFineModal').style.display='none'"
                         style="flex:1;padding:0.7rem;background:#f5f5f5;border:1px solid #ddd;border-radius:8px;cursor:pointer;">Hủy</button>
                 <button type="submit"
-                        style="flex:2;padding:0.7rem;background:linear-gradient(135deg,#ff6b6b,#ee5a24);border:none;color:#fff;border-radius:8px;cursor:pointer;font-weight:600;">
+                        style="flex:2;padding:0.7rem;background:linear-gradient(135deg,var(--primary),var(--primary-dark));border:none;color:#fff;border-radius:8px;cursor:pointer;font-weight:600;">
                     <i class="fa-solid fa-check"></i> Tạo phiếu phạt
                 </button>
             </div>
