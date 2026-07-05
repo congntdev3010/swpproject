@@ -64,7 +64,9 @@
                 <!-- Info Section -->
                 <div class="login-info">
                     <div class="info-box">
-                        <div class="info-icon">📚</div>
+                        <div class="info-icon" style="background:none;width:auto;height:auto;margin-bottom:1.5rem;display:flex;justify-content:center;">
+                            <img src="<%= contextPath %>/images/logo.png" alt="FPT University" style="height:60px;width:auto;object-fit:contain;">
+                        </div>
                         <h3>Thư viện FPT University</h3>
                         <p>Đăng nhập để:</p>
                         <ul>

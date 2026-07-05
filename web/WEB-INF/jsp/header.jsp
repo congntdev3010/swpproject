@@ -27,8 +27,8 @@
 <nav class="navbar" id="mainNavbar">
     <div class="container">
         <div class="navbar-inner">
-            <a href="<%= request.getContextPath() %>/home" class="navbar-brand">
-                <div class="brand-icon">📚</div>
+            <a href="<%= request.getContextPath() %>/home" class="navbar-brand" style="display:flex;align-items:center;gap:12px;">
+                <img src="<%= request.getContextPath() %>/images/logo.png" alt="FPT University" style="height:36px;width:auto;display:block;">
                 <span>FPT <span class="brand-accent">Library</span></span>
             </a>
 

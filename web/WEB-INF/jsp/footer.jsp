@@ -6,7 +6,10 @@
         <div class="footer-grid">
             <!-- Brand Column -->
             <div class="footer-brand">
-                <div class="brand-name">📚 FPT <span>Library</span></div>
+                <div class="brand-name" style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+                    <img src="${pageContext.request.contextPath}/images/logo.png" alt="FPT University" style="height:32px;width:auto;display:block;">
+                    <span>FPT <span style="color:var(--primary);">Library</span></span>
+                </div>
                 <p>Hệ thống quản lý thư viện hiện đại, phục vụ sinh viên và giảng viên FPT University với kho tài liệu học thuật phong phú.</p>
             </div>
 
