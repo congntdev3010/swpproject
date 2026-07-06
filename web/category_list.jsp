@@ -231,26 +231,75 @@
             <!-- ===== PAGINATION ===== -->
             <% if (totalPages > 1) { %>
             <div style="padding: 16px 24px; border-top: 1px solid #e5e7eb; display: flex; justify-content: center; background: #f9fafb;">
-                <nav aria-label="Page navigation" class="pagination" style="display: inline-flex; gap: 6px; list-style: none; padding: 0; margin: 0;">
-                    
-                    <!-- Back button -->
-                    <a class="page-link" href="<%= ctx %>/categories?keyword=<%= java.net.URLEncoder.encode(keyword,"UTF-8") %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= currentPageNum - 1 %>" 
-                       style="padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; text-decoration: none; color: #374151; font-weight: 500; background: white; <%= currentPageNum == 1 ? "pointer-events: none; opacity: 0.5;" : "" %>">
-                        <i class="fa-solid fa-angle-left"></i> Trước
-                    </a>
+                <nav aria-label="Phân trang">
+                    <ul class="pagination" style="margin-top: 0;">
+                        <!-- Prev -->
+                        <li class="page-item <%= currentPageNum <= 1 ? "disabled" : "" %>">
+                            <a class="page-link"
+                               href="<%= ctx %>/categories?keyword=<%= java.net.URLEncoder.encode(keyword,"UTF-8") %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= currentPageNum - 1 %>">
+                                <i class="fa-solid fa-chevron-left fa-xs"></i>
+                            </a>
+                        </li>
 
-                    <% for (int pg = 1; pg <= totalPages; pg++) { %>
-                        <a class="page-link" href="<%= ctx %>/categories?keyword=<%= java.net.URLEncoder.encode(keyword,"UTF-8") %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= pg %>" 
-                           style="padding: 8px 14px; border: 1px solid <%= pg == currentPageNum ? "#3b82f6" : "#d1d5db" %>; border-radius: 6px; text-decoration: none; font-weight: 500; <%= pg == currentPageNum ? "background: #3b82f6; color: white;" : "background: white; color: #374151;" %>">
-                            <%= pg %>
-                        </a>
-                    <% } %>
+                        <% 
+                           if (totalPages <= 7) {
+                               for (int pg = 1; pg <= totalPages; pg++) { %>
+                                   <li class="page-item <%= pg == currentPageNum ? "active" : "" %>">
+                                       <a class="page-link" href="<%= ctx %>/categories?keyword=<%= java.net.URLEncoder.encode(keyword,"UTF-8") %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= pg %>"><%= pg %></a>
+                                   </li>
+                               <% }
+                           } else {
+                               // Show first 2 pages
+                               for (int pg = 1; pg <= 2; pg++) { %>
+                                   <li class="page-item <%= pg == currentPageNum ? "active" : "" %>">
+                                       <a class="page-link" href="<%= ctx %>/categories?keyword=<%= java.net.URLEncoder.encode(keyword,"UTF-8") %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= pg %>"><%= pg %></a>
+                                   </li>
+                               <% }
 
-                    <!-- Next button -->
-                    <a class="page-link" href="<%= ctx %>/categories?keyword=<%= java.net.URLEncoder.encode(keyword,"UTF-8") %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= currentPageNum + 1 %>" 
-                       style="padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; text-decoration: none; color: #374151; font-weight: 500; background: white; <%= currentPageNum.equals(totalPages) ? "pointer-events: none; opacity: 0.5;" : "" %>">
-                        Sau <i class="fa-solid fa-angle-right"></i>
-                    </a>
+                               if (currentPageNum <= 4) {
+                                   // Current page is near the start
+                                   for (int pg = 3; pg <= 5; pg++) { %>
+                                       <li class="page-item <%= pg == currentPageNum ? "active" : "" %>">
+                                           <a class="page-link" href="<%= ctx %>/categories?keyword=<%= java.net.URLEncoder.encode(keyword,"UTF-8") %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= pg %>"><%= pg %></a>
+                                       </li>
+                                   <% } %>
+                                   <li class="page-item disabled"><span class="page-link">…</span></li>
+                               <% } else if (currentPageNum >= totalPages - 3) {
+                                   // Current page is near the end %>
+                                   <li class="page-item disabled"><span class="page-link">…</span></li>
+                                   <% for (int pg = totalPages - 4; pg <= totalPages - 2; pg++) { %>
+                                       <li class="page-item <%= pg == currentPageNum ? "active" : "" %>">
+                                           <a class="page-link" href="<%= ctx %>/categories?keyword=<%= java.net.URLEncoder.encode(keyword,"UTF-8") %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= pg %>"><%= pg %></a>
+                                       </li>
+                                   <% }
+                               } else {
+                                   // Current page is in the middle %>
+                                   <li class="page-item disabled"><span class="page-link">…</span></li>
+                                   <% for (int pg = currentPageNum - 1; pg <= currentPageNum + 1; pg++) { %>
+                                       <li class="page-item <%= pg == currentPageNum ? "active" : "" %>">
+                                           <a class="page-link" href="<%= ctx %>/categories?keyword=<%= java.net.URLEncoder.encode(keyword,"UTF-8") %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= pg %>"><%= pg %></a>
+                                       </li>
+                                   <% } %>
+                                   <li class="page-item disabled"><span class="page-link">…</span></li>
+                               <% }
+
+                               // Show last 2 pages
+                               for (int pg = totalPages - 1; pg <= totalPages; pg++) { %>
+                                   <li class="page-item <%= pg == currentPageNum ? "active" : "" %>">
+                                       <a class="page-link" href="<%= ctx %>/categories?keyword=<%= java.net.URLEncoder.encode(keyword,"UTF-8") %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= pg %>"><%= pg %></a>
+                                   </li>
+                               <% }
+                           }
+                        %>
+
+                        <!-- Next -->
+                        <li class="page-item <%= currentPageNum >= totalPages ? "disabled" : "" %>">
+                            <a class="page-link"
+                               href="<%= ctx %>/categories?keyword=<%= java.net.URLEncoder.encode(keyword,"UTF-8") %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= currentPageNum + 1 %>">
+                                <i class="fa-solid fa-chevron-right fa-xs"></i>
+                            </a>
+                        </li>
+                    </ul>
                 </nav>
             </div>
             <% } %>

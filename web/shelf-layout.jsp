@@ -339,27 +339,79 @@
         <!-- ===== PAGINATION ===== -->
         <c:if test="${totalPages > 1}">
             <div style="padding: 16px 24px; display: flex; justify-content: center;">
-                <nav aria-label="Page navigation" class="pagination" style="display: inline-flex; gap: 6px; list-style: none; padding: 0; margin: 0;">
+                <nav aria-label="Phân trang">
                     <c:set var="queryParams" value="&filterArea=${filterArea}&filterShelf=${filterShelf}&filterSlot=${filterSlot}" />
-                    
-                    <a class="page-link" href="shelf?action=layout${queryParams}&page=${currentPage - 1}" 
-                       style="padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; text-decoration: none; color: #374151; font-weight: 500; background: white; ${currentPage == 1 ? 'pointer-events: none; opacity: 0.5;' : ''}">
-                        <i class="fa-solid fa-angle-left"></i> Trước
-                    </a>
-
-                    <c:forEach begin="1" end="${totalPages}" var="i">
-                        <c:if test="${i >= currentPage - 2 && i <= currentPage + 2}">
-                            <a class="page-link" href="shelf?action=layout${queryParams}&page=${i}" 
-                               style="padding: 8px 14px; border: 1px solid ${i == currentPage ? 'var(--primary)' : '#d1d5db'}; border-radius: 6px; text-decoration: none; font-weight: 500; ${i == currentPage ? 'background: var(--primary); color: white;' : 'background: white; color: #374151;'}">
-                                ${i}
+                    <ul class="pagination" style="margin-top: 0;">
+                        <!-- Prev -->
+                        <li class="page-item ${currentPage <= 1 ? 'disabled' : ''}">
+                            <a class="page-link" href="shelf?action=layout${queryParams}&page=${currentPage - 1}">
+                                <i class="fa-solid fa-chevron-left fa-xs"></i>
                             </a>
-                        </c:if>
-                    </c:forEach>
+                        </li>
 
-                    <a class="page-link" href="shelf?action=layout${queryParams}&page=${currentPage + 1}" 
-                       style="padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; text-decoration: none; color: #374151; font-weight: 500; background: white; ${currentPage == totalPages ? 'pointer-events: none; opacity: 0.5;' : ''}">
-                        Sau <i class="fa-solid fa-angle-right"></i>
-                    </a>
+                        <c:choose>
+                            <c:when test="${totalPages <= 7}">
+                                <c:forEach begin="1" end="${totalPages}" var="pg">
+                                    <li class="page-item ${pg == currentPage ? 'active' : ''}">
+                                        <a class="page-link" href="shelf?action=layout${queryParams}&page=${pg}">${pg}</a>
+                                    </li>
+                                </c:forEach>
+                            </c:when>
+                            <c:otherwise>
+                                <!-- Show first 2 pages -->
+                                <c:forEach begin="1" end="2" var="pg">
+                                    <li class="page-item ${pg == currentPage ? 'active' : ''}">
+                                        <a class="page-link" href="shelf?action=layout${queryParams}&page=${pg}">${pg}</a>
+                                    </li>
+                                </c:forEach>
+
+                                <c:choose>
+                                    <c:when test="${currentPage <= 4}">
+                                        <!-- Current page is near the start -->
+                                        <c:forEach begin="3" end="5" var="pg">
+                                            <li class="page-item ${pg == currentPage ? 'active' : ''}">
+                                                <a class="page-link" href="shelf?action=layout${queryParams}&page=${pg}">${pg}</a>
+                                            </li>
+                                        </c:forEach>
+                                        <li class="page-item disabled"><span class="page-link">…</span></li>
+                                    </c:when>
+                                    <c:when test="${currentPage >= totalPages - 3}">
+                                        <!-- Current page is near the end -->
+                                        <li class="page-item disabled"><span class="page-link">…</span></li>
+                                        <c:forEach begin="${totalPages - 4}" end="${totalPages - 2}" var="pg">
+                                            <li class="page-item ${pg == currentPage ? 'active' : ''}">
+                                                <a class="page-link" href="shelf?action=layout${queryParams}&page=${pg}">${pg}</a>
+                                            </li>
+                                        </c:forEach>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <!-- Current page is in the middle -->
+                                        <li class="page-item disabled"><span class="page-link">…</span></li>
+                                        <c:forEach begin="${currentPage - 1}" end="${currentPage + 1}" var="pg">
+                                            <li class="page-item ${pg == currentPage ? 'active' : ''}">
+                                                <a class="page-link" href="shelf?action=layout${queryParams}&page=${pg}">${pg}</a>
+                                            </li>
+                                        </c:forEach>
+                                        <li class="page-item disabled"><span class="page-link">…</span></li>
+                                    </c:otherwise>
+                                </c:choose>
+
+                                <!-- Show last 2 pages -->
+                                <c:forEach begin="${totalPages - 1}" end="${totalPages}" var="pg">
+                                    <li class="page-item ${pg == currentPage ? 'active' : ''}">
+                                        <a class="page-link" href="shelf?action=layout${queryParams}&page=${pg}">${pg}</a>
+                                    </li>
+                                </c:forEach>
+                            </c:otherwise>
+                        </c:choose>
+
+                        <!-- Next -->
+                        <li class="page-item ${currentPage >= totalPages ? 'disabled' : ''}">
+                            <a class="page-link" href="shelf?action=layout${queryParams}&page=${currentPage + 1}">
+                                <i class="fa-solid fa-chevron-right fa-xs"></i>
+                            </a>
+                        </li>
+                    </ul>
                 </nav>
             </div>
         </c:if>

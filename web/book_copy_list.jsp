@@ -260,11 +260,56 @@
                         </a>
                     </li>
 
-                    <% for (int pg = 1; pg <= totalPages; pg++) { %>
-                        <li class="page-item <%= pg == currentPageNum ? "active" : "" %>">
-                            <a class="page-link" href="<%= ctx %>/book/copies?bookId=<%= book.getId() %>&keyword=<%= java.net.URLEncoder.encode(keyword,"UTF-8") %>&status=<%= java.net.URLEncoder.encode(selectedStatus,"UTF-8") %>&area=<%= java.net.URLEncoder.encode(selectedArea,"UTF-8") %>&page=<%= pg %>"><%= pg %></a>
-                        </li>
-                    <% } %>
+                    <% 
+                       if (totalPages <= 7) {
+                           for (int pg = 1; pg <= totalPages; pg++) { %>
+                               <li class="page-item <%= pg == currentPageNum ? "active" : "" %>">
+                                   <a class="page-link" href="<%= ctx %>/book/copies?bookId=<%= book.getId() %>&keyword=<%= java.net.URLEncoder.encode(keyword,"UTF-8") %>&status=<%= java.net.URLEncoder.encode(selectedStatus,"UTF-8") %>&area=<%= java.net.URLEncoder.encode(selectedArea,"UTF-8") %>&page=<%= pg %>"><%= pg %></a>
+                               </li>
+                           <% }
+                       } else {
+                           // Show first 2 pages
+                           for (int pg = 1; pg <= 2; pg++) { %>
+                               <li class="page-item <%= pg == currentPageNum ? "active" : "" %>">
+                                   <a class="page-link" href="<%= ctx %>/book/copies?bookId=<%= book.getId() %>&keyword=<%= java.net.URLEncoder.encode(keyword,"UTF-8") %>&status=<%= java.net.URLEncoder.encode(selectedStatus,"UTF-8") %>&area=<%= java.net.URLEncoder.encode(selectedArea,"UTF-8") %>&page=<%= pg %>"><%= pg %></a>
+                               </li>
+                           <% }
+
+                           if (currentPageNum <= 4) {
+                               // Current page is near the start
+                               for (int pg = 3; pg <= 5; pg++) { %>
+                                   <li class="page-item <%= pg == currentPageNum ? "active" : "" %>">
+                                       <a class="page-link" href="<%= ctx %>/book/copies?bookId=<%= book.getId() %>&keyword=<%= java.net.URLEncoder.encode(keyword,"UTF-8") %>&status=<%= java.net.URLEncoder.encode(selectedStatus,"UTF-8") %>&area=<%= java.net.URLEncoder.encode(selectedArea,"UTF-8") %>&page=<%= pg %>"><%= pg %></a>
+                                   </li>
+                               <% } %>
+                               <li class="page-item disabled"><span class="page-link">…</span></li>
+                           <% } else if (currentPageNum >= totalPages - 3) {
+                               // Current page is near the end %>
+                               <li class="page-item disabled"><span class="page-link">…</span></li>
+                               <% for (int pg = totalPages - 4; pg <= totalPages - 2; pg++) { %>
+                                   <li class="page-item <%= pg == currentPageNum ? "active" : "" %>">
+                                       <a class="page-link" href="<%= ctx %>/book/copies?bookId=<%= book.getId() %>&keyword=<%= java.net.URLEncoder.encode(keyword,"UTF-8") %>&status=<%= java.net.URLEncoder.encode(selectedStatus,"UTF-8") %>&area=<%= java.net.URLEncoder.encode(selectedArea,"UTF-8") %>&page=<%= pg %>"><%= pg %></a>
+                                   </li>
+                               <% }
+                           } else {
+                               // Current page is in the middle %>
+                               <li class="page-item disabled"><span class="page-link">…</span></li>
+                               <% for (int pg = currentPageNum - 1; pg <= currentPageNum + 1; pg++) { %>
+                                   <li class="page-item <%= pg == currentPageNum ? "active" : "" %>">
+                                       <a class="page-link" href="<%= ctx %>/book/copies?bookId=<%= book.getId() %>&keyword=<%= java.net.URLEncoder.encode(keyword,"UTF-8") %>&status=<%= java.net.URLEncoder.encode(selectedStatus,"UTF-8") %>&area=<%= java.net.URLEncoder.encode(selectedArea,"UTF-8") %>&page=<%= pg %>"><%= pg %></a>
+                                   </li>
+                               <% } %>
+                               <li class="page-item disabled"><span class="page-link">…</span></li>
+                           <% }
+
+                           // Show last 2 pages
+                           for (int pg = totalPages - 1; pg <= totalPages; pg++) { %>
+                               <li class="page-item <%= pg == currentPageNum ? "active" : "" %>">
+                                   <a class="page-link" href="<%= ctx %>/book/copies?bookId=<%= book.getId() %>&keyword=<%= java.net.URLEncoder.encode(keyword,"UTF-8") %>&status=<%= java.net.URLEncoder.encode(selectedStatus,"UTF-8") %>&area=<%= java.net.URLEncoder.encode(selectedArea,"UTF-8") %>&page=<%= pg %>"><%= pg %></a>
+                               </li>
+                           <% }
+                       }
+                    %>
 
                     <!-- Next -->
                     <li class="page-item <%= currentPageNum >= totalPages ? "disabled" : "" %>">

@@ -164,16 +164,76 @@
 
     <!-- Pagination -->
     <% if (totalPages > 1) { %>
-    <div style="display:flex;justify-content:center;gap:0.4rem;margin-top:1.5rem;">
-        <% for (int i = 1; i <= totalPages; i++) { %>
-        <a href="?page=<%= i %>&type=<%= typeFilter != null ? typeFilter : "" %>"
-           style="padding:0.4rem 0.8rem;border-radius:6px;text-decoration:none;border:1px solid #ddd;
-                  background:<%= i == currentPage ? "linear-gradient(135deg,var(--primary),var(--primary-dark))" : "#fff" %>;
-                  color:<%= i == currentPage ? "#fff" : "#333" %>;">
-            <%= i %>
-        </a>
-        <% } %>
-    </div>
+        <nav aria-label="Phân trang">
+            <ul class="pagination">
+                <!-- Prev -->
+                <li class="page-item <%= currentPage <= 1 ? "disabled" : "" %>">
+                    <a class="page-link"
+                       href="?page=<%= currentPage - 1 %>&type=<%= typeFilter != null ? java.net.URLEncoder.encode(typeFilter,"UTF-8") : "" %>">
+                        <i class="fa-solid fa-chevron-left fa-xs"></i>
+                    </a>
+                </li>
+
+                <% 
+                   if (totalPages <= 7) {
+                       for (int pg = 1; pg <= totalPages; pg++) { %>
+                           <li class="page-item <%= pg == currentPage ? "active" : "" %>">
+                               <a class="page-link" href="?page=<%= pg %>&type=<%= typeFilter != null ? java.net.URLEncoder.encode(typeFilter,"UTF-8") : "" %>"><%= pg %></a>
+                           </li>
+                       <% }
+                   } else {
+                       // Show first 2 pages
+                       for (int pg = 1; pg <= 2; pg++) { %>
+                           <li class="page-item <%= pg == currentPage ? "active" : "" %>">
+                               <a class="page-link" href="?page=<%= pg %>&type=<%= typeFilter != null ? java.net.URLEncoder.encode(typeFilter,"UTF-8") : "" %>"><%= pg %></a>
+                           </li>
+                       <% }
+
+                       if (currentPage <= 4) {
+                           // Current page is near the start
+                           for (int pg = 3; pg <= 5; pg++) { %>
+                               <li class="page-item <%= pg == currentPage ? "active" : "" %>">
+                                   <a class="page-link" href="?page=<%= pg %>&type=<%= typeFilter != null ? java.net.URLEncoder.encode(typeFilter,"UTF-8") : "" %>"><%= pg %></a>
+                               </li>
+                           <% } %>
+                           <li class="page-item disabled"><span class="page-link">…</span></li>
+                       <% } else if (currentPage >= totalPages - 3) {
+                           // Current page is near the end %>
+                           <li class="page-item disabled"><span class="page-link">…</span></li>
+                           <% for (int pg = totalPages - 4; pg <= totalPages - 2; pg++) { %>
+                               <li class="page-item <%= pg == currentPage ? "active" : "" %>">
+                                   <a class="page-link" href="?page=<%= pg %>&type=<%= typeFilter != null ? java.net.URLEncoder.encode(typeFilter,"UTF-8") : "" %>"><%= pg %></a>
+                               </li>
+                           <% }
+                       } else {
+                           // Current page is in the middle %>
+                           <li class="page-item disabled"><span class="page-link">…</span></li>
+                           <% for (int pg = currentPage - 1; pg <= currentPage + 1; pg++) { %>
+                               <li class="page-item <%= pg == currentPage ? "active" : "" %>">
+                                   <a class="page-link" href="?page=<%= pg %>&type=<%= typeFilter != null ? java.net.URLEncoder.encode(typeFilter,"UTF-8") : "" %>"><%= pg %></a>
+                               </li>
+                           <% } %>
+                           <li class="page-item disabled"><span class="page-link">…</span></li>
+                       <% }
+
+                       // Show last 2 pages
+                       for (int pg = totalPages - 1; pg <= totalPages; pg++) { %>
+                           <li class="page-item <%= pg == currentPage ? "active" : "" %>">
+                               <a class="page-link" href="?page=<%= pg %>&type=<%= typeFilter != null ? java.net.URLEncoder.encode(typeFilter,"UTF-8") : "" %>"><%= pg %></a>
+                           </li>
+                       <% }
+                   }
+                %>
+
+                <!-- Next -->
+                <li class="page-item <%= currentPage >= totalPages ? "disabled" : "" %>">
+                    <a class="page-link"
+                       href="?page=<%= currentPage + 1 %>&type=<%= typeFilter != null ? java.net.URLEncoder.encode(typeFilter,"UTF-8") : "" %>">
+                        <i class="fa-solid fa-chevron-right fa-xs"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
     <% } %>
 </div>
 
