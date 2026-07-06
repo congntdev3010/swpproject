@@ -65,7 +65,7 @@
     <div class="container" style="padding-top:28px;">
 
         <!-- ===== SEARCH BAR ===== -->
-        <form id="searchForm" action="<%= ctx %>/user" method="get">
+        <form id="searchForm" action="<%= ctx %>/users" method="get">
             <input type="hidden" name="sort"  value="<%= sortField %>">
             <input type="hidden" name="order" value="<%= sortOrder %>">
             <input type="hidden" name="page"  value="1">
@@ -112,7 +112,7 @@
                         <button type="submit" class="btn btn-primary" id="searchBtn">
                             <i class="fa-solid fa-search"></i> Tìm
                         </button>
-                        <a href="<%= ctx %>/user" class="btn btn-outline" title="Xóa bộ lọc">
+                        <a href="<%= ctx %>/users" class="btn btn-outline" title="Xóa bộ lọc">
                             <i class="fa-solid fa-rotate-right"></i>
                         </a>
                     </div>
@@ -161,7 +161,7 @@
                             String thisOrder = active ? nextOrder : "ASC";
                             String icon = active ? ("ASC".equals(sortOrder) ? " ▲" : " ▼") : "";
                     %>
-                        <a href="<%= ctx %>/user?q=<%= java.net.URLEncoder.encode(q,"UTF-8") %>&role=<%= roleFilter != null ? roleFilter : "" %>&active=<%= activeFilter != null ? activeFilter : "" %>&sort=<%= sf %>&order=<%= thisOrder %>&page=1"
+                        <a href="<%= ctx %>/users?q=<%= java.net.URLEncoder.encode(q,"UTF-8") %>&role=<%= roleFilter != null ? roleFilter : "" %>&active=<%= activeFilter != null ? activeFilter : "" %>&sort=<%= sf %>&order=<%= thisOrder %>&page=1"
                            class="sort-btn <%= active ? "sort-btn-active" : "" %>">
                             <%= sl %><%= icon %>
                         </a>
@@ -234,7 +234,7 @@
                                         <i class="fa-solid fa-eye"></i> Xem
                                     </a>
                                     <% if (logged != null && logged.isAdmin()) { %>
-                                    <form method="post" action="<%= ctx %>/user" style="display:inline;margin:0;">
+                                    <form method="post" action="<%= ctx %>/users" style="display:inline;margin:0;">
                                         <input type="hidden" name="action" value="<%= u.getActive()==1 ? "lock" : "unlock" %>">
                                         <input type="hidden" name="id" value="<%= u.getId() %>">
                                         <button type="submit"
@@ -243,7 +243,7 @@
                                             <%= u.getActive()==1 ? "Khóa" : "Mở khóa" %>
                                         </button>
                                     </form>
-                                    <form method="post" action="<%= ctx %>/user" style="display:inline;margin:0;"
+                                    <form method="post" action="<%= ctx %>/users" style="display:inline;margin:0;"
                                           onsubmit="return confirm('Xác nhận xóa người dùng <%= u.getUsername().replace("'", "\\'") %>?')">
                                         <input type="hidden" name="action" value="delete">
                                         <input type="hidden" name="id" value="<%= u.getId() %>">
@@ -282,7 +282,7 @@
                         <!-- Prev -->
                         <li class="page-item <%= currentPageNum <= 1 ? "disabled" : "" %>">
                             <a class="page-link"
-                               href="<%= ctx %>/user?q=<%= java.net.URLEncoder.encode(q,"UTF-8") %>&role=<%= roleFilter != null ? roleFilter : "" %>&active=<%= activeFilter != null ? activeFilter : "" %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= currentPageNum - 1 %>">
+                               href="<%= ctx %>/users?q=<%= java.net.URLEncoder.encode(q,"UTF-8") %>&role=<%= roleFilter != null ? roleFilter : "" %>&active=<%= activeFilter != null ? activeFilter : "" %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= currentPageNum - 1 %>">
                                 <i class="fa-solid fa-chevron-left fa-xs"></i>
                             </a>
                         </li>
@@ -291,14 +291,14 @@
                            if (totalPages <= 7) {
                                for (int pg = 1; pg <= totalPages; pg++) { %>
                                    <li class="page-item <%= pg == currentPageNum ? "active" : "" %>">
-                                       <a class="page-link" href="<%= ctx %>/user?q=<%= java.net.URLEncoder.encode(q,"UTF-8") %>&role=<%= roleFilter != null ? roleFilter : "" %>&active=<%= activeFilter != null ? activeFilter : "" %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= pg %>"><%= pg %></a>
+                                       <a class="page-link" href="<%= ctx %>/users?q=<%= java.net.URLEncoder.encode(q,"UTF-8") %>&role=<%= roleFilter != null ? roleFilter : "" %>&active=<%= activeFilter != null ? activeFilter : "" %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= pg %>"><%= pg %></a>
                                    </li>
                                <% }
                            } else {
                                // Show first 2 pages
                                for (int pg = 1; pg <= 2; pg++) { %>
                                    <li class="page-item <%= pg == currentPageNum ? "active" : "" %>">
-                                       <a class="page-link" href="<%= ctx %>/user?q=<%= java.net.URLEncoder.encode(q,"UTF-8") %>&role=<%= roleFilter != null ? roleFilter : "" %>&active=<%= activeFilter != null ? activeFilter : "" %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= pg %>"><%= pg %></a>
+                                       <a class="page-link" href="<%= ctx %>/users?q=<%= java.net.URLEncoder.encode(q,"UTF-8") %>&role=<%= roleFilter != null ? roleFilter : "" %>&active=<%= activeFilter != null ? activeFilter : "" %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= pg %>"><%= pg %></a>
                                    </li>
                                <% }
 
@@ -306,7 +306,7 @@
                                    // Current page is near the start
                                    for (int pg = 3; pg <= 5; pg++) { %>
                                        <li class="page-item <%= pg == currentPageNum ? "active" : "" %>">
-                                           <a class="page-link" href="<%= ctx %>/user?q=<%= java.net.URLEncoder.encode(q,"UTF-8") %>&role=<%= roleFilter != null ? roleFilter : "" %>&active=<%= activeFilter != null ? activeFilter : "" %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= pg %>"><%= pg %></a>
+                                           <a class="page-link" href="<%= ctx %>/users?q=<%= java.net.URLEncoder.encode(q,"UTF-8") %>&role=<%= roleFilter != null ? roleFilter : "" %>&active=<%= activeFilter != null ? activeFilter : "" %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= pg %>"><%= pg %></a>
                                        </li>
                                    <% } %>
                                    <li class="page-item disabled"><span class="page-link">…</span></li>
@@ -315,7 +315,7 @@
                                    <li class="page-item disabled"><span class="page-link">…</span></li>
                                    <% for (int pg = totalPages - 4; pg <= totalPages - 2; pg++) { %>
                                        <li class="page-item <%= pg == currentPageNum ? "active" : "" %>">
-                                           <a class="page-link" href="<%= ctx %>/user?q=<%= java.net.URLEncoder.encode(q,"UTF-8") %>&role=<%= roleFilter != null ? roleFilter : "" %>&active=<%= activeFilter != null ? activeFilter : "" %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= pg %>"><%= pg %></a>
+                                           <a class="page-link" href="<%= ctx %>/users?q=<%= java.net.URLEncoder.encode(q,"UTF-8") %>&role=<%= roleFilter != null ? roleFilter : "" %>&active=<%= activeFilter != null ? activeFilter : "" %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= pg %>"><%= pg %></a>
                                        </li>
                                    <% }
                                } else {
@@ -323,7 +323,7 @@
                                    <li class="page-item disabled"><span class="page-link">…</span></li>
                                    <% for (int pg = currentPageNum - 1; pg <= currentPageNum + 1; pg++) { %>
                                        <li class="page-item <%= pg == currentPageNum ? "active" : "" %>">
-                                           <a class="page-link" href="<%= ctx %>/user?q=<%= java.net.URLEncoder.encode(q,"UTF-8") %>&role=<%= roleFilter != null ? roleFilter : "" %>&active=<%= activeFilter != null ? activeFilter : "" %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= pg %>"><%= pg %></a>
+                                           <a class="page-link" href="<%= ctx %>/users?q=<%= java.net.URLEncoder.encode(q,"UTF-8") %>&role=<%= roleFilter != null ? roleFilter : "" %>&active=<%= activeFilter != null ? activeFilter : "" %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= pg %>"><%= pg %></a>
                                        </li>
                                    <% } %>
                                    <li class="page-item disabled"><span class="page-link">…</span></li>
@@ -332,7 +332,7 @@
                                // Show last 2 pages
                                for (int pg = totalPages - 1; pg <= totalPages; pg++) { %>
                                    <li class="page-item <%= pg == currentPageNum ? "active" : "" %>">
-                                       <a class="page-link" href="<%= ctx %>/user?q=<%= java.net.URLEncoder.encode(q,"UTF-8") %>&role=<%= roleFilter != null ? roleFilter : "" %>&active=<%= activeFilter != null ? activeFilter : "" %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= pg %>"><%= pg %></a>
+                                       <a class="page-link" href="<%= ctx %>/users?q=<%= java.net.URLEncoder.encode(q,"UTF-8") %>&role=<%= roleFilter != null ? roleFilter : "" %>&active=<%= activeFilter != null ? activeFilter : "" %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= pg %>"><%= pg %></a>
                                    </li>
                                <% }
                            }
@@ -341,7 +341,7 @@
                         <!-- Next -->
                         <li class="page-item <%= currentPageNum >= totalPages ? "disabled" : "" %>">
                             <a class="page-link"
-                               href="<%= ctx %>/user?q=<%= java.net.URLEncoder.encode(q,"UTF-8") %>&role=<%= roleFilter != null ? roleFilter : "" %>&active=<%= activeFilter != null ? activeFilter : "" %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= currentPageNum + 1 %>">
+                               href="<%= ctx %>/users?q=<%= java.net.URLEncoder.encode(q,"UTF-8") %>&role=<%= roleFilter != null ? roleFilter : "" %>&active=<%= activeFilter != null ? activeFilter : "" %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= currentPageNum + 1 %>">
                                 <i class="fa-solid fa-chevron-right fa-xs"></i>
                             </a>
                         </li>
@@ -365,7 +365,7 @@
             <button onclick="document.getElementById('createUserModal').style.display='none'"
                     style="background:none;border:none;font-size:1.4rem;cursor:pointer;color:#9ca3af;line-height:1;">×</button>
         </div>
-        <form method="post" action="<%= ctx %>/user">
+        <form method="post" action="<%= ctx %>/users">
             <input type="hidden" name="action" value="create">
             <div style="display:grid; gap:14px;">
                 <div>

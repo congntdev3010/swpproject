@@ -137,6 +137,15 @@ public class BorrowServlet extends HttpServlet {
         req.setAttribute("keyword", keyword);
         req.setAttribute("pageTitle", "Quản lý mượn sách");
         req.setAttribute("activePage", "borrows");
+        
+        // Fetch data for checkout datalists
+        try {
+            com.swp391.dao.BookDAO bookDAO = new com.swp391.dao.BookDAOImpl();
+            com.swp391.dao.UserDAO userDAO = new com.swp391.dao.UserDAOImpl();
+            req.setAttribute("allBooks", bookDAO.searchBooks(null, null, "title", "ASC", 1, 1000));
+            req.setAttribute("allUsers", userDAO.searchUsers(null, null, 1));
+        } catch (Exception e) {}
+        
         req.getRequestDispatcher("/borrow_list.jsp").forward(req, resp);
     }
 
@@ -166,7 +175,15 @@ public class BorrowServlet extends HttpServlet {
         int userId = parseIntOrDefault(req.getParameter("userId"), 0);
         int bookId = parseIntOrDefault(req.getParameter("bookId"), 0);
         String copyIdStr = req.getParameter("copyId");
-        Integer copyId = (copyIdStr != null && !copyIdStr.isEmpty()) ? Integer.parseInt(copyIdStr) : null;
+        Integer copyId = null;
+        try {
+            if (copyIdStr != null && !copyIdStr.isEmpty()) {
+                copyId = Integer.parseInt(copyIdStr);
+            }
+        } catch (NumberFormatException e) {
+            resp.sendRedirect(req.getContextPath() + "/borrow/list?error=invalid_params");
+            return;
+        }
         boolean overrideLimit = "true".equals(req.getParameter("overrideLimit"));
         String note = req.getParameter("note");
 
@@ -249,6 +266,11 @@ public class BorrowServlet extends HttpServlet {
 
     private int parseIntOrDefault(String val, int def) {
         if (val == null || val.isEmpty()) return def;
-        try { return Integer.parseInt(val); } catch (NumberFormatException e) { return def; }
+        try { 
+            String numStr = val.split(" - ")[0].trim();
+            return Integer.parseInt(numStr); 
+        } catch (NumberFormatException e) { 
+            return def; 
+        }
     }
 }
