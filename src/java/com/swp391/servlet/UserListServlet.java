@@ -93,6 +93,20 @@ public class UserListServlet extends HttpServlet {
         try {
             UserDAO dao = new UserDAOImpl();
             if ("create".equals(action)) {
+                String username = request.getParameter("username");
+                if (username == null || username.trim().isEmpty()) {
+                    session.setAttribute("errorMsg", "Tên đăng nhập không được để trống.");
+                    response.sendRedirect(request.getContextPath() + "/users");
+                    return;
+                }
+                username = username.trim();
+                
+                if (dao.getUserByUsername(username) != null) {
+                    session.setAttribute("errorMsg", "Tên đăng nhập đã tồn tại.");
+                    response.sendRedirect(request.getContextPath() + "/users");
+                    return;
+                }
+
                 User u = new User();
                 u.setUsername(request.getParameter("username"));
                 u.setFullName(request.getParameter("fullName"));
@@ -142,7 +156,7 @@ public class UserListServlet extends HttpServlet {
         }
 
         // After action redirect back to users page
-        response.sendRedirect(request.getContextPath() + "/user");
+        response.sendRedirect(request.getContextPath() + "/users");
     }
 
     private String hashPassword(String raw) {

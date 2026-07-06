@@ -1,5 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="com.swp391.model.BorrowRecord, com.swp391.model.User, java.util.List" %>
+<%@ page import="com.swp391.model.BorrowRecord, com.swp391.model.User, com.swp391.model.Book, java.util.List" %>
 <%
     User loggedUser = (User) session.getAttribute("loggedUser");
     if (loggedUser == null) { response.sendRedirect(request.getContextPath() + "/login"); return; }
@@ -260,11 +260,23 @@
                 <label style="display:block;font-weight:600;margin-bottom:0.4rem;">ID Người mượn *</label>
                 <input type="number" name="userId" required placeholder="Nhập user ID..."
                        style="width:100%;padding:0.6rem 0.8rem;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
+                <datalist id="checkoutUsersList">
+                    <% List<User> allUsers = (List<User>) request.getAttribute("allUsers");
+                       if (allUsers != null) { for (User u : allUsers) { %>
+                       <option value="<%= u.getId() %> - <%= u.getFullName() %> (<%= u.getUsername() %>)"></option>
+                    <% } } %>
+                </datalist>
             </div>
             <div style="margin-bottom:1rem;">
                 <label style="display:block;font-weight:600;margin-bottom:0.4rem;">ID Sách *</label>
                 <input type="number" name="bookId" required placeholder="Nhập book ID..."
                        style="width:100%;padding:0.6rem 0.8rem;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
+                <datalist id="checkoutBooksList">
+                    <% List<Book> allBooks = (List<Book>) request.getAttribute("allBooks");
+                       if (allBooks != null) { for (Book bk : allBooks) { %>
+                       <option value="<%= bk.getId() %> - <%= bk.getTitle() %>"></option>
+                    <% } } %>
+                </datalist>
             </div>
             <div style="margin-bottom:1rem;">
                 <label style="display:block;font-weight:600;margin-bottom:0.4rem;">ID Bản sao (copy_id, nếu có)</label>
@@ -287,5 +299,19 @@
         </form>
     </div>
 </div>
+
+<script>
+window.onload = function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('checkout') && urlParams.has('userId') && urlParams.has('bookId')) {
+        let userId = urlParams.get('userId');
+        let bookId = urlParams.get('bookId');
+        document.querySelector('input[name="userId"]').value = userId;
+        document.querySelector('input[name="bookId"]').value = bookId;
+        document.getElementById('checkoutModal').style.display = 'flex';
+        setTimeout(() => document.querySelector('input[name="copyId"]').focus(), 100);
+    }
+}
+</script>
 
 <%@ include file="/WEB-INF/jsp/footer.jsp" %>

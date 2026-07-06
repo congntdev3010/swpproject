@@ -159,6 +159,12 @@
                             </button>
                         </form>
                         <% } %>
+                        <% if (isStaff && "READY".equals(st)) { %>
+                        <a href="<%= request.getContextPath() %>/borrow/list?checkout=1&userId=<%= r.getUserId() %>&bookId=<%= r.getBookId() %>"
+                           style="padding:0.3rem 0.7rem;background:#17a2b8;border:none;color:#fff;border-radius:6px;cursor:pointer;font-size:0.8rem;text-decoration:none;display:inline-block;">
+                            <i class="fa-solid fa-plus"></i> Tạo Phiếu Mượn
+                        </a>
+                        <% } %>
                         <form method="post" action="<%= request.getContextPath() %>/reservation/cancel"
                               onsubmit="return confirm('Xác nhận hủy phiếu đặt trước?')">
                             <input type="hidden" name="reservationId" value="<%= r.getId() %>">
