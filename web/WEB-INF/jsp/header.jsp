@@ -29,7 +29,7 @@
         <div class="navbar-inner">
             <a href="<%= request.getContextPath() %>/home" class="navbar-brand" style="display:flex;align-items:center;gap:12px;">
                 <img src="<%= request.getContextPath() %>/images/logo.png" alt="FPT University" style="height:36px;width:auto;display:block;">
-                <span>FPT <span class="brand-accent">Library</span></span>
+                <span><span class="brand-accent">FPT Library</span></span>
             </a>
 
             <ul class="navbar-nav">
