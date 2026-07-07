@@ -135,6 +135,8 @@ img { max-width: 100%; display: block; }
   color: var(--text-primary);
   white-space: nowrap;
   letter-spacing: -0.3px;
+  flex-shrink: 0;
+  text-decoration: none;
 }
 .navbar-brand .brand-icon {
   width: 36px;
@@ -154,19 +156,23 @@ img { max-width: 100%; display: block; }
 .navbar-nav {
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: center;
+  flex: 1;
+  gap: 4px;
   list-style: none;
 }
 .navbar-nav .nav-link {
   display: flex;
+  flex-direction: row;
   align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
+  gap: 5px;
+  padding: 6px 10px;
   border-radius: var(--radius-sm);
   color: var(--text-secondary);
-  font-size: 0.88rem;
+  font-size: 0.83rem;
   font-weight: 500;
   transition: all var(--transition);
+  white-space: nowrap;
 }
 .navbar-nav .nav-link:hover {
   color: var(--text-primary);
@@ -230,6 +236,7 @@ img { max-width: 100%; display: block; }
   gap: 10px;
   position: relative;
   z-index: 1010;
+  flex-shrink: 0;
 }
 .btn-login {
   padding: 8px 20px;
@@ -619,16 +626,22 @@ img { max-width: 100%; display: block; }
   position: absolute;
   top: 10px;
   right: 10px;
-  font-size: 0.7rem;
-  font-weight: 700;
-  padding: 4px 10px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 5px 12px;
   border-radius: 99px;
-  backdrop-filter: blur(8px);
-  letter-spacing: 0.3px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.25);
+  animation: statusPop 0.3s ease;
 }
-.status-available   { background: rgba(46,213,115,0.15);  color: #208747; border: 1px solid rgba(46,213,115,0.25); }
-.status-unavailable { background: rgba(255,71,87,0.12);   color: #d63031; border: 1px solid rgba(255,71,87,0.2); }
-.status-reserve     { background: rgba(255,193,7,0.18);    color: #b8860b; border: 1px solid rgba(255,193,7,0.25); }
+@keyframes statusPop {
+  from { transform: scale(0.8); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+.status-available   { background: #2ed573; color: #fff; border: none; text-shadow: 0 1px 2px rgba(0,0,0,0.15); }
+.status-unavailable { background: #ff4757; color: #fff; border: none; text-shadow: 0 1px 2px rgba(0,0,0,0.15); }
+.status-reserve     { background: #ffa502; color: #fff; border: none; text-shadow: 0 1px 2px rgba(0,0,0,0.15); }
 
 .book-body {
   padding: 16px;
