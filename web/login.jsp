@@ -55,10 +55,6 @@
                         </a>
                     </div>
 
-                    <!-- Demo hint -->
-                    <div class="login-hint">
-                        <p><strong>Demo:</strong> admin / 12345 hoặc librarian / 12345</p>
-                    </div>
                 </div>
 
                 <!-- Info Section -->
@@ -85,10 +81,17 @@
 <%@ include file="/WEB-INF/jsp/footer.jsp" %>
 
 <style>
+.page-wrapper {
+    padding-bottom: 0;
+}
+
 .login-section {
     padding: 60px 0;
     background: linear-gradient(135deg, #f5f7fa 0%, #f0f4f8 100%);
     min-height: calc(100vh - 200px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .login-container {
@@ -215,6 +218,7 @@
 .login-info {
     display: flex;
     align-items: center;
+    justify-content: center;
 }
 
 .info-box {
