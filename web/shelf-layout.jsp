@@ -146,7 +146,7 @@
                  BỘ LỌC VÀ TÌM KIẾM
             ════════════════════════════════════════════════ -->
             <div style="background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; margin-bottom: 30px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-                <div style="display: flex; flex-wrap: wrap; gap: 24px;">
+                <div style="display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-end;">
                     
                     <!-- Lọc theo vị trí -->
                     <div style="flex: 2; min-width: 300px;">
@@ -192,13 +192,11 @@
                         <div style="font-weight: 600; color: #111827; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
                             <i class="fa-solid fa-barcode" style="color: var(--primary);"></i> Tìm theo Barcode
                         </div>
-                        <form method="get" action="shelf" style="display: flex; gap: 8px; align-items: stretch;">
+                        <form method="get" action="shelf" style="display: flex; gap: 8px; align-items: center;">
                             <input type="hidden" name="action" value="search">
-                            <div style="flex: 1;">
-                                <input type="text" name="barcode" value="${searchBarcode}" placeholder="Nhập mã barcode..." required 
-                                       style="width: 100%; height: 100%; box-sizing: border-box; margin: 0; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; color: #111827; background-color: #f9fafb;">
-                            </div>
-                            <button type="submit" style="margin: 0; box-sizing: border-box; background: linear-gradient(135deg,var(--primary),var(--primary-dark)); color: white; border: none; padding: 0 16px; border-radius: 6px; font-weight: 500; font-size: 14px; cursor: pointer; transition: background 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                            <input type="text" name="barcode" value="${searchBarcode}" placeholder="Nhập mã barcode..."
+                                   style="flex: 1; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; color: #111827; background-color: #f9fafb; height: 38px; box-sizing: border-box;">
+                            <button type="submit" style="height: 38px; box-sizing: border-box; background: linear-gradient(135deg,var(--primary),var(--primary-dark)); color: white; border: none; padding: 0 16px; border-radius: 6px; font-weight: 500; font-size: 14px; cursor: pointer; transition: background 0.2s; display: flex; align-items: center; gap: 6px; white-space: nowrap;">
                                 <i class="fa-solid fa-magnifying-glass"></i> Tìm
                             </button>
                         </form>
