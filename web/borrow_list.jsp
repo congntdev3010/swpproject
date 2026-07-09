@@ -258,7 +258,7 @@
         <form method="post" action="<%= request.getContextPath() %>/borrow/checkout">
             <div style="margin-bottom:1rem;">
                 <label style="display:block;font-weight:600;margin-bottom:0.4rem;">ID Người mượn *</label>
-                <input type="number" name="userId" required placeholder="Nhập user ID..."
+                 <input type="text" name="userId" list="checkoutUsersList" required placeholder="Nhập user ID..."
                        style="width:100%;padding:0.6rem 0.8rem;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
                 <datalist id="checkoutUsersList">
                     <% List<User> allUsers = (List<User>) request.getAttribute("allUsers");
@@ -269,7 +269,7 @@
             </div>
             <div style="margin-bottom:1rem;">
                 <label style="display:block;font-weight:600;margin-bottom:0.4rem;">ID Sách *</label>
-                <input type="number" name="bookId" required placeholder="Nhập book ID..."
+                <input type="text" name="bookId" list="checkoutBooksList" required placeholder="Nhập book ID..."
                        style="width:100%;padding:0.6rem 0.8rem;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
                 <datalist id="checkoutBooksList">
                     <% List<Book> allBooks = (List<Book>) request.getAttribute("allBooks");
