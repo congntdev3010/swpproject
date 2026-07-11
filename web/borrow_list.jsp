@@ -255,21 +255,27 @@
             <button onclick="document.getElementById('checkoutModal').style.display='none'"
                     style="background:none;border:none;font-size:1.4rem;cursor:pointer;color:#999;">&times;</button>
         </div>
-        <form method="post" action="<%= request.getContextPath() %>/borrow/checkout">
+        <form method="post" action="<%= request.getContextPath() %>/borrow/checkout"
+              id="checkoutForm" onsubmit="return validateCheckoutForm()">
             <div style="margin-bottom:1rem;">
                 <label style="display:block;font-weight:600;margin-bottom:0.4rem;">ID Người mượn *</label>
-                 <input type="text" name="userId" list="checkoutUsersList" required placeholder="Nhập user ID..."
-                       style="width:100%;padding:0.6rem 0.8rem;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
+                 <input type="text" name="userId" id="checkoutUserId" list="checkoutUsersList" required
+                        placeholder="Nhập user ID..."
+                        style="width:100%;padding:0.6rem 0.8rem;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
                 <datalist id="checkoutUsersList">
                     <% List<User> allUsers = (List<User>) request.getAttribute("allUsers");
                        if (allUsers != null) { for (User u : allUsers) { %>
                        <option value="<%= u.getId() %> - <%= u.getFullName() %> (<%= u.getUsername() %>)"></option>
                     <% } } %>
                 </datalist>
+                <div id="checkoutUserId-error" style="color:#e94560;font-size:12px;margin-top:3px;display:none;">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Vui lòng nhập ID người mượn hợp lệ (số nguyên dương).
+                </div>
             </div>
             <div style="margin-bottom:1rem;">
                 <label style="display:block;font-weight:600;margin-bottom:0.4rem;">ID Sách *</label>
-                <input type="text" name="bookId" list="checkoutBooksList" required placeholder="Nhập book ID..."
+                <input type="text" name="bookId" id="checkoutBookId" list="checkoutBooksList" required
+                       placeholder="Nhập book ID..."
                        style="width:100%;padding:0.6rem 0.8rem;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
                 <datalist id="checkoutBooksList">
                     <% List<Book> allBooks = (List<Book>) request.getAttribute("allBooks");
@@ -277,16 +283,24 @@
                        <option value="<%= bk.getId() %> - <%= bk.getTitle() %>"></option>
                     <% } } %>
                 </datalist>
+                <div id="checkoutBookId-error" style="color:#e94560;font-size:12px;margin-top:3px;display:none;">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Vui lòng nhập ID sách hợp lệ (số nguyên dương).
+                </div>
             </div>
             <div style="margin-bottom:1rem;">
                 <label style="display:block;font-weight:600;margin-bottom:0.4rem;">ID Bản sao (copy_id, nếu có)</label>
-                <input type="number" name="copyId" placeholder="Để trống nếu không có..."
+                <input type="number" name="copyId" id="checkoutCopyId" placeholder="Để trống nếu không có..." min="1"
                        style="width:100%;padding:0.6rem 0.8rem;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
+                <div id="checkoutCopyId-error" style="color:#e94560;font-size:12px;margin-top:3px;display:none;">
+                    <i class="fa-solid fa-triangle-exclamation"></i> ID Bản sao phải là số nguyên dương.
+                </div>
             </div>
             <div style="margin-bottom:1.5rem;">
                 <label style="display:block;font-weight:600;margin-bottom:0.4rem;">Ghi chú</label>
-                <input type="text" name="note" placeholder="Ghi chú thêm (nếu có)..."
-                       style="width:100%;padding:0.6rem 0.8rem;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
+                <input type="text" name="note" id="checkoutNote" placeholder="Ghi chú thêm (nếu có)..." maxlength="500"
+                       style="width:100%;padding:0.6rem 0.8rem;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;"
+                       oninput="document.getElementById('checkoutNote-count').textContent = (500 - this.value.length) + ' ký tự còn lại'">
+                <div id="checkoutNote-count" style="font-size:11px;color:#aaa;margin-top:3px;text-align:right;">500 ký tự còn lại</div>
             </div>
             <div style="display:flex;gap:0.8rem;">
                 <button type="button" onclick="document.getElementById('checkoutModal').style.display='none'"
@@ -311,6 +325,61 @@ window.onload = function() {
         document.getElementById('checkoutModal').style.display = 'flex';
         setTimeout(() => document.querySelector('input[name="copyId"]').focus(), 100);
     }
+}
+
+function validateCheckoutForm() {
+    let valid = true;
+
+    // Validate userId
+    const userIdInput = document.getElementById('checkoutUserId');
+    const userIdErr = document.getElementById('checkoutUserId-error');
+    const userIdRaw = userIdInput.value.trim().split(' - ')[0].trim();
+    const userId = parseInt(userIdRaw, 10);
+    if (!userIdRaw || isNaN(userId) || userId <= 0) {
+        userIdErr.style.display = 'block';
+        userIdInput.style.borderColor = '#e94560';
+        valid = false;
+    } else {
+        userIdErr.style.display = 'none';
+        userIdInput.style.borderColor = '#28a745';
+    }
+
+    // Validate bookId
+    const bookIdInput = document.getElementById('checkoutBookId');
+    const bookIdErr = document.getElementById('checkoutBookId-error');
+    const bookIdRaw = bookIdInput.value.trim().split(' - ')[0].trim();
+    const bookId = parseInt(bookIdRaw, 10);
+    if (!bookIdRaw || isNaN(bookId) || bookId <= 0) {
+        bookIdErr.style.display = 'block';
+        bookIdInput.style.borderColor = '#e94560';
+        valid = false;
+    } else {
+        bookIdErr.style.display = 'none';
+        bookIdInput.style.borderColor = '#28a745';
+    }
+
+    // Validate copyId (optional but must be positive if provided)
+    const copyIdInput = document.getElementById('checkoutCopyId');
+    const copyIdErr = document.getElementById('checkoutCopyId-error');
+    if (copyIdInput.value.trim() !== '') {
+        const copyId = parseInt(copyIdInput.value, 10);
+        if (isNaN(copyId) || copyId <= 0) {
+            copyIdErr.style.display = 'block';
+            copyIdInput.style.borderColor = '#e94560';
+            valid = false;
+        } else {
+            copyIdErr.style.display = 'none';
+            copyIdInput.style.borderColor = '#28a745';
+        }
+    } else {
+        copyIdErr.style.display = 'none';
+    }
+
+    if (!valid) {
+        const firstErr = document.querySelector('#checkoutForm [style*="block"]');
+        if (firstErr) firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    return valid;
 }
 </script>
 

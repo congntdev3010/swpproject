@@ -41,7 +41,7 @@
             <div class="profile-grid">
                 <!-- LEFT CARD: User Info & Avatar -->
                 <div class="profile-card info-card">
-                    <form method="POST" action="<%= contextPath %>/user/profile" enctype="multipart/form-data" class="profile-form">
+                    <form method="POST" action="<%= contextPath %>/user/profile" enctype="multipart/form-data" class="profile-form" onsubmit="return validateProfileForm()">
                         <input type="hidden" name="action" value="updateProfile" />
                         <input type="hidden" name="id" value="<%= profile.getId() %>" />
                         <input type="hidden" name="avatar" value="<%= profile.getAvatar() != null ? profile.getAvatar() : "" %>" />
@@ -79,23 +79,49 @@
                             </div>
 
                             <div class="form-group">
-                                <label for="fullName">Họ và tên</label>
-                                <input type="text" id="fullName" name="fullName" class="form-control" value="<%= profile.getFullName() != null ? profile.getFullName() : "" %>" required />
+                                <label for="fullName">Họ và tên <span class="required-star">*</span></label>
+                                <input type="text" id="fullName" name="fullName" class="form-control"
+                                       value="<%= profile.getFullName() != null ? profile.getFullName() : "" %>"
+                                       required minlength="2" maxlength="100"
+                                       placeholder="Nhập họ và tên..."
+                                       oninput="validateFullName(this)" />
+                                <div id="fullName-error" class="input-error-msg" style="display:none;">
+                                    <i class="fa-solid fa-triangle-exclamation"></i> Họ tên phải có ít nhất 2 ký tự và không chứa số.
+                                </div>
                             </div>
 
                             <div class="form-group">
-                                <label for="email">Địa chỉ Email</label>
-                                <input type="email" id="email" name="email" class="form-control" value="<%= profile.getEmail() != null ? profile.getEmail() : "" %>" required />
+                                <label for="email">Địa chỉ Email <span class="required-star">*</span></label>
+                                <input type="email" id="email" name="email" class="form-control"
+                                       value="<%= profile.getEmail() != null ? profile.getEmail() : "" %>"
+                                       required maxlength="150"
+                                       placeholder="example@email.com"
+                                       oninput="validateEmail(this)" />
+                                <div id="email-error" class="input-error-msg" style="display:none;">
+                                    <i class="fa-solid fa-triangle-exclamation"></i> Email không đúng định dạng.
+                                </div>
                             </div>
 
                             <div class="form-group">
                                 <label for="phone">Số điện thoại</label>
-                                <input type="text" id="phone" name="phone" class="form-control" value="<%= profile.getPhone() != null ? profile.getPhone() : "" %>" />
+                                <input type="text" id="phone" name="phone" class="form-control"
+                                       value="<%= profile.getPhone() != null ? profile.getPhone() : "" %>"
+                                       maxlength="15" placeholder="0xxxxxxxxx"
+                                       oninput="validatePhone(this)" />
+                                <div id="phone-error" class="input-error-msg" style="display:none;">
+                                    <i class="fa-solid fa-triangle-exclamation"></i> Số điện thoại phải có 10-11 chữ số và bắt đầu bằng 0.
+                                </div>
                             </div>
 
                             <div class="form-group">
                                 <label for="studentId">Mã số sinh viên (MSSV)</label>
-                                <input type="text" id="studentId" name="studentId" class="form-control" value="<%= profile.getStudentId() != null ? profile.getStudentId() : "" %>" />
+                                <input type="text" id="studentId" name="studentId" class="form-control"
+                                       value="<%= profile.getStudentId() != null ? profile.getStudentId() : "" %>"
+                                       maxlength="20" placeholder="Ví dụ: SS170001"
+                                       oninput="validateStudentId(this)" />
+                                <div id="studentId-error" class="input-error-msg" style="display:none;">
+                                    <i class="fa-solid fa-triangle-exclamation"></i> MSSV chỉ được chứa chữ cái và chữ số.
+                                </div>
                             </div>
                         </div>
 
@@ -158,12 +184,21 @@
 
                         <div class="form-group">
                             <label for="newPassword">Mật khẩu mới <span class="required-star">*</span></label>
-                            <input type="password" id="newPassword" name="newPassword" class="form-control" placeholder="Nhập mật khẩu mới" required />
+                            <input type="password" id="newPassword" name="newPassword" class="form-control"
+                                   placeholder="Tối thiểu 6 ký tự" required minlength="6"
+                                   oninput="checkPasswordStrength(this.value)" />
+                            <div id="password-strength-bar" style="height:4px; border-radius:2px; margin-top:6px; transition:all 0.3s;"></div>
+                            <div id="password-strength-text" style="font-size:11px; margin-top:3px; font-weight:600;"></div>
+                            <div id="newPassword-error" class="input-error-msg" style="display:none;">
+                                <i class="fa-solid fa-triangle-exclamation"></i> Mật khẩu phải có ít nhất 6 ký tự.
+                            </div>
                         </div>
 
                         <div class="form-group">
                             <label for="confirmPassword">Xác nhận mật khẩu mới <span class="required-star">*</span></label>
-                            <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" placeholder="Nhập lại mật khẩu mới" required />
+                            <input type="password" id="confirmPassword" name="confirmPassword" class="form-control"
+                                   placeholder="Nhập lại mật khẩu mới" required
+                                   oninput="checkConfirmPassword(this)" />
                             <div id="password-match-error" class="input-error-msg" style="display: none;">
                                 <i class="fa-solid fa-triangle-exclamation"></i> Mật khẩu xác nhận không khớp.
                             </div>
@@ -521,6 +556,20 @@
 function previewAvatar(event) {
     const input = event.target;
     if (input.files && input.files[0]) {
+        const file = input.files[0];
+        // Validate file type
+        const allowedTypes = ['image/jpeg','image/png','image/gif','image/webp'];
+        if (!allowedTypes.includes(file.type)) {
+            alert('Chỉ chấp nhận file ảnh (JPG, PNG, GIF, WEBP)!');
+            input.value = '';
+            return;
+        }
+        // Validate file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            alert('Kích thước ảnh không được vượt quá 5MB!');
+            input.value = '';
+            return;
+        }
         const reader = new FileReader();
         reader.onload = function(e) {
             const preview = document.getElementById('avatarPreview');
@@ -533,24 +582,138 @@ function previewAvatar(event) {
                 fallback.style.display = 'none';
             }
         };
-        reader.readAsDataURL(input.files[0]);
+        reader.readAsDataURL(file);
+    }
+}
+
+function validateFullName(input) {
+    const val = input.value.trim();
+    const err = document.getElementById('fullName-error');
+    if (val.length < 2 || /\d/.test(val)) {
+        err.style.display = 'flex';
+        input.style.borderColor = 'var(--danger)';
+        return false;
+    }
+    err.style.display = 'none';
+    input.style.borderColor = 'var(--success)';
+    return true;
+}
+
+function validateEmail(input) {
+    const val = input.value.trim();
+    const err = document.getElementById('email-error');
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(val)) {
+        err.style.display = 'flex';
+        input.style.borderColor = 'var(--danger)';
+        return false;
+    }
+    err.style.display = 'none';
+    input.style.borderColor = 'var(--success)';
+    return true;
+}
+
+function validatePhone(input) {
+    const val = input.value.trim();
+    const err = document.getElementById('phone-error');
+    if (val === '') { err.style.display = 'none'; input.style.borderColor = ''; return true; }
+    const phoneRegex = /^0[0-9]{9,10}$/;
+    if (!phoneRegex.test(val)) {
+        err.style.display = 'flex';
+        input.style.borderColor = 'var(--danger)';
+        return false;
+    }
+    err.style.display = 'none';
+    input.style.borderColor = 'var(--success)';
+    return true;
+}
+
+function validateStudentId(input) {
+    const val = input.value.trim();
+    const err = document.getElementById('studentId-error');
+    if (val === '') { err.style.display = 'none'; input.style.borderColor = ''; return true; }
+    const sidRegex = /^[a-zA-Z0-9]+$/;
+    if (!sidRegex.test(val)) {
+        err.style.display = 'flex';
+        input.style.borderColor = 'var(--danger)';
+        return false;
+    }
+    err.style.display = 'none';
+    input.style.borderColor = 'var(--success)';
+    return true;
+}
+
+function validateProfileForm() {
+    let valid = true;
+    const fullNameEl = document.getElementById('fullName');
+    const emailEl = document.getElementById('email');
+    const phoneEl = document.getElementById('phone');
+    const studentIdEl = document.getElementById('studentId');
+    if (fullNameEl && !validateFullName(fullNameEl)) valid = false;
+    if (emailEl && !validateEmail(emailEl)) valid = false;
+    if (phoneEl && !validatePhone(phoneEl)) valid = false;
+    if (studentIdEl && !validateStudentId(studentIdEl)) valid = false;
+    if (!valid) {
+        const firstErr = document.querySelector('.input-error-msg[style*="flex"]');
+        if (firstErr) firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    return valid;
+}
+
+function checkPasswordStrength(password) {
+    const bar = document.getElementById('password-strength-bar');
+    const text = document.getElementById('password-strength-text');
+    const errDiv = document.getElementById('newPassword-error');
+    if (!bar || !text) return;
+    if (password.length === 0) { bar.style.background=''; bar.style.width='0'; text.textContent=''; return; }
+    if (password.length < 6) {
+        bar.style.background='#ff4757'; bar.style.width='33%';
+        text.style.color='#ff4757'; text.textContent='Yếu';
+        if (errDiv) errDiv.style.display = 'flex';
+        return;
+    }
+    if (errDiv) errDiv.style.display = 'none';
+    let score = 0;
+    if (password.length >= 8) score++;
+    if (/[A-Z]/.test(password)) score++;
+    if (/[0-9]/.test(password)) score++;
+    if (/[^a-zA-Z0-9]/.test(password)) score++;
+    if (score <= 1) { bar.style.background='#ffa502'; bar.style.width='50%'; text.style.color='#ffa502'; text.textContent='Trung bình'; }
+    else if (score <= 2) { bar.style.background='#2ed573'; bar.style.width='75%'; text.style.color='#2ed573'; text.textContent='Tốt'; }
+    else { bar.style.background='#1e90ff'; bar.style.width='100%'; text.style.color='#1e90ff'; text.textContent='Rất mạnh 💪'; }
+}
+
+function checkConfirmPassword(input) {
+    const newPwd = document.getElementById('newPassword').value;
+    const errorDiv = document.getElementById('password-match-error');
+    if (input.value && newPwd !== input.value) {
+        if (errorDiv) errorDiv.style.display = 'flex';
+        input.style.borderColor = 'var(--danger)';
+    } else {
+        if (errorDiv) errorDiv.style.display = 'none';
+        input.style.borderColor = input.value ? 'var(--success)' : '';
     }
 }
 
 function validatePasswordForm() {
-    const newPwd = document.getElementById('newPassword').value;
-    const confPwd = document.getElementById('confirmPassword').value;
+    const newPwd = document.getElementById('newPassword');
+    const confPwd = document.getElementById('confirmPassword');
     const errorDiv = document.getElementById('password-match-error');
+    const newPwdErr = document.getElementById('newPassword-error');
 
-    if (newPwd !== confPwd) {
-        if (errorDiv) {
-            errorDiv.style.display = 'block';
-        }
-        return false;
+    let valid = true;
+    if (newPwd.value.length < 6) {
+        if (newPwdErr) newPwdErr.style.display = 'flex';
+        newPwd.style.borderColor = 'var(--danger)';
+        valid = false;
     }
-    if (errorDiv) {
-        errorDiv.style.display = 'none';
+    if (newPwd.value !== confPwd.value) {
+        if (errorDiv) errorDiv.style.display = 'flex';
+        confPwd.style.borderColor = 'var(--danger)';
+        valid = false;
+    } else {
+        if (errorDiv) errorDiv.style.display = 'none';
     }
-    return true;
+    return valid;
 }
 </script>

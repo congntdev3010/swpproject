@@ -76,11 +76,19 @@
         </div>
         <div style="background:#fff;border-radius:12px;padding:1.2rem;box-shadow:0 2px 12px rgba(0,0,0,0.06);">
             <div style="font-size:0.85rem;color:#888;margin-bottom:0.8rem;">Đặt trước sách mới</div>
-            <form method="post" action="<%= request.getContextPath() %>/reservation/create" style="display:flex;gap:0.5rem;">
-                <input type="number" name="bookId" placeholder="Nhập Book ID..." required
-                       style="flex:1;padding:0.5rem 0.8rem;border:1px solid #ddd;border-radius:8px;">
+            <form method="post" action="<%= request.getContextPath() %>/reservation/create"
+                  style="display:flex;gap:0.5rem;"
+                  onsubmit="return validateReservationForm(this)">
+                <div style="flex:1;">
+                    <input type="number" name="bookId" id="reservationBookId"
+                           placeholder="Nhập Book ID..." required min="1" step="1"
+                           style="width:100%;padding:0.5rem 0.8rem;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
+                    <div id="reservationBookId-error" style="color:#e94560;font-size:11px;margin-top:3px;display:none;">
+                        <i class="fa-solid fa-triangle-exclamation"></i> Vui lòng nhập ID sách hợp lệ (số nguyên dương).
+                    </div>
+                </div>
                 <button type="submit" class="btn btn-primary"
-                        style="padding:0.5rem 1rem;background:linear-gradient(135deg,var(--primary),var(--primary-dark));border:none;color:#fff;border-radius:8px;cursor:pointer;font-weight:600;white-space:nowrap;">
+                        style="padding:0.5rem 1rem;background:linear-gradient(135deg,var(--primary),var(--primary-dark));border:none;color:#fff;border-radius:8px;cursor:pointer;font-weight:600;white-space:nowrap;align-self:flex-start;">
                     <i class="fa-solid fa-plus"></i> Đặt trước
                 </button>
             </form>
@@ -257,5 +265,22 @@
         </nav>
     <% } %>
 </div>
+
+<script>
+function validateReservationForm(form) {
+    const bookIdInput = document.getElementById('reservationBookId');
+    const errorDiv = document.getElementById('reservationBookId-error');
+    const val = parseInt(bookIdInput.value, 10);
+    if (!bookIdInput.value || isNaN(val) || val <= 0) {
+        errorDiv.style.display = 'block';
+        bookIdInput.style.borderColor = '#e94560';
+        bookIdInput.focus();
+        return false;
+    }
+    errorDiv.style.display = 'none';
+    bookIdInput.style.borderColor = '#28a745';
+    return true;
+}
+</script>
 
 <%@ include file="/WEB-INF/jsp/footer.jsp" %>
