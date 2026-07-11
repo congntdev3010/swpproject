@@ -251,18 +251,30 @@
             <button onclick="document.getElementById('createFineModal').style.display='none'"
                     style="background:none;border:none;font-size:1.4rem;cursor:pointer;color:#999;">&times;</button>
         </div>
-        <form method="post" action="<%= request.getContextPath() %>/fine/create">
+        <form method="post" action="<%= request.getContextPath() %>/fine/create"
+              id="createFineForm" onsubmit="return validateFineForm()">
             <div style="margin-bottom:1rem;">
                 <label style="display:block;font-weight:600;margin-bottom:0.4rem;">ID Phiếu mượn *</label>
-                <input type="number" name="borrowRecordId" required placeholder="Nhập borrow record ID..."
+                <input type="number" name="borrowRecordId" id="fineborrowId" required
+                       placeholder="Nhập borrow record ID..." min="1" step="1"
                        style="width:100%;padding:0.6rem 0.8rem;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
+                <div id="fineborrowId-error" style="color:#e94560;font-size:12px;margin-top:3px;display:none;">
+                    <i class="fa-solid fa-triangle-exclamation"></i> ID Phiếu mượn phải là số nguyên dương.
+                </div>
             </div>
-            <div style="margin-bottom:1.5rem;">
+            <div style="margin-bottom:1rem;">
                 <label style="display:block;font-weight:600;margin-bottom:0.4rem;">Loại phạt *</label>
                 <select name="type" required style="width:100%;padding:0.6rem 0.8rem;border:1px solid #ddd;border-radius:8px;">
                     <option value="DAMAGE">🔧 Hư hỏng (70% giá gốc)</option>
                     <option value="LOST">❌ Mất sách (100% giá gốc)</option>
                 </select>
+            </div>
+            <div style="margin-bottom:1.5rem;">
+                <label style="display:block;font-weight:600;margin-bottom:0.4rem;">Ghi chú</label>
+                <input type="text" name="note" placeholder="Ghi chú thêm (tùy chọn)..." maxlength="500"
+                       style="width:100%;padding:0.6rem 0.8rem;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;"
+                       oninput="document.getElementById('fineNote-count').textContent = (500 - this.value.length) + ' ký tự còn lại'">
+                <div id="fineNote-count" style="font-size:11px;color:#aaa;margin-top:3px;text-align:right;">500 ký tự còn lại</div>
             </div>
             <div style="display:flex;gap:0.8rem;">
                 <button type="button" onclick="document.getElementById('createFineModal').style.display='none'"
@@ -275,5 +287,22 @@
         </form>
     </div>
 </div>
+
+<script>
+function validateFineForm() {
+    const borrowIdInput = document.getElementById('fineborrowId');
+    const borrowIdErr = document.getElementById('fineborrowId-error');
+    const val = parseInt(borrowIdInput.value, 10);
+    if (!borrowIdInput.value || isNaN(val) || val <= 0) {
+        borrowIdErr.style.display = 'block';
+        borrowIdInput.style.borderColor = '#e94560';
+        borrowIdInput.focus();
+        return false;
+    }
+    borrowIdErr.style.display = 'none';
+    borrowIdInput.style.borderColor = '#28a745';
+    return true;
+}
+</script>
 
 <%@ include file="/WEB-INF/jsp/footer.jsp" %>

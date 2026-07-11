@@ -365,38 +365,62 @@
             <button onclick="document.getElementById('createUserModal').style.display='none'"
                     style="background:none;border:none;font-size:1.4rem;cursor:pointer;color:#9ca3af;line-height:1;">×</button>
         </div>
-        <form method="post" action="<%= ctx %>/users">
+        <form method="post" action="<%= ctx %>/users" id="createUserForm" onsubmit="return validateCreateUserForm()">
             <input type="hidden" name="action" value="create">
             <div style="display:grid; gap:14px;">
                 <div>
                     <label style="font-size:13px;font-weight:600;color:#374151;display:block;margin-bottom:5px;">Tên đăng nhập *</label>
-                    <input name="username" required placeholder="Nhập username..."
+                    <input id="cu_username" name="username" required placeholder="Nhập username (chữ cái, số, dấu _)..."
+                           maxlength="50" autocomplete="off"
                            style="width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;box-sizing:border-box;">
+                    <div id="cu_username_err" style="color:#ef4444;font-size:12px;margin-top:4px;display:none;">
+                        <i class="fa-solid fa-triangle-exclamation"></i> Tên đăng nhập chỉ chứa chữ cái, số và dấu gạch dưới (_), tối thiểu 3 ký tự.
+                    </div>
                 </div>
                 <div>
                     <label style="font-size:13px;font-weight:600;color:#374151;display:block;margin-bottom:5px;">Mật khẩu</label>
-                    <input name="password" type="password" placeholder="Mặc định: password"
+                    <input id="cu_password" name="password" type="password" placeholder="Để trống = mặc định 'password'"
+                           minlength="6" maxlength="100"
                            style="width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;box-sizing:border-box;">
+                    <div id="cu_password_err" style="color:#ef4444;font-size:12px;margin-top:4px;display:none;">
+                        <i class="fa-solid fa-triangle-exclamation"></i> Mật khẩu phải có ít nhất 6 ký tự.
+                    </div>
                 </div>
                 <div>
                     <label style="font-size:13px;font-weight:600;color:#374151;display:block;margin-bottom:5px;">Họ và tên</label>
-                    <input name="fullName" placeholder="Nhập họ tên..."
+                    <input id="cu_fullName" name="fullName" placeholder="Nhập họ tên..."
+                           maxlength="100"
                            style="width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;box-sizing:border-box;">
+                    <div id="cu_fullName_err" style="color:#ef4444;font-size:12px;margin-top:4px;display:none;">
+                        <i class="fa-solid fa-triangle-exclamation"></i> Họ tên không được chứa số.
+                    </div>
                 </div>
                 <div>
                     <label style="font-size:13px;font-weight:600;color:#374151;display:block;margin-bottom:5px;">Email</label>
-                    <input name="email" type="email" placeholder="Nhập email..."
+                    <input id="cu_email" name="email" type="email" placeholder="example@email.com"
+                           maxlength="150"
                            style="width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;box-sizing:border-box;">
+                    <div id="cu_email_err" style="color:#ef4444;font-size:12px;margin-top:4px;display:none;">
+                        <i class="fa-solid fa-triangle-exclamation"></i> Email không đúng định dạng.
+                    </div>
                 </div>
                 <div>
                     <label style="font-size:13px;font-weight:600;color:#374151;display:block;margin-bottom:5px;">Số điện thoại</label>
-                    <input name="phone" placeholder="Nhập số điện thoại..."
+                    <input id="cu_phone" name="phone" placeholder="0xxxxxxxxx"
+                           maxlength="15"
                            style="width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;box-sizing:border-box;">
+                    <div id="cu_phone_err" style="color:#ef4444;font-size:12px;margin-top:4px;display:none;">
+                        <i class="fa-solid fa-triangle-exclamation"></i> Số điện thoại phải có 10-11 chữ số và bắt đầu bằng 0.
+                    </div>
                 </div>
                 <div>
                     <label style="font-size:13px;font-weight:600;color:#374151;display:block;margin-bottom:5px;">Mã sinh viên</label>
-                    <input name="studentId" placeholder="Nhập mã sinh viên..."
+                    <input id="cu_studentId" name="studentId" placeholder="Ví dụ: SS170001"
+                           maxlength="20"
                            style="width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;box-sizing:border-box;">
+                    <div id="cu_studentId_err" style="color:#ef4444;font-size:12px;margin-top:4px;display:none;">
+                        <i class="fa-solid fa-triangle-exclamation"></i> Mã sinh viên chỉ được chứa chữ cái và chữ số.
+                    </div>
                 </div>
                 <div>
                     <label style="font-size:13px;font-weight:600;color:#374151;display:block;margin-bottom:5px;">Vai trò</label>
@@ -424,6 +448,100 @@
 document.getElementById('createUserModal').addEventListener('click', function(e) {
     if (e.target === this) this.style.display = 'none';
 });
+
+function validateCreateUserForm() {
+    let valid = true;
+
+    // Username: min 3, only letters/numbers/underscore
+    const username = document.getElementById('cu_username');
+    const usernameErr = document.getElementById('cu_username_err');
+    const usernameRegex = /^[a-zA-Z0-9_]{3,50}$/;
+    if (!usernameRegex.test(username.value.trim())) {
+        usernameErr.style.display = 'block';
+        username.style.borderColor = '#ef4444';
+        valid = false;
+    } else {
+        usernameErr.style.display = 'none';
+        username.style.borderColor = '#22c55e';
+    }
+
+    // Password: if provided, min 6 chars
+    const password = document.getElementById('cu_password');
+    const passwordErr = document.getElementById('cu_password_err');
+    if (password.value.length > 0 && password.value.length < 6) {
+        passwordErr.style.display = 'block';
+        password.style.borderColor = '#ef4444';
+        valid = false;
+    } else {
+        passwordErr.style.display = 'none';
+        if (password.value.length > 0) password.style.borderColor = '#22c55e';
+    }
+
+    // FullName: no digits if provided
+    const fullName = document.getElementById('cu_fullName');
+    const fullNameErr = document.getElementById('cu_fullName_err');
+    if (fullName.value.trim().length > 0 && /\d/.test(fullName.value)) {
+        fullNameErr.style.display = 'block';
+        fullName.style.borderColor = '#ef4444';
+        valid = false;
+    } else {
+        fullNameErr.style.display = 'none';
+        if (fullName.value.trim()) fullName.style.borderColor = '#22c55e';
+    }
+
+    // Email: valid format if provided
+    const email = document.getElementById('cu_email');
+    const emailErr = document.getElementById('cu_email_err');
+    if (email.value.trim().length > 0) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email.value.trim())) {
+            emailErr.style.display = 'block';
+            email.style.borderColor = '#ef4444';
+            valid = false;
+        } else {
+            emailErr.style.display = 'none';
+            email.style.borderColor = '#22c55e';
+        }
+    } else {
+        emailErr.style.display = 'none';
+    }
+
+    // Phone: 10-11 digits starting with 0, if provided
+    const phone = document.getElementById('cu_phone');
+    const phoneErr = document.getElementById('cu_phone_err');
+    if (phone.value.trim().length > 0) {
+        const phoneRegex = /^0[0-9]{9,10}$/;
+        if (!phoneRegex.test(phone.value.trim())) {
+            phoneErr.style.display = 'block';
+            phone.style.borderColor = '#ef4444';
+            valid = false;
+        } else {
+            phoneErr.style.display = 'none';
+            phone.style.borderColor = '#22c55e';
+        }
+    } else {
+        phoneErr.style.display = 'none';
+    }
+
+    // StudentId: alphanumeric only if provided
+    const studentId = document.getElementById('cu_studentId');
+    const studentIdErr = document.getElementById('cu_studentId_err');
+    if (studentId.value.trim().length > 0) {
+        const sidRegex = /^[a-zA-Z0-9]+$/;
+        if (!sidRegex.test(studentId.value.trim())) {
+            studentIdErr.style.display = 'block';
+            studentId.style.borderColor = '#ef4444';
+            valid = false;
+        } else {
+            studentIdErr.style.display = 'none';
+            studentId.style.borderColor = '#22c55e';
+        }
+    } else {
+        studentIdErr.style.display = 'none';
+    }
+
+    return valid;
+}
 </script>
 <% } %>
 
