@@ -89,14 +89,31 @@ public class BookDetailServlet extends HttpServlet {
 
             List<Author> authors = dao.getAuthorsByBookId(id);
 
+            // Fetch review data
+            com.swp391.dao.BookReviewDAO reviewDAO = new com.swp391.dao.BookReviewDAO();
+            List<com.swp391.model.BookReview> reviews = reviewDAO.getReviewsByBookId(id);
+            double avgRating = reviewDAO.getAverageRating(id);
+            com.swp391.model.BookReview myReview = null;
+            boolean canReview = false;
+
+            HttpSession session = request.getSession(false);
+            User loggedUser = (session != null) ? (User) session.getAttribute("loggedUser") : null;
+            
+            if (loggedUser != null && "READER".equals(loggedUser.getRole())) {
+                canReview = reviewDAO.hasReturnedBook(id, loggedUser.getId());
+            }
+
+            request.setAttribute("reviews", reviews);
+            request.setAttribute("avgRating", String.format("%.1f", avgRating).replace(",", "."));
+            request.setAttribute("myReview", myReview);
+            request.setAttribute("canReview", canReview);
+
             request.setAttribute("book", book);
             request.setAttribute("authors", authors);
             request.setAttribute("pageTitle", book.getTitle() + " – FPT Library");
             request.setAttribute("pageDesc", "Chi tiết sách: " + book.getTitle());
 
             // Check if user is admin (for showing edit/delete buttons)
-            HttpSession session = request.getSession(false);
-            User loggedUser = (session != null) ? (User) session.getAttribute("loggedUser") : null;
             request.setAttribute("isAdmin", loggedUser != null && loggedUser.isAdmin());
 
         } catch (Exception e) {
