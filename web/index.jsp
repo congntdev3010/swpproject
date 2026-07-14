@@ -106,7 +106,7 @@
                         <div class="book-card">
                             <div class="book-cover">
                                 <% if (book.getCoverImage() != null && !book.getCoverImage().trim().isEmpty()) { %>
-                                    <img src="<%= book.getCoverImage() %>"
+                                    <img src="<%= com.swp391.util.UploadUtility.resolveUrl(book.getCoverImage(), request.getContextPath()) %>"
                                          alt="<%= book.getTitle() %>"
                                          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
                                     <div class="book-cover-placeholder" style="display:none;">

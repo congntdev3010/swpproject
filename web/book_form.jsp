@@ -80,7 +80,7 @@
     <% } %>
 
     <!-- ===== BOOK FORM ===== -->
-    <form id="bookForm" action="<%= isEdit ? ctx + "/book/edit" : ctx + "/book/add" %>" method="post" novalidate>
+    <form id="bookForm" action="<%= isEdit ? ctx + "/book/edit" : ctx + "/book/add" %>" method="post" enctype="multipart/form-data" novalidate>
         <input type="hidden" name="action" value="<%= isEdit ? "update" : "create" %>">
         <% if (isEdit) { %>
             <input type="hidden" name="id" value="<%= bookId %>">
@@ -249,10 +249,12 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="coverImageInput" class="form-label">URL ảnh bìa</label>
-                            <input type="url" id="coverImageInput" name="coverImage" class="form-control"
-                                   value="<%= coverImage %>" placeholder="https://example.com/cover.jpg"
-                                   maxlength="500">
+                            <label for="coverImageFile" class="form-label">Ảnh bìa sách</label>
+                            <input type="file" id="coverImageFile" name="coverImageFile" class="form-control" accept="image/*" onchange="previewImage(this, 'coverImagePreview')">
+                            <input type="hidden" name="existingCoverImage" value="<%= coverImage %>">
+                            <div style="margin-top: 10px;">
+                                <img id="coverImagePreview" src="<%= coverImage != null && !coverImage.isEmpty() ? com.swp391.util.UploadUtility.resolveUrl(coverImage, request.getContextPath()) : "" %>" style="max-height: 150px; display: <%= coverImage != null && !coverImage.isEmpty() ? "block" : "none" %>; border-radius: 6px; border: 1px solid #d1d5db;" alt="Xem trước ảnh bìa">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -415,4 +417,16 @@ document.getElementById('bookForm').addEventListener('submit', function(e) {
         }
     });
 })();
+
+function previewImage(input, previewId) {
+    var preview = document.getElementById(previewId);
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+}
 </script>

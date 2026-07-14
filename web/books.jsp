@@ -229,7 +229,7 @@
                             <td style="color:var(--text-muted); font-size:0.82rem;"><%= rowNum++ %></td>
                             <td>
                                 <% if (b.getCoverImage() != null && !b.getCoverImage().isEmpty()) { %>
-                                    <img src="<%= b.getCoverImage() %>" class="book-thumb"
+                                    <img src="<%= com.swp391.util.UploadUtility.resolveUrl(b.getCoverImage(), request.getContextPath()) %>" class="book-thumb"
                                          alt="<%= b.getTitle() %>"
                                          onerror="this.src=''; this.style.background='var(--bg-surface)';">
                                 <% } else { %>
@@ -305,7 +305,7 @@
                 <div class="book-card">
                     <a href="<%= ctx %>/book/detail?id=<%= b.getId() %>" class="book-cover">
                         <% if (b.getCoverImage() != null && !b.getCoverImage().trim().isEmpty()) { %>
-                            <img src="<%= b.getCoverImage() %>"
+                            <img src="<%= com.swp391.util.UploadUtility.resolveUrl(b.getCoverImage(), request.getContextPath()) %>"
                                  alt="<%= b.getTitle() %>"
                                  onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
                             <div class="book-cover-placeholder" style="display:none;">

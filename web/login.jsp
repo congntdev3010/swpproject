@@ -40,6 +40,7 @@
                         <div class="form-group">
                             <label for="password">Mật khẩu</label>
                             <input type="password" id="password" name="password"
+                                   value="${param.password}"
                                    required placeholder="Nhập mật khẩu"
                                    class="form-control">
                         </div>

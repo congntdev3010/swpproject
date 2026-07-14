@@ -192,7 +192,7 @@
                             <td style="padding: 12px 24px;">
                                 <div style="width: 44px; height: 44px; border-radius: 50%; overflow: hidden; background: #f3f4f6; border: 1px solid #e5e7eb;">
                                     <% if (a.getAvatarUrl() != null && !a.getAvatarUrl().trim().isEmpty()) { %>
-                                        <img src="<%= a.getAvatarUrl() %>" alt="avatar" style="width: 100%; height: 100%; object-fit: cover;">
+                                        <img src="<%= com.swp391.util.UploadUtility.resolveUrl(a.getAvatarUrl(), request.getContextPath()) %>" alt="avatar" style="width: 100%; height: 100%; object-fit: cover;">
                                     <% } else { %>
                                         <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: #9ca3af; font-weight: bold; font-size: 16px;">
                                             <%= a.getName().substring(0, 1).toUpperCase() %>
