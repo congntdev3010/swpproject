@@ -66,7 +66,7 @@
         </form>
     </div>
     <% } %>
-    <% if (errorMsg != null) { %>
+    <% if (errorMsg != null && !"copy_not_available".equals(errorMsg)) { %>
     <div style="background:#f8d7da;border:1px solid #f5c6cb;color:#721c24;padding:0.8rem 1.2rem;border-radius:8px;margin-bottom:1.5rem;">
         <i class="fa-solid fa-circle-xmark"></i> Có lỗi xảy ra: <%= errorMsg %>
     </div>
@@ -294,6 +294,9 @@
                 <div id="checkoutCopyId-error" style="color:#e94560;font-size:12px;margin-top:3px;display:none;">
                     <i class="fa-solid fa-triangle-exclamation"></i> ID Bản sao phải là số nguyên dương.
                 </div>
+                <div id="checkoutCopyId-server-error" style="color:#e94560;font-size:12px;margin-top:3px;display:none;">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Bản sao sách không tồn tại hoặc trạng thái không khả dụng (AVAILABLE).
+                </div>
             </div>
             <div style="margin-bottom:1.5rem;">
                 <label style="display:block;font-weight:600;margin-bottom:0.4rem;">Ghi chú</label>
@@ -320,15 +323,28 @@ window.onload = function() {
     if (urlParams.has('checkout') && urlParams.has('userId') && urlParams.has('bookId')) {
         let userId = urlParams.get('userId');
         let bookId = urlParams.get('bookId');
+        let copyId = urlParams.get('copyId');
+        let error = urlParams.get('error');
+
         document.querySelector('input[name="userId"]').value = userId;
         document.querySelector('input[name="bookId"]').value = bookId;
+        if (copyId) document.querySelector('input[name="copyId"]').value = copyId;
+        
         document.getElementById('checkoutModal').style.display = 'flex';
+        
+        if (error === 'copy_not_available') {
+            document.getElementById('checkoutCopyId-server-error').style.display = 'block';
+            document.getElementById('checkoutCopyId').style.borderColor = '#e94560';
+        }
+        
         setTimeout(() => document.querySelector('input[name="copyId"]').focus(), 100);
     }
 }
 
 function validateCheckoutForm() {
     let valid = true;
+    const serverErr = document.getElementById('checkoutCopyId-server-error');
+    if (serverErr) serverErr.style.display = 'none';
 
     // Validate userId
     const userIdInput = document.getElementById('checkoutUserId');

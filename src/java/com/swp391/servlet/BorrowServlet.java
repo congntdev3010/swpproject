@@ -1,7 +1,12 @@
 package com.swp391.servlet;
 
+import com.swp391.dao.BookCopyDAO;
+import com.swp391.dao.BookDAO;
+import com.swp391.dao.BookDAOImpl;
 import com.swp391.dao.BorrowDAO;
 import com.swp391.dao.BorrowDAOImpl;
+import com.swp391.model.Book;
+import com.swp391.model.BookCopy;
 import com.swp391.model.BorrowRecord;
 import com.swp391.model.User;
 
@@ -172,25 +177,43 @@ public class BorrowServlet extends HttpServlet {
      */
     private void processCheckout(HttpServletRequest req, HttpServletResponse resp, User loggedUser)
             throws Exception, IOException {
+        BookDAO bookDAO = new BookDAOImpl();
+        BookCopyDAO bookCopyDAO = new BookCopyDAO();
         int userId = parseIntOrDefault(req.getParameter("userId"), 0);
         int bookId = parseIntOrDefault(req.getParameter("bookId"), 0);
         String copyIdStr = req.getParameter("copyId");
         Integer copyId = null;
+
         try {
-            if (copyIdStr != null && !copyIdStr.isEmpty()) {
-                copyId = Integer.parseInt(copyIdStr);
+            if (copyIdStr != null && !copyIdStr.trim().isEmpty()) {
+                copyId = Integer.parseInt(copyIdStr.trim());
+            } else {
+                resp.sendRedirect(req.getContextPath() + "/borrow/list?error=invalid_params");
+                return;
             }
         } catch (NumberFormatException e) {
             resp.sendRedirect(req.getContextPath() + "/borrow/list?error=invalid_params");
             return;
         }
-        boolean overrideLimit = "true".equals(req.getParameter("overrideLimit"));
-        String note = req.getParameter("note");
 
         if (userId == 0 || bookId == 0) {
             resp.sendRedirect(req.getContextPath() + "/borrow/list?error=invalid_params");
             return;
         }
+
+        Book b = bookDAO.findById(bookId);
+        BookCopy bc = bookCopyDAO.findById(copyId);
+
+        if (bc == null || !"AVAILABLE".equalsIgnoreCase(bc.getStatus())) {
+            String redirectUrl = req.getContextPath() + "/borrow/list?checkout=true&error=copy_not_available"
+                    + "&userId=" + userId + "&bookId=" + bookId 
+                    + (copyId != null ? "&copyId=" + copyId : "");
+            resp.sendRedirect(redirectUrl);
+            return;
+        }
+
+        boolean overrideLimit = "true".equals(req.getParameter("overrideLimit"));
+        String note = req.getParameter("note");
 
         // §1.1 Kiểm tra ngưỡng mượn
         int activeCount = borrowDAO.countActiveBorrowsAndReservations(userId);
@@ -213,6 +236,10 @@ public class BorrowServlet extends HttpServlet {
 
         BorrowRecord created = borrowDAO.createBorrow(record);
         if (created != null) {
+            b.setAvailable(b.getAvailable() - 1);
+            bookDAO.updateBook(b);
+            bc.setStatus("BORROWED");
+            bookCopyDAO.updateCopy(bc);
             resp.sendRedirect(req.getContextPath() + "/borrow/list?success=checkout");
         } else {
             resp.sendRedirect(req.getContextPath() + "/borrow/list?error=checkout_failed");

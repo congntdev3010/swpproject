@@ -1,5 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="com.swp391.model.Book, com.swp391.model.Author, com.swp391.model.User, java.util.List" %>
+<%@ page import="com.swp391.model.Book, com.swp391.model.Author, com.swp391.model.User, com.swp391.model.BookReview, java.util.List" %>
 <%@ include file="/WEB-INF/jsp/header.jsp" %>
 <%
     User loggedUser = (User) session.getAttribute("loggedUser");
@@ -8,6 +8,12 @@
     String errorMsg  = (String) request.getAttribute("errorMsg");
     Boolean isAdmin  = (Boolean) request.getAttribute("isAdmin");
     if (isAdmin == null) isAdmin = false;
+    
+    List<BookReview> reviews = (List<BookReview>) request.getAttribute("reviews");
+    String avgRating = (String) request.getAttribute("avgRating");
+    BookReview myReview = (BookReview) request.getAttribute("myReview");
+    Boolean canReview = (Boolean) request.getAttribute("canReview");
+    if (canReview == null) canReview = false;
 
     String ctx       = request.getContextPath();
 
@@ -241,6 +247,175 @@
             <% } %>
         </div>
     </div>
+
+    <!-- ===== REVIEWS SECTION ===== -->
+    <div class="book-detail-reviews" style="margin-top: 40px; border-top: 1px solid var(--border-light); padding-top: 30px;">
+        <h3 style="margin-bottom: 25px; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 10px;">
+            <i class="fa-solid fa-star" style="color: #f5a623;"></i> Đánh giá sách
+        </h3>
+
+        <!-- Summary -->
+        <div class="detail-card" style="margin-bottom: 30px; text-align: center; max-width: 320px; margin-left: auto; margin-right: auto; padding: 20px;">
+            <div class="detail-card-body" style="padding: 0;">
+                <div style="font-size: 3rem; font-weight: 800; color: #f5a623; line-height: 1;">
+                    <%= avgRating != null && !avgRating.equals("0.0") ? avgRating : "0" %> <span style="font-size: 1.5rem; color: var(--text-muted);">/ 5</span>
+                </div>
+                <div style="color: #f5a623; font-size: 1.4rem; margin: 10px 0;">
+                    <% 
+                       double avgR = 0;
+                       try { if (avgRating != null) avgR = Double.parseDouble(avgRating); } catch (Exception e) {}
+                       for (int i=1; i<=5; i++) {
+                           if (i <= Math.round(avgR)) out.print("★");
+                           else out.print("<span style='color: #e0e0e0;'>★</span>");
+                       }
+                    %>
+                </div>
+                <div style="color: var(--text-muted); font-weight: 500;"><%= reviews != null ? reviews.size() : 0 %> đánh giá</div>
+            </div>
+        </div>
+
+        <!-- Review Form for Reader -->
+        <% if (loggedUser != null && "READER".equals(loggedUser.getRole())) { %>
+            <% if (canReview) { %>
+            <div class="detail-card" style="margin-bottom: 35px; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
+                <div class="detail-card-header" style="background: rgba(245, 166, 35, 0.1); border-bottom: none; color: #d08819; font-weight: 700;">
+                    <i class="fa-solid fa-pen-to-square"></i> Viết đánh giá
+                </div>
+                <div class="detail-card-body">
+                    <form method="post" action="<%= ctx %>/book-review">
+                        <input type="hidden" name="bookId" value="<%= book.getId() %>">
+                        <input type="hidden" name="action" value="add">
+
+                        <div style="margin-bottom: 20px;">
+                            <label style="font-weight: 600; margin-bottom: 12px; display: block; color: var(--text-primary);">Số sao <span style="color:var(--danger)">*</span></label>
+                            <div style="display: flex; gap: 8px;" class="star-rating-input-group">
+                                <% for (int star=1; star<=5; star++) { %>
+                                    <i class="fa-regular fa-star rating-star" data-value="<%= star %>" style="cursor:pointer; font-size:2.2rem; color:#f5a623; transition: transform 0.1s;"></i>
+                                <% } %>
+                                <input type="hidden" name="rating" id="ratingInput" required>
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom: 20px;">
+                            <label style="font-weight: 600; margin-bottom: 10px; display: block; color: var(--text-primary);">Nhận xét</label>
+                            <textarea name="comment" rows="3" style="width:100%; padding: 12px; border: 1px solid var(--border-light); border-radius: 8px; font-family: inherit; font-size: 0.95rem; resize: vertical;"
+                                      placeholder="Chia sẻ cảm nhận của bạn..."></textarea>
+                        </div>
+
+                        <div style="display: flex; gap: 12px; align-items: center;">
+                            <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, #f5a623, #f18d00); border: none; font-weight: 600;">Gửi đánh giá</button>
+                        </div>
+                    </form>
+                    
+                    <script>
+                        document.querySelectorAll('.rating-star').forEach(star => {
+                            star.addEventListener('mouseover', function() {
+                                let val = this.getAttribute('data-value');
+                                document.querySelectorAll('.rating-star').forEach(s => {
+                                    if (s.getAttribute('data-value') <= val) {
+                                        s.classList.remove('fa-regular');
+                                        s.classList.add('fa-solid');
+                                    } else {
+                                        s.classList.add('fa-regular');
+                                        s.classList.remove('fa-solid');
+                                    }
+                                });
+                            });
+                            
+                            star.addEventListener('click', function() {
+                                document.getElementById('ratingInput').value = this.getAttribute('data-value');
+                                this.style.transform = 'scale(1.2)';
+                                setTimeout(() => this.style.transform = 'scale(1)', 150);
+                            });
+                        });
+                        
+                        document.querySelector('.star-rating-input-group').addEventListener('mouseleave', function() {
+                            let selectedVal = document.getElementById('ratingInput').value;
+                            document.querySelectorAll('.rating-star').forEach(s => {
+                                if (selectedVal && s.getAttribute('data-value') <= selectedVal) {
+                                    s.classList.remove('fa-regular');
+                                    s.classList.add('fa-solid');
+                                } else {
+                                    s.classList.add('fa-regular');
+                                    s.classList.remove('fa-solid');
+                                }
+                            });
+                        });
+                        
+                        document.querySelector('form[action="<%= ctx %>/book-review"]').addEventListener('submit', function(e) {
+                            if (!document.getElementById('ratingInput').value) {
+                                e.preventDefault();
+                                alert('Vui lòng chọn số sao đánh giá!');
+                            }
+                        });
+                    </script>
+                </div>
+            </div>
+            <% } else if (myReview == null) { %>
+            <div class="alert alert-info" style="margin-bottom: 35px;">
+                <i class="fa-solid fa-circle-info"></i> Bạn cần mượn và trả sách này trước khi có thể đánh giá.
+            </div>
+            <% } %>
+        <% } %>
+
+        <!-- List of Reviews -->
+        <h4 style="margin-bottom: 20px; font-weight: 600; font-size: 1.2rem;">Tất cả đánh giá</h4>
+        <% if (reviews == null || reviews.isEmpty()) { %>
+            <div style="text-align: center; color: var(--text-muted); padding: 40px 20px; border: 2px dashed var(--border-light); border-radius: 12px; font-size: 1.05rem;">
+                <i class="fa-regular fa-comment-dots" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
+                Chưa có đánh giá nào.
+            </div>
+        <% } else { %>
+            <div style="display: flex; flex-direction: column; gap: 18px;">
+            <% for (BookReview rev : reviews) { %>
+                <div class="detail-card" style="border-left: 5px solid #f5a623; border-radius: 8px;">
+                    <div class="detail-card-body" style="padding: 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; flex-wrap: wrap; gap: 10px;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--border-light); display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--text-secondary);">
+                                    <%= rev.getUserFullName() != null && !rev.getUserFullName().isEmpty() ? rev.getUserFullName().substring(0,1).toUpperCase() : "?" %>
+                                </div>
+                                <div>
+                                    <span style="font-weight: 700; color: var(--text-primary);"><%= rev.getUserFullName() %></span>
+                                    <% if (rev.getUserStudentId() != null && !rev.getUserStudentId().isEmpty()) { %>
+                                        <span style="color: var(--text-muted); font-size: 0.85rem; margin-left: 5px;">(<%= rev.getUserStudentId() %>)</span>
+                                    <% } %>
+                                </div>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <span style="color: var(--text-muted); font-size: 0.85rem; background: var(--bg-hover); padding: 4px 10px; border-radius: 20px;">
+                                    <%= new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm").format(rev.getCreatedAt()) %>
+                                </span>
+                                <% if (loggedUser != null && loggedUser.getId() == rev.getUserId()) { %>
+                                <form method="post" action="<%= ctx %>/book-review" style="margin: 0;" onsubmit="return confirm('Bạn có chắc muốn xóa đánh giá này?')">
+                                    <input type="hidden" name="action" value="delete">
+                                    <input type="hidden" name="bookId" value="<%= book.getId() %>">
+                                    <input type="hidden" name="reviewId" value="<%= rev.getId() %>">
+                                    <button type="submit" title="Xóa đánh giá" style="background: none; border: none; color: var(--danger); cursor: pointer; padding: 4px; border-radius: 4px; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,0,0,0.1)'" onmouseout="this.style.background='none'"><i class="fa-solid fa-trash"></i></button>
+                                </form>
+                                <% } %>
+                            </div>
+                        </div>
+                        <div style="color: #f5a623; font-size: 1.1rem; margin: 12px 0 10px 46px;">
+                            <% for (int i=1; i<=5; i++) {
+                                   if (i <= rev.getRating()) out.print("★");
+                                   else out.print("<span style='color: #e0e0e0;'>★</span>");
+                               }
+                            %>
+                            <span style="color: var(--text-muted); font-size: 0.9rem; margin-left: 8px; font-weight: 500;">(<%= rev.getRating() %>/5)</span>
+                        </div>
+                        <% if (rev.getComment() != null && !rev.getComment().trim().isEmpty()) { %>
+                            <p style="margin: 0 0 0 46px; color: var(--text-secondary); line-height: 1.6; font-size: 0.95rem;">
+                                <%= rev.getComment().replace("\n", "<br>") %>
+                            </p>
+                        <% } %>
+                    </div>
+                </div>
+            <% } %>
+            </div>
+        <% } %>
+    </div>
+    <!-- ===== END REVIEWS SECTION ===== -->
 
     <% } %> <!-- end if book != null -->
 

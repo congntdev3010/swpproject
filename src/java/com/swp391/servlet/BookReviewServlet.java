@@ -32,7 +32,7 @@ public class BookReviewServlet extends HttpServlet {
         try {
             int bookId = Integer.parseInt(bookIdParam);
             HttpSession session = request.getSession(false);
-            User loggedInUser = (session != null) ? (User) session.getAttribute("user") : null;
+            User loggedInUser = (session != null) ? (User) session.getAttribute("loggedUser") : null;
 
             // Lấy danh sách review + rating trung bình
             List<BookReview> reviews = reviewDAO.getReviewsByBookId(bookId);
@@ -68,7 +68,7 @@ public class BookReviewServlet extends HttpServlet {
 
         // Kiểm tra user đã đăng nhập
         HttpSession session = request.getSession(false);
-        User loggedInUser = (session != null) ? (User) session.getAttribute("user") : null;
+        User loggedInUser = (session != null) ? (User) session.getAttribute("loggedUser") : null;
 
         if (loggedInUser == null) {
             response.sendRedirect("login");
@@ -120,7 +120,7 @@ public class BookReviewServlet extends HttpServlet {
                 }
             }
 
-            response.sendRedirect("book-review?bookId=" + bookId);
+            response.sendRedirect(request.getContextPath() + "/book/detail?id=" + bookId);
         } catch (NumberFormatException e) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Dữ liệu không hợp lệ");
         }
@@ -132,13 +132,6 @@ public class BookReviewServlet extends HttpServlet {
         // Kiểm tra đã trả sách chưa
         if (!reviewDAO.hasReturnedBook(bookId, userId)) {
             request.setAttribute("error", "Bạn chỉ có thể đánh giá sách đã mượn và trả.");
-            doGet(request, response);
-            return;
-        }
-
-        // Kiểm tra đã review chưa
-        if (reviewDAO.getReviewByBookAndUser(bookId, userId) != null) {
-            request.setAttribute("error", "Bạn đã đánh giá cuốn sách này rồi.");
             doGet(request, response);
             return;
         }
