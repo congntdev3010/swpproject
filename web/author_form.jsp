@@ -205,6 +205,17 @@ function showError(id, message) {
 function previewImage(input, previewId) {
     var preview = document.getElementById(previewId);
     if (input.files && input.files[0]) {
+        var file = input.files[0];
+        if (!file.type.startsWith('image/')) {
+            alert('Vui lòng chọn một tệp hình ảnh hợp lệ (JPG, PNG, GIF, WEBP, etc.)!');
+            input.value = '';
+            return;
+        }
+        if (file.size > 5 * 1024 * 1024) {
+            alert('Kích thước ảnh không được vượt quá 5MB!');
+            input.value = '';
+            return;
+        }
         var reader = new FileReader();
         reader.onload = function(e) {
             preview.src = e.target.result;

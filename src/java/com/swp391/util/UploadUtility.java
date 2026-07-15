@@ -77,6 +77,12 @@ public class UploadUtility {
             return null;
         }
 
+        // Validate content type to ensure it is an image
+        String contentType = filePart.getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
+            throw new IOException("Tệp tải lên không phải là định dạng ảnh hợp lệ.");
+        }
+
         String uniqueFileName = System.currentTimeMillis() + "_" + fileName;
         String uploadDirPath = getUploadDir(ctx);
         File uploadDir = new File(uploadDirPath);

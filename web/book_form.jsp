@@ -349,6 +349,16 @@ document.getElementById('bookForm').addEventListener('submit', function(e) {
     if (availVal < 0) errors.push('Số lượng có sẵn không được âm.');
     if (availVal > qtyVal) errors.push('Số lượng có sẵn không được lớn hơn tổng số lượng.');
 
+    var coverImageFile = document.getElementById('coverImageFile');
+    if (coverImageFile && coverImageFile.files && coverImageFile.files[0]) {
+        var file = coverImageFile.files[0];
+        if (!file.type.startsWith('image/')) {
+            errors.push('Ảnh bìa phải là định dạng hình ảnh hợp lệ.');
+        } else if (file.size > 5 * 1024 * 1024) {
+            errors.push('Kích thước ảnh bìa không được vượt quá 5MB.');
+        }
+    }
+
     if (errors.length > 0) {
         e.preventDefault();
         alert(errors.join('\n'));
@@ -421,6 +431,17 @@ document.getElementById('bookForm').addEventListener('submit', function(e) {
 function previewImage(input, previewId) {
     var preview = document.getElementById(previewId);
     if (input.files && input.files[0]) {
+        var file = input.files[0];
+        if (!file.type.startsWith('image/')) {
+            alert('Vui lòng chọn một tệp hình ảnh hợp lệ (JPG, PNG, GIF, WEBP, etc.)!');
+            input.value = '';
+            return;
+        }
+        if (file.size > 5 * 1024 * 1024) {
+            alert('Kích thước ảnh không được vượt quá 5MB!');
+            input.value = '';
+            return;
+        }
         var reader = new FileReader();
         reader.onload = function(e) {
             preview.src = e.target.result;
