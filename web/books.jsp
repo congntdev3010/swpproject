@@ -415,16 +415,16 @@
                                </li>
                            <% } %>
                            <li class="page-item disabled"><span class="page-link">…</span></li>
-                       <% } else if (currentPageNum >= totalPages - 3) {
-                           // Current page is near the end %>
+                       <% } else if (currentPageNum >= totalPages - 3) { %>
+                           <%-- Current page is near the end --%>
                            <li class="page-item disabled"><span class="page-link">…</span></li>
                            <% for (int pg = totalPages - 4; pg <= totalPages - 2; pg++) { %>
                                <li class="page-item <%= pg == currentPageNum ? "active" : "" %>">
                                    <a class="page-link" href="<%= ctx %>/books?keyword=<%= java.net.URLEncoder.encode(keyword,"UTF-8") %>&category=<%= java.net.URLEncoder.encode(selectedCategory,"UTF-8") %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= pg %>&view=<%= viewMode %>"><%= pg %></a>
                                </li>
                            <% }
-                       } else {
-                           // Current page is in the middle %>
+                       } else { %>
+                           <%-- Current page is in the middle --%>
                            <li class="page-item disabled"><span class="page-link">…</span></li>
                            <% for (int pg = currentPageNum - 1; pg <= currentPageNum + 1; pg++) { %>
                                <li class="page-item <%= pg == currentPageNum ? "active" : "" %>">
