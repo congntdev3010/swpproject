@@ -49,7 +49,7 @@
                         <div class="avatar-upload-container">
                             <div class="avatar-frame">
                                 <% if (profile.getAvatar() != null && !profile.getAvatar().trim().isEmpty()) { %>
-                                    <img id="avatarPreview" src="<%= profile.getAvatar() %>" alt="Avatar" class="avatar-img" />
+                                    <img id="avatarPreview" src="<%= com.swp391.util.UploadUtility.resolveUrl(profile.getAvatar(), request.getContextPath()) %>" alt="Avatar" class="avatar-img" />
                                     <div id="avatarFallback" class="avatar-fallback" style="display: none;">
                                         <%= profile.getFullName() != null && !profile.getFullName().isEmpty() ? profile.getFullName().substring(0, 1).toUpperCase() : profile.getUsername().substring(0, 1).toUpperCase() %>
                                     </div>

@@ -9,6 +9,8 @@ import com.swp391.model.User;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.annotation.MultipartConfig;
+import com.swp391.util.UploadUtility;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +27,11 @@ import java.util.List;
 @WebServlet(name = "BookDetailServlet", urlPatterns = {
     "/book/detail", "/book/add", "/book/edit", "/book/delete"
 })
+@MultipartConfig(
+    fileSizeThreshold = 1024 * 1024 * 2, // 2MB
+    maxFileSize = 1024 * 1024 * 10,      // 10MB
+    maxRequestSize = 1024 * 1024 * 50    // 50MB
+)
 public class BookDetailServlet extends HttpServlet {
 
     @Override
@@ -397,7 +404,7 @@ public class BookDetailServlet extends HttpServlet {
     /**
      * Parse book data từ request parameters.
      */
-    private Book extractBookFromRequest(HttpServletRequest request) {
+    private Book extractBookFromRequest(HttpServletRequest request) throws ServletException, IOException {
         Book book = new Book();
         book.setTitle(trim(request.getParameter("title")));
         book.setIsbn(trim(request.getParameter("isbn")));
@@ -434,7 +441,22 @@ public class BookDetailServlet extends HttpServlet {
         }
 
         book.setDescription(trim(request.getParameter("description")));
-        book.setCoverImage(trim(request.getParameter("coverImage")));
+        
+        // Handle cover image upload using UploadUtility
+        String coverImage = trim(request.getParameter("existingCoverImage"));
+        try {
+            Part filePart = request.getPart("coverImageFile");
+            if (filePart != null && filePart.getSize() > 0) {
+                String savedPath = UploadUtility.saveFile(filePart, request.getServletContext());
+                if (savedPath != null) {
+                    coverImage = savedPath;
+                }
+            }
+        } catch (Exception e) {
+            // Log or ignore
+        }
+        book.setCoverImage(coverImage);
+        
         book.setSubject(trim(request.getParameter("subject")));
         book.setArea(trim(request.getParameter("area")));
         book.setShelf(trim(request.getParameter("shelf")));

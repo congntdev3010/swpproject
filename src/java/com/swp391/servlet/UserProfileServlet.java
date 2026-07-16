@@ -8,6 +8,7 @@ import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.annotation.MultipartConfig;
+import com.swp391.util.UploadUtility;
 import java.io.IOException;
 import java.io.File;
 import java.security.MessageDigest;
@@ -92,23 +93,12 @@ public class UserProfileServlet extends HttpServlet {
                 int active = 1;
                 try { if (activeParam != null) active = Integer.parseInt(activeParam); } catch (NumberFormatException e) {}
 
-                // Handle file upload for avatar
+                // Handle file upload for avatar using UploadUtility
                 Part filePart = request.getPart("avatarFile");
                 if (filePart != null && filePart.getSize() > 0) {
-                    String fileName = getFileName(filePart);
-                    if (fileName != null && !fileName.isEmpty()) {
-                        // Unique name
-                        String uniqueFileName = System.currentTimeMillis() + "_" + fileName;
-                        // Path inside the deployed web application
-                        String uploadPath = request.getServletContext().getRealPath("") + File.separator + "uploads";
-                        File uploadDir = new File(uploadPath);
-                        if (!uploadDir.exists()) {
-                            uploadDir.mkdir();
-                        }
-                        // Write the file
-                        filePart.write(uploadPath + File.separator + uniqueFileName);
-                        // Store the relative path in the database
-                        avatar = request.getContextPath() + "/uploads/" + uniqueFileName;
+                    String savedPath = UploadUtility.saveFile(filePart, request.getServletContext());
+                    if (savedPath != null) {
+                        avatar = savedPath;
                     }
                 }
 

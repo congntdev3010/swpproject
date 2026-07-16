@@ -142,7 +142,7 @@ public class BorrowServlet extends HttpServlet {
         req.setAttribute("keyword", keyword);
         req.setAttribute("pageTitle", "Quản lý mượn sách");
         req.setAttribute("activePage", "borrows");
-        
+
         // Fetch data for checkout datalists
         try {
             com.swp391.dao.BookDAO bookDAO = new com.swp391.dao.BookDAOImpl();
@@ -152,7 +152,7 @@ public class BorrowServlet extends HttpServlet {
             req.setAttribute("allUsers", userDAO.searchUsers(null, null, 1));
             req.setAttribute("allCopies", copyDAO.getAllCopies());
         } catch (Exception e) {}
-        
+
         req.getRequestDispatcher("/borrow_list.jsp").forward(req, resp);
     }
 
@@ -208,7 +208,7 @@ public class BorrowServlet extends HttpServlet {
 
         if (bc == null || !"AVAILABLE".equalsIgnoreCase(bc.getStatus())) {
             String redirectUrl = req.getContextPath() + "/borrow/list?checkout=true&error=copy_not_available"
-                    + "&userId=" + userId + "&bookId=" + bookId 
+                    + "&userId=" + userId + "&bookId=" + bookId
                     + (copyId != null ? "&copyId=" + copyId : "");
             resp.sendRedirect(redirectUrl);
             return;
@@ -242,7 +242,7 @@ public class BorrowServlet extends HttpServlet {
             bookDAO.updateBook(b);
             bc.setStatus("BORROWED");
             bookCopyDAO.updateCopy(bc);
-            
+
             // Đánh dấu phiếu đặt trước thành COMPLETED nếu có
             com.swp391.dao.ReservationDAO resDAO = new com.swp391.dao.ReservationDAOImpl();
             resDAO.completeByUserAndBook(userId, bookId);
@@ -300,11 +300,11 @@ public class BorrowServlet extends HttpServlet {
 
     private int parseIntOrDefault(String val, int def) {
         if (val == null || val.isEmpty()) return def;
-        try { 
+        try {
             String numStr = val.split(" - ")[0].trim();
-            return Integer.parseInt(numStr); 
-        } catch (NumberFormatException e) { 
-            return def; 
+            return Integer.parseInt(numStr);
+        } catch (NumberFormatException e) {
+            return def;
         }
     }
 }

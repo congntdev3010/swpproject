@@ -7,6 +7,9 @@ import com.swp391.model.User;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.annotation.MultipartConfig;
+import jakarta.servlet.http.Part;
+import com.swp391.util.UploadUtility;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,6 +24,11 @@ import java.util.List;
 @WebServlet(name = "AuthorServlet", urlPatterns = {
     "/authors", "/author/add", "/author/edit", "/author/delete"
 })
+@MultipartConfig(
+    fileSizeThreshold = 1024 * 1024 * 2, // 2MB
+    maxFileSize = 1024 * 1024 * 10,      // 10MB
+    maxRequestSize = 1024 * 1024 * 50    // 50MB
+)
 public class AuthorServlet extends HttpServlet {
 
     private static final int PAGE_SIZE = 10;
@@ -177,7 +185,20 @@ public class AuthorServlet extends HttpServlet {
         String nationality = trim(request.getParameter("nationality"));
         String birthDateStr = trim(request.getParameter("birthDate"));
         String bio = trim(request.getParameter("bio"));
-        String avatarUrl = trim(request.getParameter("avatarUrl"));
+        
+        // Handle avatar upload using UploadUtility
+        String avatarUrl = trim(request.getParameter("existingAvatarUrl"));
+        try {
+            Part filePart = request.getPart("avatarFile");
+            if (filePart != null && filePart.getSize() > 0) {
+                String savedPath = UploadUtility.saveFile(filePart, request.getServletContext());
+                if (savedPath != null) {
+                    avatarUrl = savedPath;
+                }
+            }
+        } catch (Exception e) {
+            // Log or ignore
+        }
 
         Author author = new Author();
         author.setName(name);
@@ -267,7 +288,20 @@ public class AuthorServlet extends HttpServlet {
         String nationality = trim(request.getParameter("nationality"));
         String birthDateStr = trim(request.getParameter("birthDate"));
         String bio = trim(request.getParameter("bio"));
-        String avatarUrl = trim(request.getParameter("avatarUrl"));
+        
+        // Handle avatar upload using UploadUtility
+        String avatarUrl = trim(request.getParameter("existingAvatarUrl"));
+        try {
+            Part filePart = request.getPart("avatarFile");
+            if (filePart != null && filePart.getSize() > 0) {
+                String savedPath = UploadUtility.saveFile(filePart, request.getServletContext());
+                if (savedPath != null) {
+                    avatarUrl = savedPath;
+                }
+            }
+        } catch (Exception e) {
+            // Log or ignore
+        }
 
         Author author = new Author();
         author.setId(id);

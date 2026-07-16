@@ -112,7 +112,7 @@
                         <button type="submit" class="btn btn-primary" id="searchBtn">
                             <i class="fa-solid fa-search"></i> Tìm
                         </button>
-                        <a href="<%= ctx %>/users" class="btn btn-outline" title="Xóa bộ lọc">
+                        <a href="<%= ctx %>/user" class="btn btn-outline" title="Xóa bộ lọc">
                             <i class="fa-solid fa-rotate-right"></i>
                         </a>
                     </div>
@@ -161,7 +161,7 @@
                             String thisOrder = active ? nextOrder : "ASC";
                             String icon = active ? ("ASC".equals(sortOrder) ? " ▲" : " ▼") : "";
                     %>
-                        <a href="<%= ctx %>/users?q=<%= java.net.URLEncoder.encode(q,"UTF-8") %>&role=<%= roleFilter != null ? roleFilter : "" %>&active=<%= activeFilter != null ? activeFilter : "" %>&sort=<%= sf %>&order=<%= thisOrder %>&page=1"
+                        <a href="<%= ctx %>/user?q=<%= java.net.URLEncoder.encode(q,"UTF-8") %>&role=<%= roleFilter != null ? roleFilter : "" %>&active=<%= activeFilter != null ? activeFilter : "" %>&sort=<%= sf %>&order=<%= thisOrder %>&page=1"
                            class="sort-btn <%= active ? "sort-btn-active" : "" %>">
                             <%= sl %><%= icon %>
                         </a>
@@ -234,7 +234,7 @@
                                         <i class="fa-solid fa-eye"></i> Xem
                                     </a>
                                     <% if (logged != null && logged.isAdmin()) { %>
-                                    <form method="post" action="<%= ctx %>/users" style="display:inline;margin:0;">
+                                    <form method="post" action="<%= ctx %>/user" style="display:inline;margin:0;">
                                         <input type="hidden" name="action" value="<%= u.getActive()==1 ? "lock" : "unlock" %>">
                                         <input type="hidden" name="id" value="<%= u.getId() %>">
                                         <button type="submit"
@@ -243,7 +243,7 @@
                                             <%= u.getActive()==1 ? "Khóa" : "Mở khóa" %>
                                         </button>
                                     </form>
-                                    <form method="post" action="<%= ctx %>/users" style="display:inline;margin:0;"
+                                    <form method="post" action="<%= ctx %>/user" style="display:inline;margin:0;"
                                           onsubmit="return confirm('Xác nhận xóa người dùng <%= u.getUsername().replace("'", "\\'") %>?')">
                                         <input type="hidden" name="action" value="delete">
                                         <input type="hidden" name="id" value="<%= u.getId() %>">
@@ -282,7 +282,7 @@
                         <!-- Prev -->
                         <li class="page-item <%= currentPageNum <= 1 ? "disabled" : "" %>">
                             <a class="page-link"
-                               href="<%= ctx %>/users?q=<%= java.net.URLEncoder.encode(q,"UTF-8") %>&role=<%= roleFilter != null ? roleFilter : "" %>&active=<%= activeFilter != null ? activeFilter : "" %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= currentPageNum - 1 %>">
+                               href="<%= ctx %>/user?q=<%= java.net.URLEncoder.encode(q,"UTF-8") %>&role=<%= roleFilter != null ? roleFilter : "" %>&active=<%= activeFilter != null ? activeFilter : "" %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= currentPageNum - 1 %>">
                                 <i class="fa-solid fa-chevron-left fa-xs"></i>
                             </a>
                         </li>
@@ -291,14 +291,14 @@
                            if (totalPages <= 7) {
                                for (int pg = 1; pg <= totalPages; pg++) { %>
                                    <li class="page-item <%= pg == currentPageNum ? "active" : "" %>">
-                                       <a class="page-link" href="<%= ctx %>/users?q=<%= java.net.URLEncoder.encode(q,"UTF-8") %>&role=<%= roleFilter != null ? roleFilter : "" %>&active=<%= activeFilter != null ? activeFilter : "" %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= pg %>"><%= pg %></a>
+                                       <a class="page-link" href="<%= ctx %>/user?q=<%= java.net.URLEncoder.encode(q,"UTF-8") %>&role=<%= roleFilter != null ? roleFilter : "" %>&active=<%= activeFilter != null ? activeFilter : "" %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= pg %>"><%= pg %></a>
                                    </li>
                                <% }
                            } else {
                                // Show first 2 pages
                                for (int pg = 1; pg <= 2; pg++) { %>
                                    <li class="page-item <%= pg == currentPageNum ? "active" : "" %>">
-                                       <a class="page-link" href="<%= ctx %>/users?q=<%= java.net.URLEncoder.encode(q,"UTF-8") %>&role=<%= roleFilter != null ? roleFilter : "" %>&active=<%= activeFilter != null ? activeFilter : "" %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= pg %>"><%= pg %></a>
+                                       <a class="page-link" href="<%= ctx %>/user?q=<%= java.net.URLEncoder.encode(q,"UTF-8") %>&role=<%= roleFilter != null ? roleFilter : "" %>&active=<%= activeFilter != null ? activeFilter : "" %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= pg %>"><%= pg %></a>
                                    </li>
                                <% }
 
@@ -306,7 +306,7 @@
                                    // Current page is near the start
                                    for (int pg = 3; pg <= 5; pg++) { %>
                                        <li class="page-item <%= pg == currentPageNum ? "active" : "" %>">
-                                           <a class="page-link" href="<%= ctx %>/users?q=<%= java.net.URLEncoder.encode(q,"UTF-8") %>&role=<%= roleFilter != null ? roleFilter : "" %>&active=<%= activeFilter != null ? activeFilter : "" %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= pg %>"><%= pg %></a>
+                                           <a class="page-link" href="<%= ctx %>/user?q=<%= java.net.URLEncoder.encode(q,"UTF-8") %>&role=<%= roleFilter != null ? roleFilter : "" %>&active=<%= activeFilter != null ? activeFilter : "" %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= pg %>"><%= pg %></a>
                                        </li>
                                    <% } %>
                                    <li class="page-item disabled"><span class="page-link">…</span></li>
@@ -315,7 +315,7 @@
                                    <li class="page-item disabled"><span class="page-link">…</span></li>
                                    <% for (int pg = totalPages - 4; pg <= totalPages - 2; pg++) { %>
                                        <li class="page-item <%= pg == currentPageNum ? "active" : "" %>">
-                                           <a class="page-link" href="<%= ctx %>/users?q=<%= java.net.URLEncoder.encode(q,"UTF-8") %>&role=<%= roleFilter != null ? roleFilter : "" %>&active=<%= activeFilter != null ? activeFilter : "" %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= pg %>"><%= pg %></a>
+                                           <a class="page-link" href="<%= ctx %>/user?q=<%= java.net.URLEncoder.encode(q,"UTF-8") %>&role=<%= roleFilter != null ? roleFilter : "" %>&active=<%= activeFilter != null ? activeFilter : "" %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= pg %>"><%= pg %></a>
                                        </li>
                                    <% }
                                } else {
@@ -323,7 +323,7 @@
                                    <li class="page-item disabled"><span class="page-link">…</span></li>
                                    <% for (int pg = currentPageNum - 1; pg <= currentPageNum + 1; pg++) { %>
                                        <li class="page-item <%= pg == currentPageNum ? "active" : "" %>">
-                                           <a class="page-link" href="<%= ctx %>/users?q=<%= java.net.URLEncoder.encode(q,"UTF-8") %>&role=<%= roleFilter != null ? roleFilter : "" %>&active=<%= activeFilter != null ? activeFilter : "" %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= pg %>"><%= pg %></a>
+                                           <a class="page-link" href="<%= ctx %>/user?q=<%= java.net.URLEncoder.encode(q,"UTF-8") %>&role=<%= roleFilter != null ? roleFilter : "" %>&active=<%= activeFilter != null ? activeFilter : "" %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= pg %>"><%= pg %></a>
                                        </li>
                                    <% } %>
                                    <li class="page-item disabled"><span class="page-link">…</span></li>
@@ -332,7 +332,7 @@
                                // Show last 2 pages
                                for (int pg = totalPages - 1; pg <= totalPages; pg++) { %>
                                    <li class="page-item <%= pg == currentPageNum ? "active" : "" %>">
-                                       <a class="page-link" href="<%= ctx %>/users?q=<%= java.net.URLEncoder.encode(q,"UTF-8") %>&role=<%= roleFilter != null ? roleFilter : "" %>&active=<%= activeFilter != null ? activeFilter : "" %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= pg %>"><%= pg %></a>
+                                       <a class="page-link" href="<%= ctx %>/user?q=<%= java.net.URLEncoder.encode(q,"UTF-8") %>&role=<%= roleFilter != null ? roleFilter : "" %>&active=<%= activeFilter != null ? activeFilter : "" %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= pg %>"><%= pg %></a>
                                    </li>
                                <% }
                            }
@@ -341,7 +341,7 @@
                         <!-- Next -->
                         <li class="page-item <%= currentPageNum >= totalPages ? "disabled" : "" %>">
                             <a class="page-link"
-                               href="<%= ctx %>/users?q=<%= java.net.URLEncoder.encode(q,"UTF-8") %>&role=<%= roleFilter != null ? roleFilter : "" %>&active=<%= activeFilter != null ? activeFilter : "" %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= currentPageNum + 1 %>">
+                               href="<%= ctx %>/user?q=<%= java.net.URLEncoder.encode(q,"UTF-8") %>&role=<%= roleFilter != null ? roleFilter : "" %>&active=<%= activeFilter != null ? activeFilter : "" %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= currentPageNum + 1 %>">
                                 <i class="fa-solid fa-chevron-right fa-xs"></i>
                             </a>
                         </li>
@@ -356,16 +356,16 @@
 <!-- ===== CREATE USER MODAL (Admin only) ===== -->
 <% if (isAdmin) { %>
 <div id="createUserModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center; backdrop-filter:blur(4px);">
-    <div style="background:var(--bg-card, #fff); border-radius:var(--radius-md, 16px); padding:36px; max-width:520px; width:92%; box-shadow:0 20px 60px rgba(0,0,0,0.2); position:relative; max-height:90vh; overflow-y:auto;">
-        <div style="position:absolute; top:0; left:0; right:0; height:4px; background:var(--primary); border-radius:16px 16px 0 0;"></div>
+    <div style="background:#fff; border-radius:16px; padding:36px; max-width:520px; width:92%; box-shadow:0 20px 60px rgba(0,0,0,0.2); position:relative; max-height:90vh; overflow-y:auto;">
+        <div style="position:absolute; top:0; left:0; right:0; height:4px; background:linear-gradient(to right,#3b82f6,#8b5cf6); border-radius:16px 16px 0 0;"></div>
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
-            <h3 style="font-size:1.2rem; font-weight:700; color:var(--text-primary); margin:0;">
-                <i class="fa-solid fa-user-plus" style="color:var(--primary);"></i> Tạo người dùng mới
+            <h3 style="font-size:1.2rem; font-weight:700; color:#111827; margin:0;">
+                <i class="fa-solid fa-user-plus" style="color:#3b82f6;"></i> Tạo người dùng mới
             </h3>
             <button onclick="document.getElementById('createUserModal').style.display='none'"
-                    style="background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--text-muted);line-height:1;">×</button>
+                    style="background:none;border:none;font-size:1.4rem;cursor:pointer;color:#9ca3af;line-height:1;">×</button>
         </div>
-        <form method="post" action="<%= ctx %>/users" id="createUserForm" onsubmit="return validateCreateUserForm()">
+        <form method="post" action="<%= ctx %>/user">
             <input type="hidden" name="action" value="create">
             <div style="display:grid; gap:14px;">
                 <div>
@@ -417,8 +417,8 @@
                     </div>
                 </div>
                 <div>
-                    <label style="font-size:13px;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:5px;">Vai trò</label>
-                    <select name="role" class="form-select">
+                    <label style="font-size:13px;font-weight:600;color:#374151;display:block;margin-bottom:5px;">Vai trò</label>
+                    <select name="role" style="width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;box-sizing:border-box;">
                         <option value="READER">READER</option>
                         <option value="LIBRARIAN">LIBRARIAN</option>
                         <option value="ADMIN">ADMIN</option>
@@ -426,10 +426,12 @@
                 </div>
             </div>
             <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:24px;">
-                <button type="button" class="btn btn-outline" onclick="document.getElementById('createUserModal').style.display='none'">
+                <button type="button" onclick="document.getElementById('createUserModal').style.display='none'"
+                        style="padding:10px 20px;border:1px solid #d1d5db;border-radius:8px;background:white;color:#374151;font-weight:600;cursor:pointer;">
                     Hủy
                 </button>
-                <button type="submit" class="btn btn-primary">
+                <button type="submit"
+                        style="padding:10px 20px;border:none;border-radius:8px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:white;font-weight:600;cursor:pointer;">
                     <i class="fa-solid fa-plus"></i> Tạo người dùng
                 </button>
             </div>

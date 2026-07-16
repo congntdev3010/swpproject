@@ -229,7 +229,7 @@
                             <td style="color:var(--text-muted); font-size:0.82rem;"><%= rowNum++ %></td>
                             <td>
                                 <% if (b.getCoverImage() != null && !b.getCoverImage().isEmpty()) { %>
-                                    <img src="<%= b.getCoverImage() %>" class="book-thumb"
+                                    <img src="<%= com.swp391.util.UploadUtility.resolveUrl(b.getCoverImage(), request.getContextPath()) %>" class="book-thumb"
                                          alt="<%= b.getTitle() %>"
                                          onerror="this.src=''; this.style.background='var(--bg-surface)';">
                                 <% } else { %>
@@ -305,7 +305,7 @@
                 <div class="book-card">
                     <a href="<%= ctx %>/book/detail?id=<%= b.getId() %>" class="book-cover">
                         <% if (b.getCoverImage() != null && !b.getCoverImage().trim().isEmpty()) { %>
-                            <img src="<%= b.getCoverImage() %>"
+                            <img src="<%= com.swp391.util.UploadUtility.resolveUrl(b.getCoverImage(), request.getContextPath()) %>"
                                  alt="<%= b.getTitle() %>"
                                  onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
                             <div class="book-cover-placeholder" style="display:none;">
@@ -415,16 +415,16 @@
                                </li>
                            <% } %>
                            <li class="page-item disabled"><span class="page-link">…</span></li>
-                       <% } else if (currentPageNum >= totalPages - 3) {
-                           // Current page is near the end %>
+                       <% } else if (currentPageNum >= totalPages - 3) { %>
+                           <%-- Current page is near the end --%>
                            <li class="page-item disabled"><span class="page-link">…</span></li>
                            <% for (int pg = totalPages - 4; pg <= totalPages - 2; pg++) { %>
                                <li class="page-item <%= pg == currentPageNum ? "active" : "" %>">
                                    <a class="page-link" href="<%= ctx %>/books?keyword=<%= java.net.URLEncoder.encode(keyword,"UTF-8") %>&category=<%= java.net.URLEncoder.encode(selectedCategory,"UTF-8") %>&sort=<%= sortField %>&order=<%= sortOrder %>&page=<%= pg %>&view=<%= viewMode %>"><%= pg %></a>
                                </li>
                            <% }
-                       } else {
-                           // Current page is in the middle %>
+                       } else { %>
+                           <%-- Current page is in the middle --%>
                            <li class="page-item disabled"><span class="page-link">…</span></li>
                            <% for (int pg = currentPageNum - 1; pg <= currentPageNum + 1; pg++) { %>
                                <li class="page-item <%= pg == currentPageNum ? "active" : "" %>">

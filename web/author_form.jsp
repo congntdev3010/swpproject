@@ -64,7 +64,7 @@
                 <% } %>
 
                 <!-- ===== FORM ===== -->
-                <form id="authorForm" method="POST" action="<%= actionUrl %>" onsubmit="return validateAuthorForm()">
+                <form id="authorForm" method="POST" action="<%= actionUrl %>" onsubmit="return validateAuthorForm()" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="<%= actionName %>">
                     <% if (isEdit) { %>
                         <input type="hidden" name="id" value="<%= author.getId() %>">
@@ -99,13 +99,17 @@
                         </div>
                     </div>
 
-                    <!-- Ảnh đại diện URL -->
+                    <!-- Ảnh đại diện File -->
                     <div class="form-group" style="margin-bottom: 24px;">
-                        <label for="avatarUrl" style="display: block; font-weight: 500; font-size: 14px; color: #374151; margin-bottom: 8px;">
-                            Đường dẫn ảnh đại diện (URL)
+                        <label for="avatarFile" style="display: block; font-weight: 500; font-size: 14px; color: #374151; margin-bottom: 8px;">
+                            Ảnh đại diện
                         </label>
-                        <input type="text" id="avatarUrl" name="avatarUrl" class="form-control" placeholder="https://example.com/avatar.jpg" value="<%= avatarVal %>" style="width: 100%; border: 1px solid #d1d5db; padding: 12px; border-radius: 8px; font-size: 14px; box-sizing: border-box;">
+                        <input type="file" id="avatarFile" name="avatarFile" accept="image/*" onchange="previewImage(this, 'avatarPreview')" style="width: 100%; border: 1px solid #d1d5db; padding: 12px; border-radius: 8px; font-size: 14px; box-sizing: border-box;">
+                        <input type="hidden" name="existingAvatarUrl" value="<%= avatarVal %>">
                         <div id="avatarError" style="color: #ef4444; font-size: 12.5px; margin-top: 5px; display: none;"></div>
+                        <div style="margin-top: 10px;">
+                            <img id="avatarPreview" src="<%= avatarVal != null && !avatarVal.isEmpty() ? com.swp391.util.UploadUtility.resolveUrl(avatarVal, request.getContextPath()) : "" %>" style="max-height: 150px; display: <%= avatarVal != null && !avatarVal.isEmpty() ? "block" : "none" %>; border-radius: 8px; border: 1px solid #e5e7eb;" alt="Xem trước ảnh đại diện">
+                        </div>
                     </div>
 
                     <!-- Tiểu sử -->
@@ -137,7 +141,7 @@ function validateAuthorForm() {
     var name = document.getElementById('name').value.trim();
     var nationality = document.getElementById('nationality').value.trim();
     var birthDate = document.getElementById('birthDate').value;
-    var avatarUrl = document.getElementById('avatarUrl').value.trim();
+    var avatarFile = document.getElementById('avatarFile');
     var bio = document.getElementById('bio').value;
 
     var isValid = true;
@@ -173,9 +177,15 @@ function validateAuthorForm() {
         }
     }
 
-    if (avatarUrl.length > 500) {
-        showError('avatarError', 'URL ảnh đại diện không được vượt quá 500 ký tự.');
-        isValid = false;
+    if (avatarFile.files && avatarFile.files[0]) {
+        var file = avatarFile.files[0];
+        if (!file.type.startsWith('image/')) {
+            showError('avatarError', 'Vui lòng chọn một tệp hình ảnh.');
+            isValid = false;
+        } else if (file.size > 5 * 1024 * 1024) {
+            showError('avatarError', 'Kích thước ảnh đại diện không được vượt quá 5MB.');
+            isValid = false;
+        }
     }
 
     if (bio.length > 5000) {
@@ -190,6 +200,29 @@ function showError(id, message) {
     var errorDiv = document.getElementById(id);
     errorDiv.innerText = message;
     errorDiv.style.display = 'block';
+}
+
+function previewImage(input, previewId) {
+    var preview = document.getElementById(previewId);
+    if (input.files && input.files[0]) {
+        var file = input.files[0];
+        if (!file.type.startsWith('image/')) {
+            alert('Vui lòng chọn một tệp hình ảnh hợp lệ (JPG, PNG, GIF, WEBP, etc.)!');
+            input.value = '';
+            return;
+        }
+        if (file.size > 5 * 1024 * 1024) {
+            alert('Kích thước ảnh không được vượt quá 5MB!');
+            input.value = '';
+            return;
+        }
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
 }
 </script>
 

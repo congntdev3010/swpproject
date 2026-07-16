@@ -85,7 +85,7 @@
         <div class="book-detail-cover-section">
             <div class="book-detail-cover">
                 <% if (book.getCoverImage() != null && !book.getCoverImage().trim().isEmpty()) { %>
-                    <img src="<%= book.getCoverImage() %>" alt="<%= book.getTitle() %>"
+                    <img src="<%= com.swp391.util.UploadUtility.resolveUrl(book.getCoverImage(), request.getContextPath()) %>" alt="<%= book.getTitle() %>"
                          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
                     <div class="book-detail-cover-placeholder" style="display:none;">
                         <i class="fa-solid fa-book-open"></i>

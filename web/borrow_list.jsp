@@ -298,6 +298,14 @@
                 <div id="checkoutCopyId-server-error" style="color:#e94560;font-size:12px;margin-top:3px;display:none;">
                     <i class="fa-solid fa-triangle-exclamation"></i> Bản sao sách không tồn tại hoặc trạng thái không khả dụng (AVAILABLE).
                 </div>
+                <input type="number" name="copyId" id="checkoutCopyId" placeholder="Để trống nếu không có..." min="1"
+                       style="width:100%;padding:0.6rem 0.8rem;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
+                <div id="checkoutCopyId-error" style="color:#e94560;font-size:12px;margin-top:3px;display:none;">
+                    <i class="fa-solid fa-triangle-exclamation"></i> ID Bản sao phải là số nguyên dương.
+                </div>
+                <div id="checkoutCopyId-server-error" style="color:#e94560;font-size:12px;margin-top:3px;display:none;">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Bản sao sách không tồn tại hoặc trạng thái không khả dụng (AVAILABLE).
+                </div>
             </div>
             <div style="margin-bottom:1.5rem;">
                 <label style="display:block;font-weight:600;margin-bottom:0.4rem;">Ghi chú</label>
@@ -332,12 +340,12 @@ function updateCopiesDropdown() {
     const datalist = document.getElementById('checkoutCopiesList');
     const copyInput = document.getElementById('checkoutCopyId');
     datalist.innerHTML = '';
-    
+
     if (!isNaN(bookId) && bookId > 0) {
         copyInput.disabled = false;
         copyInput.style.background = '#fff';
         copyInput.placeholder = "Nhập ID hoặc Barcode...";
-        
+
         const filteredCopies = allCopiesData.filter(c => c.bookId === bookId);
         filteredCopies.forEach(c => {
             const statusText = c.status === 'AVAILABLE' ? 'Sẵn sàng' : (c.status === 'BORROWED' ? 'Đã mượn' : 'Không khả dụng');
@@ -362,18 +370,18 @@ window.onload = function() {
 
         document.querySelector('input[name="userId"]').value = userId;
         document.querySelector('input[name="bookId"]').value = bookId;
-        
+
         updateCopiesDropdown();
-        
+
         if (copyId) document.querySelector('input[name="copyId"]').value = copyId;
-        
+
         document.getElementById('checkoutModal').style.display = 'flex';
-        
+
         if (error === 'copy_not_available') {
             document.getElementById('checkoutCopyId-server-error').style.display = 'block';
             document.getElementById('checkoutCopyId').style.borderColor = '#e94560';
         }
-        
+
         setTimeout(() => document.querySelector('input[name="copyId"]').focus(), 100);
     }
 }
@@ -417,6 +425,88 @@ function validateCheckoutForm() {
     if (copyIdInput.value.trim() !== '') {
         const copyIdRaw = copyIdInput.value.trim().split(' - ')[0].trim();
         const copyId = parseInt(copyIdRaw, 10);
+        if (isNaN(copyId) || copyId <= 0) {
+            copyIdErr.style.display = 'block';
+            copyIdInput.style.borderColor = '#e94560';
+            valid = false;
+        } else {
+            copyIdErr.style.display = 'none';
+            copyIdInput.style.borderColor = '#28a745';
+        }
+    } else {
+        copyIdErr.style.display = 'none';
+    }
+
+    if (!valid) {
+        const firstErr = document.querySelector('#checkoutForm [style*="block"]');
+        if (firstErr) firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    return valid;
+}
+</script>
+
+<script>
+window.onload = function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('checkout') && urlParams.has('userId') && urlParams.has('bookId')) {
+        let userId = urlParams.get('userId');
+        let bookId = urlParams.get('bookId');
+        let copyId = urlParams.get('copyId');
+        let error = urlParams.get('error');
+
+        document.querySelector('input[name="userId"]').value = userId;
+        document.querySelector('input[name="bookId"]').value = bookId;
+        if (copyId) document.querySelector('input[name="copyId"]').value = copyId;
+
+        document.getElementById('checkoutModal').style.display = 'flex';
+
+        if (error === 'copy_not_available') {
+            document.getElementById('checkoutCopyId-server-error').style.display = 'block';
+            document.getElementById('checkoutCopyId').style.borderColor = '#e94560';
+        }
+
+        setTimeout(() => document.querySelector('input[name="copyId"]').focus(), 100);
+    }
+}
+
+function validateCheckoutForm() {
+    let valid = true;
+    const serverErr = document.getElementById('checkoutCopyId-server-error');
+    if (serverErr) serverErr.style.display = 'none';
+
+    // Validate userId
+    const userIdInput = document.getElementById('checkoutUserId');
+    const userIdErr = document.getElementById('checkoutUserId-error');
+    const userIdRaw = userIdInput.value.trim().split(' - ')[0].trim();
+    const userId = parseInt(userIdRaw, 10);
+    if (!userIdRaw || isNaN(userId) || userId <= 0) {
+        userIdErr.style.display = 'block';
+        userIdInput.style.borderColor = '#e94560';
+        valid = false;
+    } else {
+        userIdErr.style.display = 'none';
+        userIdInput.style.borderColor = '#28a745';
+    }
+
+    // Validate bookId
+    const bookIdInput = document.getElementById('checkoutBookId');
+    const bookIdErr = document.getElementById('checkoutBookId-error');
+    const bookIdRaw = bookIdInput.value.trim().split(' - ')[0].trim();
+    const bookId = parseInt(bookIdRaw, 10);
+    if (!bookIdRaw || isNaN(bookId) || bookId <= 0) {
+        bookIdErr.style.display = 'block';
+        bookIdInput.style.borderColor = '#e94560';
+        valid = false;
+    } else {
+        bookIdErr.style.display = 'none';
+        bookIdInput.style.borderColor = '#28a745';
+    }
+
+    // Validate copyId (optional but must be positive if provided)
+    const copyIdInput = document.getElementById('checkoutCopyId');
+    const copyIdErr = document.getElementById('checkoutCopyId-error');
+    if (copyIdInput.value.trim() !== '') {
+        const copyId = parseInt(copyIdInput.value, 10);
         if (isNaN(copyId) || copyId <= 0) {
             copyIdErr.style.display = 'block';
             copyIdInput.style.borderColor = '#e94560';
