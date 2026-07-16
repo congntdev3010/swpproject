@@ -166,21 +166,20 @@
                         </div>
                     </div>
 
+                    <% if (isAdminEditingOther) { %>
+                        <div class="alert alert-warning" style="margin-top: 20px;">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            Quản trị viên không thể thay đổi mật khẩu của người dùng khác vì lý do bảo mật.
+                        </div>
+                    <% } else { %>
                     <form method="POST" action="<%= contextPath %>/user/profile" class="profile-form" onsubmit="return validatePasswordForm()">
                         <input type="hidden" name="action" value="changePassword" />
                         <input type="hidden" name="id" value="<%= profile.getId() %>" />
 
-                        <% if (!isAdminEditingOther) { %>
-                            <div class="form-group">
-                                <label for="oldPassword">Mật khẩu hiện tại <span class="required-star">*</span></label>
-                                <input type="password" id="oldPassword" name="oldPassword" class="form-control" placeholder="Nhập mật khẩu hiện tại" required />
-                            </div>
-                        <% } else { %>
-                            <div class="info-bubble">
-                                <i class="fa-solid fa-circle-info"></i>
-                                Bạn đang đổi mật khẩu với tư cách Quản trị viên. Không cần nhập mật khẩu cũ.
-                            </div>
-                        <% } %>
+                        <div class="form-group">
+                            <label for="oldPassword">Mật khẩu hiện tại <span class="required-star">*</span></label>
+                            <input type="password" id="oldPassword" name="oldPassword" class="form-control" placeholder="Nhập mật khẩu hiện tại" required />
+                        </div>
 
                         <div class="form-group">
                             <label for="newPassword">Mật khẩu mới <span class="required-star">*</span></label>
@@ -210,6 +209,7 @@
                             </button>
                         </div>
                     </form>
+                    <% } %>
                 </div>
             </div>
             <% } %>

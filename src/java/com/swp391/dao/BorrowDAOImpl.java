@@ -152,6 +152,13 @@ public class BorrowDAOImpl implements BorrowDAO {
                 }
             }
 
+            // 4. Cập nhật số lượng khả dụng của sách
+            String updateBook = "UPDATE books SET available = available + 1, updated_at = NOW() WHERE id = ?";
+            try (PreparedStatement ps = con.prepareStatement(updateBook)) {
+                ps.setInt(1, record.getBookId());
+                ps.executeUpdate();
+            }
+
             con.commit();
             return true;
         } catch (Exception e) {
@@ -159,6 +166,7 @@ public class BorrowDAOImpl implements BorrowDAO {
             throw e;
         } finally {
             con.setAutoCommit(true);
+            con.close();
         }
     }
 

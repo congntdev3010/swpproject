@@ -21,6 +21,9 @@ public interface ReservationDAO {
     /** §1.4 Đếm reservation đang chờ của một cuốn sách (dùng kiểm tra gia hạn) */
     int countPendingReservations(int bookId) throws Exception;
 
+    /** Đánh dấu phiếu duyệt là COMPLETED khi đã tạo phiếu mượn thành công */
+    boolean completeByUserAndBook(int userId, int bookId) throws Exception;
+
     /** Tìm phiếu đặt trước theo ID */
     ReservationRecord findById(int id) throws Exception;
 

@@ -1,5 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="com.swp391.model.BorrowRecord, com.swp391.model.User, com.swp391.model.Book, java.util.List" %>
+<%@ page import="com.swp391.model.BorrowRecord, com.swp391.model.User, com.swp391.model.Book, com.swp391.model.BookCopy, java.util.List" %>
 <%
     User loggedUser = (User) session.getAttribute("loggedUser");
     if (loggedUser == null) { response.sendRedirect(request.getContextPath() + "/login"); return; }
@@ -275,7 +275,7 @@
             <div style="margin-bottom:1rem;">
                 <label style="display:block;font-weight:600;margin-bottom:0.4rem;">ID Sách *</label>
                 <input type="text" name="bookId" id="checkoutBookId" list="checkoutBooksList" required
-                       placeholder="Nhập book ID..."
+                       placeholder="Nhập book ID..." oninput="updateCopiesDropdown()"
                        style="width:100%;padding:0.6rem 0.8rem;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
                 <datalist id="checkoutBooksList">
                     <% List<Book> allBooks = (List<Book>) request.getAttribute("allBooks");
@@ -289,8 +289,9 @@
             </div>
             <div style="margin-bottom:1rem;">
                 <label style="display:block;font-weight:600;margin-bottom:0.4rem;">ID Bản sao (copy_id, nếu có)</label>
-                <input type="number" name="copyId" id="checkoutCopyId" placeholder="Để trống nếu không có..." min="1"
-                       style="width:100%;padding:0.6rem 0.8rem;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
+                <input type="text" name="copyId" id="checkoutCopyId" list="checkoutCopiesList" placeholder="Vui lòng chọn Sách trước..." disabled
+                       style="width:100%;padding:0.6rem 0.8rem;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;background:#f5f5f5;">
+                <datalist id="checkoutCopiesList"></datalist>
                 <div id="checkoutCopyId-error" style="color:#e94560;font-size:12px;margin-top:3px;display:none;">
                     <i class="fa-solid fa-triangle-exclamation"></i> ID Bản sao phải là số nguyên dương.
                 </div>
@@ -318,6 +319,39 @@
 </div>
 
 <script>
+const allCopiesData = [
+<% List<BookCopy> allCopies = (List<BookCopy>) request.getAttribute("allCopies");
+   if (allCopies != null) { for (BookCopy c : allCopies) { %>
+    { id: <%= c.getId() %>, bookId: <%= c.getBookId() %>, barcode: "<%= c.getBarcode() %>", status: "<%= c.getStatus() %>" },
+<% } } %>
+];
+
+function updateCopiesDropdown() {
+    const bookIdRaw = document.getElementById('checkoutBookId').value.trim().split(' - ')[0].trim();
+    const bookId = parseInt(bookIdRaw, 10);
+    const datalist = document.getElementById('checkoutCopiesList');
+    const copyInput = document.getElementById('checkoutCopyId');
+    datalist.innerHTML = '';
+    
+    if (!isNaN(bookId) && bookId > 0) {
+        copyInput.disabled = false;
+        copyInput.style.background = '#fff';
+        copyInput.placeholder = "Nhập ID hoặc Barcode...";
+        
+        const filteredCopies = allCopiesData.filter(c => c.bookId === bookId);
+        filteredCopies.forEach(c => {
+            const statusText = c.status === 'AVAILABLE' ? 'Sẵn sàng' : (c.status === 'BORROWED' ? 'Đã mượn' : 'Không khả dụng');
+            const option = document.createElement('option');
+            option.value = c.id + " - " + c.barcode + " (" + statusText + ")";
+            datalist.appendChild(option);
+        });
+    } else {
+        copyInput.value = '';
+        copyInput.disabled = true;
+        copyInput.style.background = '#f5f5f5';
+        copyInput.placeholder = "Vui lòng chọn Sách trước...";
+    }
+}
 window.onload = function() {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.has('checkout') && urlParams.has('userId') && urlParams.has('bookId')) {
@@ -328,6 +362,9 @@ window.onload = function() {
 
         document.querySelector('input[name="userId"]').value = userId;
         document.querySelector('input[name="bookId"]').value = bookId;
+        
+        updateCopiesDropdown();
+        
         if (copyId) document.querySelector('input[name="copyId"]').value = copyId;
         
         document.getElementById('checkoutModal').style.display = 'flex';
@@ -378,7 +415,8 @@ function validateCheckoutForm() {
     const copyIdInput = document.getElementById('checkoutCopyId');
     const copyIdErr = document.getElementById('checkoutCopyId-error');
     if (copyIdInput.value.trim() !== '') {
-        const copyId = parseInt(copyIdInput.value, 10);
+        const copyIdRaw = copyIdInput.value.trim().split(' - ')[0].trim();
+        const copyId = parseInt(copyIdRaw, 10);
         if (isNaN(copyId) || copyId <= 0) {
             copyIdErr.style.display = 'block';
             copyIdInput.style.borderColor = '#e94560';

@@ -70,6 +70,18 @@ public class ReservationDAOImpl implements ReservationDAO {
     }
 
     @Override
+    public boolean completeByUserAndBook(int userId, int bookId) throws Exception {
+        String sql = "UPDATE book_reservations SET status = 'COMPLETED', updated_at = NOW() "
+                + "WHERE user_id = ? AND book_id = ? AND status IN ('PENDING', 'READY')";
+        try (Connection con = DBContext.getInstance().getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ps.setInt(2, bookId);
+            return ps.executeUpdate() > 0;
+        }
+    }
+
+    @Override
     public ReservationRecord findById(int id) throws Exception {
         String sql = "SELECT rr.*, u.full_name, u.username, b.title AS book_title "
                 + "FROM book_reservations rr "

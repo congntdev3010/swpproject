@@ -147,8 +147,10 @@ public class BorrowServlet extends HttpServlet {
         try {
             com.swp391.dao.BookDAO bookDAO = new com.swp391.dao.BookDAOImpl();
             com.swp391.dao.UserDAO userDAO = new com.swp391.dao.UserDAOImpl();
+            com.swp391.dao.BookCopyDAO copyDAO = new com.swp391.dao.BookCopyDAO();
             req.setAttribute("allBooks", bookDAO.searchBooks(null, null, "title", "ASC", 1, 1000));
             req.setAttribute("allUsers", userDAO.searchUsers(null, null, 1));
+            req.setAttribute("allCopies", copyDAO.getAllCopies());
         } catch (Exception e) {}
         
         req.getRequestDispatcher("/borrow_list.jsp").forward(req, resp);
@@ -240,6 +242,11 @@ public class BorrowServlet extends HttpServlet {
             bookDAO.updateBook(b);
             bc.setStatus("BORROWED");
             bookCopyDAO.updateCopy(bc);
+            
+            // Đánh dấu phiếu đặt trước thành COMPLETED nếu có
+            com.swp391.dao.ReservationDAO resDAO = new com.swp391.dao.ReservationDAOImpl();
+            resDAO.completeByUserAndBook(userId, bookId);
+
             resp.sendRedirect(req.getContextPath() + "/borrow/list?success=checkout");
         } else {
             resp.sendRedirect(req.getContextPath() + "/borrow/list?error=checkout_failed");

@@ -356,75 +356,69 @@
 <!-- ===== CREATE USER MODAL (Admin only) ===== -->
 <% if (isAdmin) { %>
 <div id="createUserModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center; backdrop-filter:blur(4px);">
-    <div style="background:#fff; border-radius:16px; padding:36px; max-width:520px; width:92%; box-shadow:0 20px 60px rgba(0,0,0,0.2); position:relative; max-height:90vh; overflow-y:auto;">
-        <div style="position:absolute; top:0; left:0; right:0; height:4px; background:linear-gradient(to right,#3b82f6,#8b5cf6); border-radius:16px 16px 0 0;"></div>
+    <div style="background:var(--bg-card, #fff); border-radius:var(--radius-md, 16px); padding:36px; max-width:520px; width:92%; box-shadow:0 20px 60px rgba(0,0,0,0.2); position:relative; max-height:90vh; overflow-y:auto;">
+        <div style="position:absolute; top:0; left:0; right:0; height:4px; background:var(--primary); border-radius:16px 16px 0 0;"></div>
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
-            <h3 style="font-size:1.2rem; font-weight:700; color:#111827; margin:0;">
-                <i class="fa-solid fa-user-plus" style="color:#3b82f6;"></i> Tạo người dùng mới
+            <h3 style="font-size:1.2rem; font-weight:700; color:var(--text-primary); margin:0;">
+                <i class="fa-solid fa-user-plus" style="color:var(--primary);"></i> Tạo người dùng mới
             </h3>
             <button onclick="document.getElementById('createUserModal').style.display='none'"
-                    style="background:none;border:none;font-size:1.4rem;cursor:pointer;color:#9ca3af;line-height:1;">×</button>
+                    style="background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--text-muted);line-height:1;">×</button>
         </div>
         <form method="post" action="<%= ctx %>/users" id="createUserForm" onsubmit="return validateCreateUserForm()">
             <input type="hidden" name="action" value="create">
             <div style="display:grid; gap:14px;">
                 <div>
-                    <label style="font-size:13px;font-weight:600;color:#374151;display:block;margin-bottom:5px;">Tên đăng nhập *</label>
+                    <label style="font-size:13px;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:5px;">Tên đăng nhập *</label>
                     <input id="cu_username" name="username" required placeholder="Nhập username (chữ cái, số, dấu _)..."
-                           maxlength="50" autocomplete="off"
-                           style="width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;box-sizing:border-box;">
-                    <div id="cu_username_err" style="color:#ef4444;font-size:12px;margin-top:4px;display:none;">
+                           maxlength="50" autocomplete="off" class="form-control">
+                    <div id="cu_username_err" style="color:var(--danger);font-size:12px;margin-top:4px;display:none;">
                         <i class="fa-solid fa-triangle-exclamation"></i> Tên đăng nhập chỉ chứa chữ cái, số và dấu gạch dưới (_), tối thiểu 3 ký tự.
                     </div>
                 </div>
                 <div>
-                    <label style="font-size:13px;font-weight:600;color:#374151;display:block;margin-bottom:5px;">Mật khẩu</label>
+                    <label style="font-size:13px;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:5px;">Mật khẩu</label>
                     <input id="cu_password" name="password" type="password" placeholder="Để trống = mặc định 'password'"
-                           minlength="6" maxlength="100"
-                           style="width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;box-sizing:border-box;">
-                    <div id="cu_password_err" style="color:#ef4444;font-size:12px;margin-top:4px;display:none;">
+                           minlength="6" maxlength="100" class="form-control">
+                    <div id="cu_password_err" style="color:var(--danger);font-size:12px;margin-top:4px;display:none;">
                         <i class="fa-solid fa-triangle-exclamation"></i> Mật khẩu phải có ít nhất 6 ký tự.
                     </div>
                 </div>
                 <div>
-                    <label style="font-size:13px;font-weight:600;color:#374151;display:block;margin-bottom:5px;">Họ và tên</label>
+                    <label style="font-size:13px;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:5px;">Họ và tên</label>
                     <input id="cu_fullName" name="fullName" placeholder="Nhập họ tên..."
-                           maxlength="100"
-                           style="width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;box-sizing:border-box;">
-                    <div id="cu_fullName_err" style="color:#ef4444;font-size:12px;margin-top:4px;display:none;">
+                           maxlength="100" class="form-control">
+                    <div id="cu_fullName_err" style="color:var(--danger);font-size:12px;margin-top:4px;display:none;">
                         <i class="fa-solid fa-triangle-exclamation"></i> Họ tên không được chứa số.
                     </div>
                 </div>
                 <div>
-                    <label style="font-size:13px;font-weight:600;color:#374151;display:block;margin-bottom:5px;">Email</label>
+                    <label style="font-size:13px;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:5px;">Email</label>
                     <input id="cu_email" name="email" type="email" placeholder="example@email.com"
-                           maxlength="150"
-                           style="width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;box-sizing:border-box;">
-                    <div id="cu_email_err" style="color:#ef4444;font-size:12px;margin-top:4px;display:none;">
+                           maxlength="150" class="form-control">
+                    <div id="cu_email_err" style="color:var(--danger);font-size:12px;margin-top:4px;display:none;">
                         <i class="fa-solid fa-triangle-exclamation"></i> Email không đúng định dạng.
                     </div>
                 </div>
                 <div>
-                    <label style="font-size:13px;font-weight:600;color:#374151;display:block;margin-bottom:5px;">Số điện thoại</label>
+                    <label style="font-size:13px;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:5px;">Số điện thoại</label>
                     <input id="cu_phone" name="phone" placeholder="0xxxxxxxxx"
-                           maxlength="15"
-                           style="width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;box-sizing:border-box;">
-                    <div id="cu_phone_err" style="color:#ef4444;font-size:12px;margin-top:4px;display:none;">
+                           maxlength="15" class="form-control">
+                    <div id="cu_phone_err" style="color:var(--danger);font-size:12px;margin-top:4px;display:none;">
                         <i class="fa-solid fa-triangle-exclamation"></i> Số điện thoại phải có 10-11 chữ số và bắt đầu bằng 0.
                     </div>
                 </div>
                 <div>
-                    <label style="font-size:13px;font-weight:600;color:#374151;display:block;margin-bottom:5px;">Mã sinh viên</label>
+                    <label style="font-size:13px;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:5px;">Mã sinh viên</label>
                     <input id="cu_studentId" name="studentId" placeholder="Ví dụ: SS170001"
-                           maxlength="20"
-                           style="width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;box-sizing:border-box;">
-                    <div id="cu_studentId_err" style="color:#ef4444;font-size:12px;margin-top:4px;display:none;">
+                           maxlength="20" class="form-control">
+                    <div id="cu_studentId_err" style="color:var(--danger);font-size:12px;margin-top:4px;display:none;">
                         <i class="fa-solid fa-triangle-exclamation"></i> Mã sinh viên chỉ được chứa chữ cái và chữ số.
                     </div>
                 </div>
                 <div>
-                    <label style="font-size:13px;font-weight:600;color:#374151;display:block;margin-bottom:5px;">Vai trò</label>
-                    <select name="role" style="width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;box-sizing:border-box;">
+                    <label style="font-size:13px;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:5px;">Vai trò</label>
+                    <select name="role" class="form-select">
                         <option value="READER">READER</option>
                         <option value="LIBRARIAN">LIBRARIAN</option>
                         <option value="ADMIN">ADMIN</option>
@@ -432,12 +426,10 @@
                 </div>
             </div>
             <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:24px;">
-                <button type="button" onclick="document.getElementById('createUserModal').style.display='none'"
-                        style="padding:10px 20px;border:1px solid #d1d5db;border-radius:8px;background:white;color:#374151;font-weight:600;cursor:pointer;">
+                <button type="button" class="btn btn-outline" onclick="document.getElementById('createUserModal').style.display='none'">
                     Hủy
                 </button>
-                <button type="submit"
-                        style="padding:10px 20px;border:none;border-radius:8px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:white;font-weight:600;cursor:pointer;">
+                <button type="submit" class="btn btn-primary">
                     <i class="fa-solid fa-plus"></i> Tạo người dùng
                 </button>
             </div>
