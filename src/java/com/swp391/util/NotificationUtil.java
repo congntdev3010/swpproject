@@ -87,4 +87,17 @@ public class NotificationUtil {
             e.printStackTrace();
         }
     }
+
+    public static void sendSystemMessage(int userId, String title, String message) {
+        try {
+            notifDAO.sendAutoNotification(
+                userId,
+                "SYSTEM",
+                title,
+                message
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

@@ -1,5 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="com.swp391.model.User" %>
+<%@ page import="com.swp391.dao.NotificationDAO" %>
+<%@ page import="com.swp391.dao.NotificationDAOImpl" %>
 <%
     User navUser = (User) session.getAttribute("loggedUser");
     String navCurrentPage = "";
@@ -7,6 +9,14 @@
         navCurrentPage = (String) request.getAttribute("activePage");
     } else if (request.getAttribute("currentPage") instanceof String) {
         navCurrentPage = (String) request.getAttribute("currentPage");
+    }
+    
+    int headerUnreadCount = 0;
+    if (navUser != null) {
+        try {
+            NotificationDAO notifDAO = new NotificationDAOImpl();
+            headerUnreadCount = notifDAO.countUnread(navUser.getId());
+        } catch (Exception e) {}
     }
 %>
 <!DOCTYPE html>
@@ -73,8 +83,11 @@
                 </li>
                 <li class="nav-item" style="position:relative;">
                     <a href="<%= request.getContextPath() %>/notification/my"
-                       class="nav-link <%= "notifications".equals(navCurrentPage) ? "active" : "" %>">
+                       class="nav-link <%= "notifications".equals(navCurrentPage) ? "active" : "" %>" style="position:relative; display:inline-flex; align-items:center;">
                         <i class="fa-solid fa-bell"></i> Thông báo
+                        <% if (headerUnreadCount > 0) { %>
+                            <span style="position:absolute; top:2px; right:-5px; width:8px; height:8px; background-color:#e94560; border-radius:50%;"></span>
+                        <% } %>
                     </a>
                 </li>
                 <% } %>

@@ -238,8 +238,6 @@ public class BorrowServlet extends HttpServlet {
 
         BorrowRecord created = borrowDAO.createBorrow(record);
         if (created != null) {
-            b.setAvailable(b.getAvailable() - 1);
-            bookDAO.updateBook(b);
             bc.setStatus("BORROWED");
             bookCopyDAO.updateCopy(bc);
 

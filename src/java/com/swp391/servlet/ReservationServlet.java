@@ -6,6 +6,7 @@ import com.swp391.dao.ReservationDAO;
 import com.swp391.dao.ReservationDAOImpl;
 import com.swp391.model.ReservationRecord;
 import com.swp391.model.User;
+import com.swp391.util.NotificationUtil;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -151,9 +152,15 @@ public class ReservationServlet extends HttpServlet {
     private void processConfirm(HttpServletRequest req, HttpServletResponse resp, User loggedUser)
             throws Exception, IOException {
         int id = parseIntOrDefault(req.getParameter("reservationId"), 0);
+         int userId = parseIntOrDefault(req.getParameter("userId"), 0);
+        int bookId = parseIntOrDefault(req.getParameter("bookId"), 0);
         if (id == 0) { resp.sendRedirect(req.getContextPath() + "/reservation/list?error=invalid_params"); return; }
         boolean ok = reservationDAO.confirm(id, loggedUser.getUsername());
-        resp.sendRedirect(req.getContextPath() + "/reservation/list?success=" + (ok ? "confirmed" : "failed"));
+       if (ok && userId > 0 && bookId > 0) {
+            resp.sendRedirect(req.getContextPath() + "/borrow/list?checkout=1&userId=" + userId + "&bookId=" + bookId);
+        } else {
+            resp.sendRedirect(req.getContextPath() + "/reservation/list?success=" + (ok ? "confirmed" : "failed"));
+        }
     }
 
     /**
@@ -166,16 +173,22 @@ public class ReservationServlet extends HttpServlet {
         int id = parseIntOrDefault(req.getParameter("reservationId"), 0);
         if (id == 0) { resp.sendRedirect(req.getContextPath() + "/reservation/my?error=invalid_params"); return; }
 
+        String cancelReason = req.getParameter("cancelReason");
+        
+        ReservationRecord record = reservationDAO.findById(id);
         // Nếu là User thường, kiểm tra phiếu có thuộc về user này không
         if (!loggedUser.isAdminOrLibrarian()) {
-            ReservationRecord record = reservationDAO.findById(id);
+
             if (record == null || record.getUserId() != loggedUser.getId()) {
                 resp.sendError(403, "Bạn không có quyền hủy phiếu này.");
                 return;
             }
         }
-
         boolean ok = reservationDAO.cancel(id, loggedUser.getUsername());
+        
+        if (ok && loggedUser.isAdminOrLibrarian() && cancelReason != null && !cancelReason.trim().isEmpty() && record != null) {
+            NotificationUtil.sendSystemMessage(record.getUserId(), "Thông báo hủy đơn đặt trước", cancelReason.trim());
+        }
         String redirect = loggedUser.isAdminOrLibrarian()
                 ? req.getContextPath() + "/reservation/list"
                 : req.getContextPath() + "/reservation/my";

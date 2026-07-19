@@ -162,6 +162,8 @@
                         <% if (isStaff && "PENDING".equals(st)) { %>
                         <form method="post" action="<%= request.getContextPath() %>/reservation/confirm">
                             <input type="hidden" name="reservationId" value="<%= r.getId() %>">
+                             <input type="hidden" name="userId" value="<%= r.getUserId() %>">
+                            <input type="hidden" name="bookId" value="<%= r.getBookId() %>">
                             <button type="submit" style="padding:0.3rem 0.7rem;background:#28a745;border:none;color:#fff;border-radius:6px;cursor:pointer;font-size:0.8rem;">
                                 <i class="fa-solid fa-check"></i> Duyệt
                             </button>
@@ -172,7 +174,11 @@
                            style="padding:0.3rem 0.7rem;background:#17a2b8;border:none;color:#fff;border-radius:6px;cursor:pointer;font-size:0.8rem;text-decoration:none;display:inline-block;">
                             <i class="fa-solid fa-plus"></i> Tạo Phiếu Mượn
                         </a>
-                        <% } %>
+                       <% if (isStaff) { %>
+                            <button type="button" onclick="openCancelModal(<%= r.getId() %>)" style="padding:0.3rem 0.7rem;background:#e94560;border:none;color:#fff;border-radius:6px;cursor:pointer;font-size:0.8rem;">
+                                <i class="fa-solid fa-ban"></i> Hủy
+                            </button>
+                        <% } else { %>
                         <form method="post" action="<%= request.getContextPath() %>/reservation/cancel"
                               onsubmit="return confirm('Xác nhận hủy phiếu đặt trước?')">
                             <input type="hidden" name="reservationId" value="<%= r.getId() %>">
@@ -180,6 +186,7 @@
                                 <i class="fa-solid fa-ban"></i> Hủy
                             </button>
                         </form>
+                        <% } %>
                     <% } else { %>
                         <span style="color:#ccc;font-size:0.8rem;">—</span>
                     <% } %>
@@ -265,7 +272,32 @@
         </nav>
     <% } %>
 </div>
-
+<% if (isStaff) { %>
+<!-- Cancel Modal -->
+<div id="cancelModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;">
+    <div style="background:#fff;padding:2rem;border-radius:12px;width:90%;max-width:400px;box-shadow:0 10px 30px rgba(0,0,0,0.2);">
+        <h3 style="margin-top:0;margin-bottom:1rem;color:#1a1a2e;font-size:1.2rem;">Lý do hủy đặt trước</h3>
+        <form id="cancelForm" method="post" action="<%= request.getContextPath() %>/reservation/cancel">
+            <input type="hidden" name="reservationId" id="cancelReservationId">
+            <textarea name="cancelReason" rows="4" placeholder="Nhập thông báo gửi đến người đặt (bắt buộc)..." required
+                      style="width:100%;padding:0.8rem;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;margin-bottom:1rem;font-family:inherit;resize:vertical;"></textarea>
+            <div style="display:flex;gap:1rem;justify-content:flex-end;">
+                <button type="button" onclick="closeCancelModal()" style="padding:0.5rem 1rem;background:#f5f5f5;border:1px solid #ddd;color:#333;border-radius:8px;cursor:pointer;">Đóng</button>
+                <button type="submit" style="padding:0.5rem 1rem;background:#e94560;border:none;color:#fff;border-radius:8px;cursor:pointer;font-weight:600;">Xác nhận Hủy</button>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+function openCancelModal(id) {
+    document.getElementById('cancelReservationId').value = id;
+    document.getElementById('cancelModal').style.display = 'flex';
+}
+function closeCancelModal() {
+    document.getElementById('cancelModal').style.display = 'none';
+}
+</script>
+<% } %>
 <script>
 function validateReservationForm(form) {
     const bookIdInput = document.getElementById('reservationBookId');
