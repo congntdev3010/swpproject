@@ -103,7 +103,12 @@
                             <input type="text" id="titleInput" name="title" class="form-control"
                                    value="<%= title %>" placeholder="Nhập tiêu đề sách..."
                                    maxlength="255" required>
-                            <span class="form-hint">Tối đa 255 ký tự</span>
+                            <div id="titleFeedback" style="display: flex; justify-content: space-between; margin-top: 4px; font-size: 13px;">
+                                <span id="titleError" style="color: var(--danger); display: none; font-weight: 500;">
+                                    <i class="fa-solid fa-circle-exclamation"></i> Đã đạt giới hạn tối đa 255 ký tự.
+                                </span>
+                                <span id="titleCounter" style="color: var(--text-muted); margin-left: auto;">0 / 255 ký tự</span>
+                            </div>
                         </div>
 
                         <!-- ISBN -->
@@ -280,6 +285,38 @@
 <%@ include file="/WEB-INF/jsp/footer.jsp" %>
 
 <script>
+// ---- Title live character counter & validation ----
+(function() {
+    var titleInput = document.getElementById('titleInput');
+    var titleCounter = document.getElementById('titleCounter');
+    var titleError = document.getElementById('titleError');
+
+    if (!titleInput || !titleCounter || !titleError) return;
+
+    function checkLength() {
+        var len = titleInput.value.length;
+        titleCounter.textContent = len + ' / 255 ký tự';
+
+        if (len >= 255) {
+            titleInput.style.borderColor = 'var(--danger)';
+            titleInput.style.boxShadow = '0 0 0 3px rgba(255, 71, 87, 0.15)';
+            titleCounter.style.color = 'var(--danger)';
+            titleCounter.style.fontWeight = 'bold';
+            titleError.style.display = 'inline-block';
+        } else {
+            titleInput.style.borderColor = '';
+            titleInput.style.boxShadow = '';
+            titleCounter.style.color = 'var(--text-muted)';
+            titleCounter.style.fontWeight = 'normal';
+            titleError.style.display = 'none';
+        }
+    }
+
+    titleInput.addEventListener('input', checkLength);
+    // Initialize on load
+    checkLength();
+})();
+
 // ---- Category ID sync ----
 function updateCategoryId() {
     var sel = document.getElementById('categorySelect');
