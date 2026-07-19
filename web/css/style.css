@@ -2004,5 +2004,5 @@ a.book-title-link:hover {
     grid-template-columns: 1fr;
   }
 }
-.dropdown-divider { height: 1px; background-color: var(--border); margin: 8px 0; } 
- 
+.dropdown-divider { height: 1px; background-color: var(--border); margin: 8px 0; 
+}

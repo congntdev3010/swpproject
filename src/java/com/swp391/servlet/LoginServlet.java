@@ -1,6 +1,5 @@
 package com.swp391.servlet;
 
-import com.swp391.dao.DBContext;
 import com.swp391.dao.UserDAO;
 import com.swp391.dao.UserDAOImpl;
 import com.swp391.model.User;
@@ -11,9 +10,8 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.nio.charset.StandardCharsets;
 import com.swp391.util.BCrypt;
-import java.io.Console;
-import java.sql.Connection;
-import java.sql.SQLException;
+import java.security.NoSuchAlgorithmException;
+
 
     @WebServlet(name = "LoginServlet", urlPatterns = {"/login"})
 public class LoginServlet extends HttpServlet {
@@ -57,7 +55,7 @@ public class LoginServlet extends HttpServlet {
                 sb.append(String.format("%02x", b));
             }
             return sb.toString();
-        } catch (Exception e) {
+        } catch (NoSuchAlgorithmException e) {
             throw new IllegalStateException("MD5 not available", e);
         }
     }

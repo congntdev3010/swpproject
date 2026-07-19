@@ -98,8 +98,9 @@
   .badge-MAINTENANCE { background: #6c757d; color: #fff; }
   .badge-LOST        { background: #343a40; color: #fff; }
   .filter-card { border: 1.5px solid #c7d7ff; border-radius: 10px; background: #f6f8ff; }
-  .area-unplaced { border-color: #fd7e14; }
-  .area-unplaced .area-header { background: #fd7e14; }
+  .area-unplaced { border-color: #cbd5e1; }
+  .area-unplaced .area-header { background: #f1f5f9; color: #475569; }
+  .area-unplaced .area-header .badge { background: #ffffff; color: #475569; border: 1px solid #cbd5e1; }
   .btn-move { font-size: .78rem; padding: 2px 10px; }
   .toggle-shelf { cursor: pointer; user-select: none; }
   .toggle-shelf:hover { color: var(--primary); }
@@ -243,7 +244,7 @@
                         <div class="area-block shadow-sm ${areaEntry.key == 'Chưa xếp' ? 'area-unplaced' : ''}">
                             <div class="area-header">
                                 <span>
-                                    ${areaEntry.key == 'Chưa xếp' ? '⚠️' : '🏢'} ${areaEntry.key}
+                                    ${areaEntry.key == 'Chưa xếp' ? '' : '🏢'} ${areaEntry.key}
                                 </span>
                                 <span class="badge bg-white text-dark fw-normal fs-6 ms-2">
                                     <c:set var="areaCount" value="0"/>

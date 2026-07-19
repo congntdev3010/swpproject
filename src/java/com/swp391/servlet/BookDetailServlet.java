@@ -3,7 +3,6 @@ package com.swp391.servlet;
 import com.swp391.dao.*;
 import com.swp391.model.Author;
 import com.swp391.model.Book;
-import com.swp391.model.Category;
 import com.swp391.model.User;
 
 import jakarta.servlet.*;
@@ -419,12 +418,12 @@ public class BookDetailServlet extends HttpServlet {
 
         String yearStr = request.getParameter("publishYear");
         if (yearStr != null && !yearStr.trim().isEmpty()) {
-            try { book.setPublishYear(Integer.parseInt(yearStr.trim())); } catch (NumberFormatException e) {}
+            try { book.setPublishYear(Integer.valueOf(yearStr.trim())); } catch (NumberFormatException e) {}
         }
 
         String priceStr = request.getParameter("price");
         if (priceStr != null && !priceStr.trim().isEmpty()) {
-            try { book.setPrice(Integer.parseInt(priceStr.trim())); } catch (NumberFormatException e) {}
+            try { book.setPrice(Integer.valueOf(priceStr.trim())); } catch (NumberFormatException e) {}
         }
 
         String qtyStr = request.getParameter("quantity");
@@ -452,7 +451,7 @@ public class BookDetailServlet extends HttpServlet {
                     coverImage = savedPath;
                 }
             }
-        } catch (Exception e) {
+        } catch (ServletException | IOException e) {
             // Log or ignore
         }
         book.setCoverImage(coverImage);
@@ -473,7 +472,7 @@ public class BookDetailServlet extends HttpServlet {
         String[] authorIdStrs = request.getParameterValues("authorIds");
         if (authorIdStrs != null) {
             for (String s : authorIdStrs) {
-                try { ids.add(Integer.parseInt(s.trim())); } catch (NumberFormatException e) {}
+                try { ids.add(Integer.valueOf(s.trim())); } catch (NumberFormatException e) {}
             }
         }
         return ids;
@@ -515,8 +514,9 @@ public class BookDetailServlet extends HttpServlet {
 
         // Publish year
         if (book.getPublishYear() != null) {
-            if (book.getPublishYear() < 1000 || book.getPublishYear() > 2100) {
-                errors.add("Năm xuất bản phải từ 1000 đến 2100.");
+            int currentYear = java.time.Year.now().getValue();
+            if (book.getPublishYear() < 1000 || book.getPublishYear() > currentYear) {
+                errors.add("Năm xuất bản phải từ 1000 đến " + currentYear + ".");
             }
         }
 

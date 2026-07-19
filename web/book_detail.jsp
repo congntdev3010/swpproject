@@ -123,9 +123,12 @@
                 </form>
             </div>
             <% } %>
+            
+            
+            
 
             <!-- Admin Actions -->
-            <% if (isAdmin) { %>
+            <% if (isAdmin ) { %>
             <div class="book-detail-actions">
                 <a href="<%= ctx %>/book/edit?id=<%= book.getId() %>" class="btn btn-primary" style="flex:1;">
                     <i class="fa-solid fa-pen"></i> Chỉnh sửa

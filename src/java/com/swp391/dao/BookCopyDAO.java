@@ -540,4 +540,43 @@ public class BookCopyDAO {
 
         return bc;
     }
+
+    // 1. Hàm lấy danh sách KỆ dựa theo TẦNG
+    public List<String> getShelvesByArea(String area) {
+        List<String> list = new ArrayList<>();
+        // Câu lệnh SQL lấy các kệ không trùng lặp, bỏ qua giá trị rỗng/null và bản sao đã xóa
+        String sql = "SELECT DISTINCT shelf FROM book_copies WHERE area = ? AND shelf IS NOT NULL AND shelf != '' AND is_deleted = 0 ORDER BY shelf"; 
+        
+        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
+            ps.setString(1, area);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(rs.getString("shelf"));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    // 2. Hàm lấy danh sách NGĂN dựa theo TẦNG và KỆ
+    public List<String> getSlotsByShelf(String area, String shelf) {
+        List<String> list = new ArrayList<>();
+        // Câu lệnh SQL lấy các ngăn không trùng lặp, lọc chặt chẽ theo cả area và shelf
+        String sql = "SELECT DISTINCT slot FROM book_copies WHERE area = ? AND shelf = ? AND slot IS NOT NULL AND slot != '' AND is_deleted = 0 ORDER BY slot"; 
+        
+        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
+            ps.setString(1, area);
+            ps.setString(2, shelf);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(rs.getString("slot"));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 }

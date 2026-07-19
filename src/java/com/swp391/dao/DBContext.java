@@ -58,49 +58,4 @@ public class DBContext {
             System.out.println("Ket noi that bai: " + e.getMessage());
         }
     }
-    // 1. Hàm lấy danh sách KỆ dựa theo TẦNG
-    public List<String> getShelvesByArea(String area) {
-        List<String> list = new ArrayList<>();
-        // Câu lệnh SQL lấy các kệ không trùng lặp, bỏ qua giá trị rỗng/null
-        String sql = "SELECT DISTINCT shelf FROM book_copy WHERE area = ? AND shelf IS NOT NULL AND shelf != ''"; 
-        
-        // Khởi tạo kết nối chạy theo cấu trúc DBContext Singleton của bạn
-        try {
-            Connection conn = DBContext.getInstance().getConnection();
-            try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                ps.setString(1, area);
-                try (ResultSet rs = (ResultSet) ps.executeQuery()) {
-                    while (rs.next()) {
-                        list.add(rs.getString("shelf"));
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return list;
-    }
-
-    // 2. Hàm lấy danh sách NGĂN dựa theo TẦNG và KỆ
-    public List<String> getSlotsByShelf(String area, String shelf) {
-        List<String> list = new ArrayList<>();
-        // Câu lệnh SQL lấy các ngăn không trùng lặp, lọc chặt chẽ theo cả area và shelf
-        String sql = "SELECT DISTINCT slot FROM book_copy WHERE area = ? AND shelf = ? AND slot IS NOT NULL AND slot != ''"; 
-        
-        try {
-            Connection conn = DBContext.getInstance().getConnection();
-            try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                ps.setString(1, area);
-                ps.setString(2, shelf);
-                try (ResultSet rs = (ResultSet) ps.executeQuery()) {
-                    while (rs.next()) {
-                        list.add(rs.getString("slot"));
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return list;
-    }
 }

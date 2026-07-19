@@ -288,7 +288,7 @@
                 </div>
             </div>
             <div style="margin-bottom:1rem;">
-                <label style="display:block;font-weight:600;margin-bottom:0.4rem;">ID Bản sao (copy_id, nếu có)</label>
+                <label style="display:block;font-weight:600;margin-bottom:0.4rem;">Chọn ID Bản sao (Số cuối của Barcode)</label>
                 <input type="text" name="copyId" id="checkoutCopyId" list="checkoutCopiesList" placeholder="Vui lòng chọn Sách trước..." disabled
                        style="width:100%;padding:0.6rem 0.8rem;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;background:#f5f5f5;">
                 <datalist id="checkoutCopiesList"></datalist>
@@ -298,8 +298,7 @@
                 <div id="checkoutCopyId-server-error" style="color:#e94560;font-size:12px;margin-top:3px;display:none;">
                     <i class="fa-solid fa-triangle-exclamation"></i> Bản sao sách không tồn tại hoặc trạng thái không khả dụng (AVAILABLE).
                 </div>
-                <input type="number" name="copyId" id="checkoutCopyId" placeholder="Để trống nếu không có..." min="1"
-                       style="width:100%;padding:0.6rem 0.8rem;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
+               
                 <div id="checkoutCopyId-error" style="color:#e94560;font-size:12px;margin-top:3px;display:none;">
                     <i class="fa-solid fa-triangle-exclamation"></i> ID Bản sao phải là số nguyên dương.
                 </div>

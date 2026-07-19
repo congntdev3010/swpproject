@@ -93,10 +93,11 @@ public class BookReviewDAO {
     // *** Cần xác nhận tên cột join trong borrow_records trước khi dùng hàm này ***
     public boolean hasReturnedBook(int bookId, int userId) {
     String sql = "SELECT COUNT(*) FROM borrow_records "
-            + "WHERE book_id = ? AND user_id = ? AND status = 'RETURNED'";
+            + "WHERE book_id = ? AND user_id = ? AND status = 'BORROWING'";
     try (PreparedStatement ps = getConn().prepareStatement(sql)) {
         ps.setInt(1, bookId);
         ps.setInt(2, userId);
+
         ResultSet rs = ps.executeQuery();
         if (rs.next()) {
             return rs.getInt(1) > 0;

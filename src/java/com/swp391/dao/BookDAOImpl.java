@@ -35,7 +35,7 @@ public class BookDAOImpl implements BookDAO {
                    + "price, quantity, available, description, cover_image, subject, "
                    + "area, shelf, slot, created_at, updated_at, is_deleted, created_by, updated_by "
                    + "FROM books "
-                   + "WHERE is_deleted = 0 "
+                   + "WHERE is_deleted = 0 AND created_at >= NOW() - INTERVAL 7 DAY "
                    + "ORDER BY created_at DESC "
                    + "LIMIT ?";
         List<Book> list = new ArrayList<>();

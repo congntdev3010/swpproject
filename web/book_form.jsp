@@ -35,6 +35,7 @@
     String shelf       = book != null && book.getShelf() != null ? book.getShelf() : "";
     String slot        = book != null && book.getSlot() != null ? book.getSlot() : "";
     int    bookId      = book != null ? book.getId() : 0;
+    int    currentYear = java.time.Year.now().getValue();
 %>
 
 <main class="page-wrapper">
@@ -170,7 +171,7 @@
                                 <label for="publishYearInput" class="form-label">Năm xuất bản</label>
                                 <input type="number" id="publishYearInput" name="publishYear" class="form-control"
                                        value="<%= publishYear %>" placeholder="VD: 2024"
-                                       min="1000" max="2100">
+                                       min="1000" max="<%= currentYear %>">
                             </div>
                             <div class="form-group">
                                 <label for="priceInput" class="form-label">Giá (VNĐ)</label>
@@ -337,7 +338,8 @@ document.getElementById('bookForm').addEventListener('submit', function(e) {
     var yearVal = document.getElementById('publishYearInput').value.trim();
     if (yearVal) {
         var y = parseInt(yearVal);
-        if (isNaN(y) || y < 1000 || y > 2100) errors.push('Năm xuất bản phải từ 1000 đến 2100.');
+        var currentYear = new Date().getFullYear();
+        if (isNaN(y) || y < 1000 || y > currentYear) errors.push('Năm xuất bản phải từ 1000 đến ' + currentYear + '.');
     }
 
     var priceVal = document.getElementById('priceInput').value.trim();

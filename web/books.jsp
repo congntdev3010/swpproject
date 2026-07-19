@@ -75,7 +75,7 @@
                         <i class="fa-solid fa-magnifying-glass search-icon"></i>
                         <input type="text" id="keywordInput" name="keyword"
                                class="form-control"
-                               placeholder="Nhập tên sách, ISBN..."
+                               placeholder="Nhập tên sách, ISBN, tác giả..."
                                value="<%= keyword %>"
                                maxlength="200"
                                autocomplete="off">
