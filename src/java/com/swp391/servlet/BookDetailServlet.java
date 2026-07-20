@@ -457,9 +457,6 @@ public class BookDetailServlet extends HttpServlet {
         book.setCoverImage(coverImage);
         
         book.setSubject(trim(request.getParameter("subject")));
-        book.setArea(trim(request.getParameter("area")));
-        book.setShelf(trim(request.getParameter("shelf")));
-        book.setSlot(trim(request.getParameter("slot")));
 
         return book;
     }

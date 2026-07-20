@@ -1,6 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
-    if (request.getAttribute("featuredBooks") == null) {
+    if (request.getAttribute("featuredBooks") == null && request.getAttribute("dbError") == null) {
         request.getRequestDispatcher("/home").forward(request, response);
         return;
     }

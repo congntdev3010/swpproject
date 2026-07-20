@@ -16,7 +16,7 @@ import java.util.Set;
  * Cột bảng books:
  *   id, isbn, title, category (VARCHAR), category_id (INT),
  *   publisher (VARCHAR), publish_year, price, quantity, available,
- *   description, cover_image, subject, area, shelf, slot,
+ *   description, cover_image, subject,
  *   created_at, updated_at
  */
 public class BookDAOImpl implements BookDAO {
@@ -33,7 +33,7 @@ public class BookDAOImpl implements BookDAO {
     public List<Book> getNewestBooks(int limit) throws Exception {
         String sql = "SELECT id, isbn, title, category, category_id, publisher, publish_year, "
                    + "price, quantity, available, description, cover_image, subject, "
-                   + "area, shelf, slot, created_at, updated_at, is_deleted, created_by, updated_by "
+                   + "created_at, updated_at, is_deleted, created_by, updated_by "
                    + "FROM books "
                    + "WHERE is_deleted = 0 AND created_at >= NOW() - INTERVAL 7 DAY "
                    + "ORDER BY created_at DESC "
@@ -65,7 +65,7 @@ public class BookDAOImpl implements BookDAO {
         StringBuilder sql = new StringBuilder(
             "SELECT id, isbn, title, category, category_id, publisher, publish_year, "
           + "price, quantity, available, description, cover_image, subject, "
-          + "area, shelf, slot, created_at, updated_at, is_deleted, created_by, updated_by "
+          + "created_at, updated_at, is_deleted, created_by, updated_by "
           + "FROM books WHERE is_deleted = 0 "
         );
 
@@ -166,7 +166,7 @@ public class BookDAOImpl implements BookDAO {
     public Book findById(int id) throws Exception {
         String sql = "SELECT id, isbn, title, category, category_id, publisher, publish_year, "
                    + "price, quantity, available, description, cover_image, subject, "
-                   + "area, shelf, slot, created_at, updated_at, is_deleted, created_by, updated_by "
+                   + "created_at, updated_at, is_deleted, created_by, updated_by "
                    + "FROM books WHERE id = ? AND is_deleted = 0";
         try (Connection con = DBContext.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -185,8 +185,8 @@ public class BookDAOImpl implements BookDAO {
     public int createBook(Book book) throws Exception {
         String sql = "INSERT INTO books (isbn, title, category, category_id, publisher, "
                    + "publish_year, price, quantity, available, description, cover_image, "
-                   + "subject, area, shelf, slot, created_by) "
-                   + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                   + "subject, created_by) "
+                   + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection con = DBContext.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, book.getIsbn());
@@ -213,10 +213,7 @@ public class BookDAOImpl implements BookDAO {
             ps.setString(10, book.getDescription());
             ps.setString(11, book.getCoverImage());
             ps.setString(12, book.getSubject());
-            ps.setString(13, book.getArea());
-            ps.setString(14, book.getShelf());
-            ps.setString(15, book.getSlot());
-            ps.setString(16, book.getCreatedBy());
+            ps.setString(13, book.getCreatedBy());
 
             int affected = ps.executeUpdate();
             if (affected == 0) return -1;
@@ -234,7 +231,7 @@ public class BookDAOImpl implements BookDAO {
     public boolean updateBook(Book book) throws Exception {
         String sql = "UPDATE books SET isbn = ?, title = ?, category = ?, category_id = ?, "
                    + "publisher = ?, publish_year = ?, price = ?, quantity = ?, available = ?, "
-                   + "description = ?, cover_image = ?, subject = ?, area = ?, shelf = ?, slot = ?, updated_by = ? "
+                   + "description = ?, cover_image = ?, subject = ?, updated_by = ? "
                    + "WHERE id = ? AND is_deleted = 0";
         try (Connection con = DBContext.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -262,11 +259,8 @@ public class BookDAOImpl implements BookDAO {
             ps.setString(10, book.getDescription());
             ps.setString(11, book.getCoverImage());
             ps.setString(12, book.getSubject());
-            ps.setString(13, book.getArea());
-            ps.setString(14, book.getShelf());
-            ps.setString(15, book.getSlot());
-            ps.setString(16, book.getUpdatedBy());
-            ps.setInt(17, book.getId());
+            ps.setString(13, book.getUpdatedBy());
+            ps.setInt(14, book.getId());
             return ps.executeUpdate() > 0;
         }
     }
@@ -480,9 +474,6 @@ public class BookDAOImpl implements BookDAO {
         b.setDescription(rs.getString("description"));
         b.setCoverImage(rs.getString("cover_image"));
         b.setSubject(rs.getString("subject"));
-        b.setArea(rs.getString("area"));
-        b.setShelf(rs.getString("shelf"));
-        b.setSlot(rs.getString("slot"));
         b.setCreatedAt(rs.getTimestamp("created_at"));
         b.setUpdatedAt(rs.getTimestamp("updated_at"));
         b.setDeleted(rs.getInt("is_deleted") == 1);

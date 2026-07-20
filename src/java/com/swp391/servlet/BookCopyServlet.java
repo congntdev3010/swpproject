@@ -184,6 +184,21 @@ public class BookCopyServlet extends HttpServlet {
             errors.add("Ghi chú không được vượt quá 255 ký tự.");
         }
 
+        // Validate condition vs status
+        if ("GOOD".equals(condition)) {
+            if (!"AVAILABLE".equals(status) && !"BORROWED".equals(status) && !"RESERVED".equals(status)) {
+                errors.add("Tình trạng 'GOOD' chỉ đi kèm với các trạng thái: AVAILABLE, BORROWED, RESERVED.");
+            }
+        } else if ("WORN".equals(condition) || "DAMAGED".equals(condition)) {
+            if (!"MAINTENANCE".equals(status)) {
+                errors.add("Tình trạng 'WORN' hoặc 'DAMAGED' bắt buộc trạng thái phải là MAINTENANCE.");
+            }
+        } else if ("LOST".equals(condition)) {
+            if (!"LOST".equals(status)) {
+                errors.add("Tình trạng 'LOST' bắt buộc trạng thái phải là LOST.");
+            }
+        }
+
         if (!errors.isEmpty()) {
             request.setAttribute("formMode", "add");
             request.setAttribute("book", book);
@@ -271,6 +286,21 @@ public class BookCopyServlet extends HttpServlet {
         }
         if (note != null && note.length() > 255) {
             errors.add("Ghi chú không được vượt quá 255 ký tự.");
+        }
+
+        // Validate condition vs status
+        if ("GOOD".equals(condition)) {
+            if (!"AVAILABLE".equals(status) && !"BORROWED".equals(status) && !"RESERVED".equals(status)) {
+                errors.add("Tình trạng 'GOOD' chỉ đi kèm với các trạng thái: AVAILABLE, BORROWED, RESERVED.");
+            }
+        } else if ("WORN".equals(condition) || "DAMAGED".equals(condition)) {
+            if (!"MAINTENANCE".equals(status)) {
+                errors.add("Tình trạng 'WORN' hoặc 'DAMAGED' bắt buộc trạng thái phải là MAINTENANCE.");
+            }
+        } else if ("LOST".equals(condition)) {
+            if (!"LOST".equals(status)) {
+                errors.add("Tình trạng 'LOST' bắt buộc trạng thái phải là LOST.");
+            }
         }
 
         if (!errors.isEmpty()) {

@@ -221,16 +221,7 @@
                             <span class="detail-label"><i class="fa-solid fa-check-circle"></i> Còn cho mượn</span>
                             <span class="detail-value" style="font-weight:700; font-size:1.1rem; color:var(--success);"><%= book.getAvailable() %></span>
                         </div>
-                        <div class="detail-item">
-                            <span class="detail-label"><i class="fa-solid fa-location-dot"></i> Khu vực</span>
-                            <span class="detail-value"><%= book.getArea() != null ? book.getArea() : "—" %></span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label"><i class="fa-solid fa-table-cells"></i> Kệ / Ngăn</span>
-                            <span class="detail-value">
-                                <%= book.getShelf() != null ? book.getShelf() : "—" %> / <%= book.getSlot() != null ? book.getSlot() : "—" %>
-                            </span>
-                        </div>
+
                     </div>
                 </div>
             </div>

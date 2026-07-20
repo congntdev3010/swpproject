@@ -219,6 +219,60 @@
 <%@ include file="/WEB-INF/jsp/footer.jsp" %>
 
 <script>
+document.addEventListener('DOMContentLoaded', function() {
+    var conditionSelect = document.getElementById('conditionSelect');
+    var statusSelect = document.getElementById('statusSelect');
+    var originalSelectedStatus = "<%= selectedStatus %>";
+
+    function updateStatusOptions() {
+        var condition = conditionSelect.value;
+        var currentStatus = statusSelect.value || originalSelectedStatus;
+        
+        var allStatuses = [
+            { value: 'AVAILABLE', text: 'AVAILABLE (Sẵn sàng)' },
+            { value: 'BORROWED', text: 'BORROWED (Đang mượn)' },
+            { value: 'RESERVED', text: 'RESERVED (Đặt giữ)' },
+            { value: 'MAINTENANCE', text: 'MAINTENANCE (Bảo trì)' },
+            { value: 'LOST', text: 'LOST (Đã mất)' }
+        ];
+        
+        var allowedValues = [];
+        if (condition === 'GOOD') {
+            allowedValues = ['AVAILABLE', 'BORROWED', 'RESERVED'];
+        } else if (condition === 'WORN' || condition === 'DAMAGED') {
+            allowedValues = ['MAINTENANCE'];
+        } else if (condition === 'LOST') {
+            allowedValues = ['LOST'];
+        }
+        
+        statusSelect.innerHTML = '';
+        
+        allStatuses.forEach(function(status) {
+            if (allowedValues.indexOf(status.value) !== -1) {
+                var opt = document.createElement('option');
+                opt.value = status.value;
+                opt.textContent = status.text;
+                if (status.value === currentStatus) {
+                    opt.selected = true;
+                }
+                statusSelect.appendChild(opt);
+            }
+        });
+        
+        // If current selected status is no longer valid, select the first allowed status
+        if (allowedValues.indexOf(statusSelect.value) === -1 && allowedValues.length > 0) {
+            statusSelect.value = allowedValues[0];
+        }
+    }
+
+    conditionSelect.addEventListener('change', function() {
+        originalSelectedStatus = ""; // Reset on manual change
+        updateStatusOptions();
+    });
+
+    updateStatusOptions();
+});
+
 document.getElementById('copyForm').addEventListener('submit', function(e) {
     var barcodeVal = document.getElementById('barcodeInput').value.trim();
     var areaVal = document.getElementById('areaInput').value.trim();

@@ -239,7 +239,7 @@ BEGIN
             END IF;
 
             INSERT INTO books (id, isbn, title, category, category_id, publisher, publish_year, quantity,
-                               available, description, cover_image, subject, area, shelf, slot, created_by, updated_by, is_deleted)
+                               available, description, cover_image, subject, created_by, updated_by, is_deleted)
             VALUES (i,
                     CONCAT('978-604-', LPAD(i * 251, 6, '0')),
                     tieu_de,
@@ -252,18 +252,15 @@ BEGIN
                     CONCAT('Tài liệu giáo trình chính thống hỗ trợ kiến thức chuyên ngành chuyên sâu về đầu sách: ', tieu_de),
                     anh_bia,
                     ELT(1 + (i % 5), 'Lập trình Web', 'Cơ sở dữ liệu', 'Toán rời rạc', 'Kinh tế vĩ mô', 'Vật lý đại cương'),
-                    CONCAT('Tầng ', (1 + (i % 3))),
-                    CONCAT('Kệ K', LPAD(1 + (i % 12), 2, '0')),
-                    CONCAT('Ngăn N', LPAD(1 + (i % 5), 2, '0')),
                     'system',
                     'system',
                     0);
 
-            -- Thêm 3 bản sao vật lý cho mỗi đầu sách
-            INSERT INTO book_copies (book_id, barcode, book_condition, status)
-            VALUES (i, CONCAT('B', LPAD(i, 4, '0'), 'C01'), 'GOOD', 'AVAILABLE'),
-                   (i, CONCAT('B', LPAD(i, 4, '0'), 'C02'), 'GOOD', 'AVAILABLE'),
-                   (i, CONCAT('B', LPAD(i, 4, '0'), 'C03'), 'WORN', 'AVAILABLE');
+            -- Thêm 3 bản sao vật lý cho mỗi đầu sách với thông tin Khu vực, Kệ, Ngăn tương ứng
+            INSERT INTO book_copies (book_id, barcode, book_condition, status, area, shelf, slot)
+            VALUES (i, CONCAT('B', LPAD(i, 4, '0'), 'C01'), 'GOOD', 'AVAILABLE', CONCAT('Tầng ', (1 + (i % 3))), CONCAT('Kệ K', LPAD(1 + (i % 12), 2, '0')), CONCAT('Ngăn N', LPAD(1 + (i % 5), 2, '0'))),
+                   (i, CONCAT('B', LPAD(i, 4, '0'), 'C02'), 'GOOD', 'AVAILABLE', CONCAT('Tầng ', (1 + (i % 3))), CONCAT('Kệ K', LPAD(1 + (i % 12), 2, '0')), CONCAT('Ngăn N', LPAD(1 + (i % 5), 2, '0'))),
+                   (i, CONCAT('B', LPAD(i, 4, '0'), 'C03'), 'WORN', 'AVAILABLE', CONCAT('Tầng ', (1 + (i % 3))), CONCAT('Kệ K', LPAD(1 + (i % 12), 2, '0')), CONCAT('Ngăn N', LPAD(1 + (i % 5), 2, '0')));
 
             -- Gán quan hệ vào bảng trung gian nhiều - nhiều: book_authors
             INSERT INTO book_authors(book_id, author_id, role) VALUES (i, tg_id, 'PRIMARY');

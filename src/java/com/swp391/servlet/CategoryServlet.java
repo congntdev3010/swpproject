@@ -37,8 +37,8 @@ public class CategoryServlet extends HttpServlet {
             return;
         }
 
-        // View is allowed for both ADMIN and LIBRARIAN
-        if (!loggedUser.isAdminOrLibrarian()) {
+        // View is allowed for ADMIN only (Librarian is no longer allowed)
+        if (!loggedUser.isAdmin()) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "Bạn không có quyền truy cập trang này.");
             return;
         }

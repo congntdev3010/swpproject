@@ -8,7 +8,7 @@ import java.sql.Timestamp;
  * Schema:
  *   id, isbn, title, category (VARCHAR), category_id (FK),
  *   publisher (VARCHAR), publish_year, price, quantity, available,
- *   description, cover_image, subject, area, shelf, slot,
+ *   description, cover_image, subject,
  *   created_at, updated_at, is_deleted, created_by, updated_by
  *
  * Trạng thái sách:
@@ -31,9 +31,7 @@ public class Book {
     private String  description;
     private String  coverImage;
     private String  subject;        // môn học liên quan
-    private String  area;           // khu vực (Tầng 1...)
-    private String  shelf;          // kệ (K01...)
-    private String  slot;           // ngăn (N01...)
+
     private Timestamp createdAt;
     private Timestamp updatedAt;
     private boolean   isDeleted;   // soft delete flag
@@ -82,14 +80,7 @@ public class Book {
     public String getSubject()              { return subject; }
     public void setSubject(String v)        { this.subject = v; }
 
-    public String getArea()                 { return area; }
-    public void setArea(String v)           { this.area = v; }
 
-    public String getShelf()                { return shelf; }
-    public void setShelf(String v)          { this.shelf = v; }
-
-    public String getSlot()                 { return slot; }
-    public void setSlot(String v)           { this.slot = v; }
 
     public Timestamp getCreatedAt()         { return createdAt; }
     public void setCreatedAt(Timestamp v)   { this.createdAt = v; }

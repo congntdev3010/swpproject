@@ -31,9 +31,7 @@
     String description = book != null && book.getDescription() != null ? book.getDescription() : "";
     String coverImage  = book != null && book.getCoverImage() != null ? book.getCoverImage() : "";
     String subject     = book != null && book.getSubject() != null ? book.getSubject() : "";
-    String area        = book != null && book.getArea() != null ? book.getArea() : "";
-    String shelf       = book != null && book.getShelf() != null ? book.getShelf() : "";
-    String slot        = book != null && book.getSlot() != null ? book.getSlot() : "";
+
     int    bookId      = book != null ? book.getId() : 0;
     int    currentYear = java.time.Year.now().getValue();
 %>
@@ -217,26 +215,7 @@
                                    maxlength="100">
                         </div>
 
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="areaInput" class="form-label">Khu vực</label>
-                                <input type="text" id="areaInput" name="area" class="form-control"
-                                       value="<%= area %>" placeholder="VD: Tầng 1"
-                                       maxlength="50">
-                            </div>
-                            <div class="form-group">
-                                <label for="shelfInput" class="form-label">Kệ</label>
-                                <input type="text" id="shelfInput" name="shelf" class="form-control"
-                                       value="<%= shelf %>" placeholder="VD: K01"
-                                       maxlength="20">
-                            </div>
-                            <div class="form-group">
-                                <label for="slotInput" class="form-label">Ngăn</label>
-                                <input type="text" id="slotInput" name="slot" class="form-control"
-                                       value="<%= slot %>" placeholder="VD: N01"
-                                       maxlength="20">
-                            </div>
-                        </div>
+
                     </div>
                 </div>
 

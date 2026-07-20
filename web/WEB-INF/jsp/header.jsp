@@ -131,6 +131,7 @@
                                 <i class="fa-solid fa-layer-group"></i> Vị trí kệ
                             </a>
                         </li>
+                        <% if (navUser.isAdmin()) { %>
                         <li>
                             <a href="<%= request.getContextPath() %>/authors"
                                class="dropdown-item <%= "authors".equals(navCurrentPage) ? "active" : "" %>">
@@ -143,6 +144,7 @@
                                 <i class="fa-solid fa-tags"></i> Danh mục
                             </a>
                         </li>
+                        <% } %>
                         <li class="dropdown-divider"></li>
                         <% if (navUser.isAdmin()) { %>
                         <li>
