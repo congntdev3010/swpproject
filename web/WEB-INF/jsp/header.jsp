@@ -148,7 +148,8 @@
                         <li class="dropdown-divider"></li>
                         <% if (navUser.isAdmin()) { %>
                         <li>
-                            <a href="<%= request.getContextPath() %>/users" class="dropdown-item">
+                            <a href="<%= request.getContextPath() %>/users"
+                               class="dropdown-item <%= "users".equals(navCurrentPage) ? "active" : "" %>">
                                 <i class="fa-solid fa-user-gear"></i> Tài khoản
                             </a>
                         </li>

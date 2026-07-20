@@ -68,6 +68,7 @@ public class UserListServlet extends HttpServlet {
             request.setAttribute("activeFilter", active);
             request.setAttribute("sortField", sortField);
             request.setAttribute("sortOrder", sortOrder);
+            request.setAttribute("currentPage", "users");
         } catch (Exception e) {
             request.setAttribute("error", "Không thể tải danh sách người dùng: " + e.getMessage());
         }

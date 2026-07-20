@@ -174,6 +174,7 @@
                            style="padding:0.3rem 0.7rem;background:#17a2b8;border:none;color:#fff;border-radius:6px;cursor:pointer;font-size:0.8rem;text-decoration:none;display:inline-block;">
                             <i class="fa-solid fa-plus"></i> Tạo Phiếu Mượn
                         </a>
+                        <% } %>
                        <% if (isStaff) { %>
                             <button type="button" onclick="openCancelModal(<%= r.getId() %>)" style="padding:0.3rem 0.7rem;background:#e94560;border:none;color:#fff;border-radius:6px;cursor:pointer;font-size:0.8rem;">
                                 <i class="fa-solid fa-ban"></i> Hủy
