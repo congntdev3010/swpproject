@@ -202,6 +202,11 @@ public class BookDetailServlet extends HttpServlet {
         try {
             BookDAO dao = new BookDAOImpl();
             Book book = extractBookFromRequest(request);
+            HttpSession session = request.getSession(false);
+            User loggedUser = (session != null) ? (User) session.getAttribute("loggedUser") : null;
+            if (loggedUser != null) {
+                book.setCreatedBy(loggedUser.getUsername());
+            }
 
             // Validate
             List<String> errors = validateBook(book, dao, true, 0);
@@ -266,6 +271,11 @@ public class BookDetailServlet extends HttpServlet {
             BookDAO dao = new BookDAOImpl();
             Book book = extractBookFromRequest(request);
             book.setId(id);
+            HttpSession session = request.getSession(false);
+            User loggedUser = (session != null) ? (User) session.getAttribute("loggedUser") : null;
+            if (loggedUser != null) {
+                book.setUpdatedBy(loggedUser.getUsername());
+            }
 
             // If has physical copies, keep original ISBN
             boolean hasCopies = dao.hasPhysicalCopies(id);

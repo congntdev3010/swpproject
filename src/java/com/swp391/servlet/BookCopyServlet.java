@@ -224,6 +224,7 @@ public class BookCopyServlet extends HttpServlet {
         copy.setShelf(shelf);
         copy.setSlot(slot);
         copy.setNote(note);
+        copy.setCreatedBy(operator);
 
         BookCopyDAO copyDao = new BookCopyDAO();
         boolean success = copyDao.addCopy(copy);
@@ -330,6 +331,7 @@ public class BookCopyServlet extends HttpServlet {
         existingCopy.setShelf(shelf);
         existingCopy.setSlot(slot);
         existingCopy.setNote(note);
+        existingCopy.setUpdatedBy(operator);
 
         boolean success = copyDao.updateCopy(existingCopy);
         if (success) {
