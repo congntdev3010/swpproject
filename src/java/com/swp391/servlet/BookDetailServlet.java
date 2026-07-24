@@ -106,7 +106,7 @@ public class BookDetailServlet extends HttpServlet {
             User loggedUser = (session != null) ? (User) session.getAttribute("loggedUser") : null;
             
             if (loggedUser != null && "READER".equals(loggedUser.getRole())) {
-                canReview = reviewDAO.hasReturnedBook(id, loggedUser.getId());
+                canReview = reviewDAO.hasBorrowedBook(id, loggedUser.getId());
             }
 
             request.setAttribute("reviews", reviews);

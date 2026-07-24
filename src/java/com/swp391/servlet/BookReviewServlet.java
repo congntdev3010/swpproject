@@ -43,7 +43,7 @@ public class BookReviewServlet extends HttpServlet {
             boolean canReview = false;
             if (loggedInUser != null && "READER".equals(loggedInUser.getRole())) {
                 myReview = reviewDAO.getReviewByBookAndUser(bookId, loggedInUser.getId());
-                canReview = reviewDAO.hasReturnedBook(bookId, loggedInUser.getId());
+                canReview = reviewDAO.hasBorrowedBook(bookId, loggedInUser.getId());
             }
 
             request.setAttribute("bookId", bookId);
@@ -129,9 +129,9 @@ public class BookReviewServlet extends HttpServlet {
     // Xử lý thêm review mới
     private void handleAddReview(HttpServletRequest request, HttpServletResponse response, 
                                   int bookId, int userId) throws ServletException, IOException {
-        // Kiểm tra đã trả sách chưa
-        if (!reviewDAO.hasReturnedBook(bookId, userId)) {
-            request.setAttribute("error", "Bạn chỉ có thể đánh giá sách đã mượn và trả.");
+        // Kiểm tra đã từng mượn sách chưa
+        if (!reviewDAO.hasBorrowedBook(bookId, userId)) {
+            request.setAttribute("error", "Bạn chỉ có thể đánh giá sách sau khi đã mượn.");
             doGet(request, response);
             return;
         }

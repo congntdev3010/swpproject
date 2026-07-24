@@ -89,24 +89,23 @@ public class BookReviewDAO {
         return null;
     }
 
-    // Kiểm tra user đã trả sách này chưa (điều kiện được phép review)
-    // *** Cần xác nhận tên cột join trong borrow_records trước khi dùng hàm này ***
-    public boolean hasReturnedBook(int bookId, int userId) {
-    String sql = "SELECT COUNT(*) FROM borrow_records "
-            + "WHERE book_id = ? AND user_id = ? AND status = 'BORROWING'";
-    try (PreparedStatement ps = getConn().prepareStatement(sql)) {
-        ps.setInt(1, bookId);
-        ps.setInt(2, userId);
+    // Kiểm tra user đã từng mượn sách này chưa (điều kiện được phép review)
+    public boolean hasBorrowedBook(int bookId, int userId) {
+        String sql = "SELECT COUNT(*) FROM borrow_records "
+                + "WHERE book_id = ? AND user_id = ? AND status IN ('BORROWING', 'RETURNED', 'OVERDUE', 'LOST')";
+        try (PreparedStatement ps = getConn().prepareStatement(sql)) {
+            ps.setInt(1, bookId);
+            ps.setInt(2, userId);
 
-        ResultSet rs = ps.executeQuery();
-        if (rs.next()) {
-            return rs.getInt(1) > 0;
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-    } catch (Exception e) {
-        e.printStackTrace();
+        return false;
     }
-    return false;
-}
 
     // Thêm review mới
     public boolean addReview(int bookId, int userId, int rating, String comment) {

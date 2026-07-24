@@ -132,6 +132,13 @@ public class UserDAOImpl implements UserDAO {
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, userId);
             return ps.executeUpdate() > 0;
+        } catch (SQLIntegrityConstraintViolationException e) {
+            throw new Exception("Không thể xóa người dùng này vì có dữ liệu liên quan (lịch sử mượn, phạt, v.v.). Vui lòng Khóa tài khoản thay thế.");
+        } catch (SQLException e) {
+            if (e.getMessage() != null && e.getMessage().toLowerCase().contains("foreign key constraint")) {
+                throw new Exception("Không thể xóa người dùng này vì có dữ liệu liên quan (lịch sử mượn, phạt, v.v.). Vui lòng Khóa tài khoản thay thế.");
+            }
+            throw e;
         }
     }
 

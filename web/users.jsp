@@ -234,7 +234,7 @@
                                         <i class="fa-solid fa-eye"></i> Xem
                                     </a>
                                     <% if (logged != null && logged.isAdmin()) { %>
-                                    <form method="post" action="<%= ctx %>/user" style="display:inline;margin:0;">
+                                    <form method="post" action="<%= ctx %>/users" style="display:inline;margin:0;">
                                         <input type="hidden" name="action" value="<%= u.getActive()==1 ? "lock" : "unlock" %>">
                                         <input type="hidden" name="id" value="<%= u.getId() %>">
                                         <button type="submit"
@@ -243,7 +243,7 @@
                                             <%= u.getActive()==1 ? "Khóa" : "Mở khóa" %>
                                         </button>
                                     </form>
-                                    <form method="post" action="<%= ctx %>/user" style="display:inline;margin:0;"
+                                    <form method="post" action="<%= ctx %>/users" style="display:inline;margin:0;"
                                           onsubmit="return confirm('Xác nhận xóa người dùng <%= u.getUsername().replace("'", "\\'") %>?')">
                                         <input type="hidden" name="action" value="delete">
                                         <input type="hidden" name="id" value="<%= u.getId() %>">
